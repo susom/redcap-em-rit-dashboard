@@ -1,0 +1,52 @@
+{
+  "name": "Project Portal API",
+  "namespace": "Stanford\\ProjectPortal",
+  "description": "A module that links redcap projects to Stanford Research Project Portal",
+  "versions": [
+    {
+      "0.1": "Initial Development Version"
+    }
+  ],
+  "authors": [
+    {
+      "name": "Andy Martin",
+      "email": "andy123@stanford.edu",
+      "institution": "Stanford University"
+    },
+    {
+      "name": "Ihab Zeedia",
+      "email": "ihabz@stanford.edu",
+      "institution": "Stanford University"
+    }
+  ],
+  "no-auth-pages": [
+    "services"
+  ],
+  "system-settings": [
+    {
+      "key": "project-portal-api-token",
+      "name": "<b>Token to be used to get user projects or update REDCap projects with Project Portal`s link.</b>",
+      "type": "text"
+    },
+    {
+      "key": "ip_whitelist",
+      "name": "IP Whitelist",
+      "type": "sub_settings",
+      "repeatable": true,
+      "sub_settings": [
+        {
+          "key": "ip",
+          "name": "IP address or CIDR notation (e.g. 192.168.123.1/24). Create a new subsetting for each IP address.",
+          "required": false,
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "enable-system-debug-logging",
+      "name": "<b>Enable Debug Logging (system-wide)</b>",
+      "required": false,
+      "type": "checkbox"
+    }
+  ]
+}
