@@ -11,7 +11,7 @@ http://[HOST_NAME]/external_modules/?prefix=project_portal_api&page=services&NOA
 
 
 #####example: 
-```angular2
+```
 curl --location --request POST 'http://redcap.stanford.edu/external_modules/?prefix=project_portal_api&page=services&NOAUTH' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'secret_token=[TOKEN]' \
