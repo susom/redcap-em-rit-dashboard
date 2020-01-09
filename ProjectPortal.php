@@ -6,7 +6,6 @@ require_once("emLoggerTrait.php");
 
 
 use REDCap;
-use UserRights;
 use ExternalModules\AbstractExternalModule;
 
 /**
