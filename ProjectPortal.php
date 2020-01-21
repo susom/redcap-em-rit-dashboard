@@ -156,7 +156,7 @@ class ProjectPortal extends AbstractExternalModule
 
                 // Return error
                 $this->emError($subject, $body);
-                $this->returnError("Invalid source IP: " . $ip_addr);
+                $this->returnError("Invalid source IP. Please contact REDCap Administrator to whitelist this IP:" . $ip_addr);
             }
         }
         return true;
