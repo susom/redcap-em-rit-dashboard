@@ -156,7 +156,7 @@ class ProjectPortal extends AbstractExternalModule
 
                 // Return error
                 $this->emError($subject, $body);
-                $this->returnError("Invalid source IP");
+                $this->returnError("Invalid source IP" . $ip_addr);
             }
         }
         return true;
