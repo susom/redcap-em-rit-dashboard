@@ -6,6 +6,7 @@ require_once("emLoggerTrait.php");
 
 
 use REDCap;
+use Records;
 use ExternalModules\AbstractExternalModule;
 
 /**
@@ -108,6 +109,8 @@ class ProjectPortal extends AbstractExternalModule
                         $temp = array(
                             'project_name' => $project->project['app_title'],
                             'project_id' => $project->project_id,
+                            'last_logged_event' => $project->project['last_logged_event'],
+                            'record_count' => Records::getRecordCount($project->project_id),
                         );
                         // get project users other the main one we sent via API
                         while ($record = db_fetch_assoc($records)) {
