@@ -48,5 +48,27 @@
       "required": false,
       "type": "checkbox"
     }
+  ],
+  "project-settings": [
+    {
+      "key": "portal-project-id",
+      "name": "<b>Research Project Portal ID</b>",
+      "type": "text"
+    },
+    {
+      "key": "portal-project-name",
+      "name": "<b>Research Project Portal Name</b>",
+      "type": "text"
+    },
+    {
+      "key": "portal-project-description",
+      "name": "<b>Research Project Portal Description</b>",
+      "type": "text"
+    },
+    {
+      "key": "portal-project-url",
+      "name": "<b>Research Project Portal URL</b>",
+      "type": "text"
+    }
   ]
 }

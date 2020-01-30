@@ -5,6 +5,7 @@ namespace Stanford\ProjectPortal;
 require_once("emLoggerTrait.php");
 
 
+use ExternalModules\ExternalModules;
 use REDCap;
 use Records;
 use ExternalModules\AbstractExternalModule;
@@ -16,6 +17,7 @@ use ExternalModules\AbstractExternalModule;
  * @property string $user
  * @property array $ips
  * @property array $projects
+ * @property \Project $project
  * @property string $request
  */
 class ProjectPortal extends AbstractExternalModule
@@ -43,6 +45,10 @@ class ProjectPortal extends AbstractExternalModule
     private $projects;
 
     /**
+     * @var \Project
+     */
+    private $project;
+    /**
      * @var
      */
     private $request;
@@ -64,7 +70,7 @@ class ProjectPortal extends AbstractExternalModule
         }
 
         if (!isset($_POST['secret_token']) || !isset($_POST['request'])) {
-            throw new \LogicException("request parameters are missing");
+            throw new \LogicException("request parameter is missing");
         }
 
         if (!$this->applyIpFilter()) {
@@ -81,14 +87,56 @@ class ProjectPortal extends AbstractExternalModule
 
         if ($this->getRequest() == 'users') {
             if (!isset($_POST['users'])) {
-                throw new \LogicException("request parameters are missing");
+                throw new \LogicException("request parameter is missing");
             }
             $users = explode(',', filter_var($_POST['users'], FILTER_SANITIZE_STRING));
             if (empty($users)) {
                 throw new \LogicException("no users were passed");
             }
             $this->processUserRequest($users);
+        } elseif ($this->getRequest() == "add_project") {
+            if (!isset($_POST['redcap_project_id'])) {
+                throw new \LogicException("REDCap project id parameter is missing");
+            }
+            if (!isset($_POST['project_portal_id'])) {
+                throw new \LogicException("project id parameter is missing");
+            }
+            if (!isset($_POST['project_name'])) {
+                throw new \LogicException("project name parameter is missing");
+            }
+            if (!isset($_POST['project_description'])) {
+                throw new \LogicException("project description parameter is missing");
+            }
+            if (!isset($_POST['project_url'])) {
+                throw new \LogicException("project url parameter is missing");
+            }
+
+            $args = array(
+                'redcap_project_id' => FILTER_SANITIZE_NUMBER_INT,
+                'project_portal_id' => FILTER_SANITIZE_NUMBER_INT,
+                'project_name' => FILTER_SANITIZE_STRING,
+                'project_description' => FILTER_SANITIZE_STRING,
+                'project_url' => FILTER_SANITIZE_STRING,
+            );
+
+            $inputs = filter_var_array($_POST, $args);
+            $this->processAddProjectRequest($inputs);
         }
+    }
+
+    private function processAddProjectRequest($inputs)
+    {
+        $this->setProject(new \Project($inputs['redcap_project_id']));
+        $settings = array(
+            'portal-project-id' => $inputs['project_portal_id'],
+            'portal-project-name' => $inputs['project_name'],
+            'portal-project-description' => $inputs['project_description'],
+            'portal-project-url' => $inputs['project_url'],
+        );
+        ExternalModules::saveSettings($this->PREFIX, $this->getProject()->project_id, $settings);
+        header("Content-type: application/json");
+        http_response_code(200);
+        echo json_encode(array("Project information has been updated."));
     }
 
     private function processUserRequest($users)
@@ -324,5 +372,22 @@ class ProjectPortal extends AbstractExternalModule
     {
         $this->request = $request;
     }
+
+    /**
+     * @return \Project
+     */
+    public function getProject()
+    {
+        return $this->project;
+    }
+
+    /**
+     * @param \Project $project
+     */
+    public function setProject($project)
+    {
+        $this->project = $project;
+    }
+
 
 }
