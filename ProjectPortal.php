@@ -126,6 +126,7 @@ class ProjectPortal extends AbstractExternalModule
 
     private function processAddProjectRequest($inputs)
     {
+        $this->emDebug($inputs);
         $this->setProject(new \Project($inputs['redcap_project_id']));
         $settings = array(
             'portal-project-id' => $inputs['portal_project_id'],
