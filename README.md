@@ -31,7 +31,7 @@ curl --location --request POST 'https://redcap.stanford.edu/api/?type=module&pre
 
 #####example: 
 ```
-curl --location --request POST 'http://ihabz.stanford.edu/api/?type=module&prefix=project_portal_api&page=services&NOAUTH' \
+curl --location --request POST 'https://redcap.stanford.edu/api/?type=module&prefix=project_portal_api&page=services&NOAUTH' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'secret_token=[TOKEN]' \
 --data-urlencode 'request=add_project' \
