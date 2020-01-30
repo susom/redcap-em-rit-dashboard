@@ -98,25 +98,25 @@ class ProjectPortal extends AbstractExternalModule
             if (!isset($_POST['redcap_project_id'])) {
                 throw new \LogicException("REDCap project id parameter is missing");
             }
-            if (!isset($_POST['project_portal_id'])) {
+            if (!isset($_POST['portal_project_id'])) {
                 throw new \LogicException("project id parameter is missing");
             }
-            if (!isset($_POST['project_name'])) {
+            if (!isset($_POST['portal_project_name'])) {
                 throw new \LogicException("project name parameter is missing");
             }
-            if (!isset($_POST['project_description'])) {
+            if (!isset($_POST['portal_project_description'])) {
                 throw new \LogicException("project description parameter is missing");
             }
-            if (!isset($_POST['project_url'])) {
+            if (!isset($_POST['portal_project_url'])) {
                 throw new \LogicException("project url parameter is missing");
             }
 
             $args = array(
                 'redcap_project_id' => FILTER_SANITIZE_NUMBER_INT,
-                'project_portal_id' => FILTER_SANITIZE_NUMBER_INT,
-                'project_name' => FILTER_SANITIZE_STRING,
-                'project_description' => FILTER_SANITIZE_STRING,
-                'project_url' => FILTER_SANITIZE_STRING,
+                'portal_project_id' => FILTER_SANITIZE_NUMBER_INT,
+                'portal_project_name' => FILTER_SANITIZE_STRING,
+                'portal_project_description' => FILTER_SANITIZE_STRING,
+                'portal_project_url' => FILTER_SANITIZE_STRING,
             );
 
             $inputs = filter_var_array($_POST, $args);
@@ -128,10 +128,10 @@ class ProjectPortal extends AbstractExternalModule
     {
         $this->setProject(new \Project($inputs['redcap_project_id']));
         $settings = array(
-            'portal-project-id' => $inputs['project_portal_id'],
-            'portal-project-name' => $inputs['project_name'],
-            'portal-project-description' => $inputs['project_description'],
-            'portal-project-url' => $inputs['project_url'],
+            'portal-project-id' => $inputs['portal_project_id'],
+            'portal-project-name' => $inputs['portal_project_name'],
+            'portal-project-description' => $inputs['portal_project_description'],
+            'portal-project-url' => $inputs['portal_project_url'],
         );
         ExternalModules::saveSettings($this->PREFIX, $this->getProject()->project_id, $settings);
         header("Content-type: application/json");
