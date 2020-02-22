@@ -87,6 +87,33 @@ class ProjectPortal extends AbstractExternalModule
         }
     }
 
+    /**
+     * call django endpoint to attach redcap project to portal project. need more testnig
+     * @param $projectId
+     * @throws \Exception
+     */
+    public function attachToProjectPortal($projectId)
+    {
+        $this->getProjectPortalJWTToken();
+
+        $client = new \GuzzleHttp\Client();
+        $jwt = $this->getJwtToken();
+        $this->setProject(new \Project($this->getProjectId()));
+        $response = $client->post(PROJECT_PORTAL_URL . 'api/projects/' . $projectId . '/attach-redcap/', [
+            'debug' => false,
+            'form_params' => [
+                'redcap_project_id' => $this->getProjectId(),
+                'redcap_project_name' => $this->getProject()->project['app_title'],
+            ],
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            $data = json_decode($response->getBody());
+            $this->setProjectPortalList(json_decode(json_encode($data), true));
+        }
+    }
 
     public function isREDCapProjectLinkedToProjectPortalProject()
     {

@@ -10,6 +10,8 @@ namespace Stanford\ProjectPortal;
        value="<?php echo $this->getUrl("ajax/project_setup.php") . '&pid=' . $this->getProjectId() ?>">
 <input type="hidden" name="attach-project-url" id="attach-project-url"
        value="<?php echo PROJECT_PORTAL_URL . 'api/projects/[PID]/attach-redcap/' ?>">
+<input type="hidden" name="attach-project-url" id="attach-project-url"
+       value="<?php echo $this->getUrl("ajax/project_attach.php") . '&pid=' . $this->getProjectId() ?>">
 <script>
     ProjectSetup.init();
 </script>

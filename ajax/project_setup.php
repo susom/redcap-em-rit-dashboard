@@ -51,7 +51,7 @@ try {
                         <?php
                         if ($module->getProjectPortalList()) {
                             ?>
-                            <select name="project-portal-list">
+                            <select id="project-portal-list" name="project-portal-list">
                                 <option value="">SELECT A PROJECT</option>
                                 <?php
                                 foreach ($module->getProjectPortalList() as $project) {
@@ -64,6 +64,8 @@ try {
                             <?php
                         }
                         ?>
+                        <button class="btn btn-defaultrc btn-xs fs13" id="attach-redcap-project">Attach Select Project
+                        </button>
                         <pre>
                             <?php
                             if (isset($module->projectPortalSavedConfig['portal-project-id'])) {
