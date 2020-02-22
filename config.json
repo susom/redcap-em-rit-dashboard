@@ -19,6 +19,9 @@
       "institution": "Stanford University"
     }
   ],
+  "permissions": [
+    "redcap_every_page_top"
+  ],
   "no-auth-pages": [
     "services"
   ],

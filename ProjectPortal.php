@@ -9,7 +9,12 @@ use ExternalModules\ExternalModules;
 use REDCap;
 use Records;
 use ExternalModules\AbstractExternalModule;
+use Sabre\DAV\Exception;
 
+
+define('PROJECT_PORTAL_USERNAME', 'redcap');
+define('PROJECT_PORTAL_PASSWORD', 'qVFcxFge6gue');
+define('PROJECT_PORTAL_URL', 'https://django-dev-dot-som-irt-scci-dev.appspot.com/');
 /**
  * Class ProjectPortal
  * @package Stanford\ProjectPortal
@@ -19,6 +24,9 @@ use ExternalModules\AbstractExternalModule;
  * @property array $projects
  * @property \Project $project
  * @property string $request
+ * @property string $jwtToken
+ * @property array $projectPortalSavedConfig
+ * @property array $projectPortalList
  */
 class ProjectPortal extends AbstractExternalModule
 {
@@ -29,6 +37,8 @@ class ProjectPortal extends AbstractExternalModule
      */
     private $token;
 
+
+    private $jwtToken;
     /**
      * @var
      */
@@ -54,15 +64,122 @@ class ProjectPortal extends AbstractExternalModule
     private $request;
 
     /**
+     * @var
+     */
+    public $projectPortalSavedConfig;
+
+    /**
+     * @var
+     */
+    private $projectPortalList;
+    /**
      * ProjectPortal constructor.
      */
     public function __construct()
     {
         parent::__construct();
-        $this->setToken($this->getSystemSetting('project-portal-api-token'));
-        $this->setProjects($this->getEnabledProjects());
+        if ($_GET && ($_GET['projectid'] != null || $_GET['pid'] != null)) {
+            $this->setToken($this->getSystemSetting('project-portal-api-token'));
+            $this->setProjects($this->getEnabledProjects());
+
+            // set these fields as we might need them later for linkage process.
+            $this->setProjectPortalSavedConfig();
+        }
     }
 
+
+    public function isREDCapProjectLinkedToProjectPortalProject()
+    {
+        return isset($this->projectPortalSavedConfig['portal-project-id']) && $this->projectPortalSavedConfig['portal-project-id'] != '';
+    }
+
+    public function getProjectPortalSavedConfig()
+    {
+        return $this->projectPortalSavedConfig;
+    }
+
+
+    public function setProjectPortalSavedConfig()
+    {
+        $this->projectPortalSavedConfig['portal-project-id'] = $this->getProjectSetting('portal-project-id',
+            $this->getProjectId());
+        $this->projectPortalSavedConfig['portal-project-name'] = $this->getProjectSetting('portal-project-name',
+            $this->getProjectId());
+        $this->projectPortalSavedConfig['portal-project-description'] = $this->getProjectSetting('portal-project-description',
+            $this->getProjectId());
+        $this->projectPortalSavedConfig['portal-project-url'] = $this->getProjectSetting('portal-project-url',
+            $this->getProjectId());
+    }
+
+    public function prepareProjectPortalList()
+    {
+        # get or update current jwt token to make requests to project portal api
+        $this->getProjectPortalJWTToken();
+
+        $client = new \GuzzleHttp\Client();
+        $jwt = $this->getJwtToken();
+        $response = $client->get(PROJECT_PORTAL_URL . 'api/projects/list/', [
+            'debug' => false,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            $data = json_decode($response->getBody());
+            $this->setProjectPortalList(json_decode(json_encode($data), true));
+        }
+    }
+
+    public function redcap_every_page_top()
+    {
+        // in case we are loading record homepage load its the record children if existed
+        if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
+            //    $this->includeFile("views/project_setup.php");
+        }
+    }
+
+    /**
+     * check is jwt token is still valid current expiration time is 2 days
+     * @return bool
+     */
+    private function isJWTTokenStillValid()
+    {
+        if (isset($_SESSION['project_portal_jwt_token_created_at']) && (time() - $_SESSION['project_portal_jwt_token_created_at'] < 60 * 60 * 24 * 2)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function getProjectPortalJWTToken()
+    {
+        try {
+            if (isset($_SESSION['project_portal_jwt_token']) && $this->isJWTTokenStillValid()) {
+                $this->setJwtToken($_SESSION['project_portal_jwt_token']);
+            } else {
+                $client = new \GuzzleHttp\Client();
+
+                $response = $client->post(PROJECT_PORTAL_URL . 'api/users/token/', [
+                    'debug' => false,
+                    'form_params' => [
+                        'username' => PROJECT_PORTAL_USERNAME,
+                        'password' => PROJECT_PORTAL_PASSWORD,
+                    ],
+                    'headers' => [
+                        'Content-Type' => 'application/x-www-form-urlencoded',
+                    ]
+                ]);
+                if ($response->getStatusCode() < 300) {
+                    $data = json_decode($response->getBody());
+                    $this->setJwtToken($data->token);
+                    $this->setJWTTokenIntoSession($data->token);
+                }
+            }
+        } catch (Exception $e) {
+            echo $e;
+        }
+
+    }
     public function processRequest()
     {
         if (!isset($_POST) OR empty($_POST)) {
@@ -388,6 +505,52 @@ class ProjectPortal extends AbstractExternalModule
     public function setProject($project)
     {
         $this->project = $project;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJwtToken()
+    {
+        return $this->jwtToken;
+    }
+
+    /**
+     * @param string $jwtToken
+     */
+    public function setJwtToken($jwtToken)
+    {
+        $this->jwtToken = $jwtToken;
+    }
+
+    private function setJWTTokenIntoSession($jwtToken)
+    {
+        $_SESSION['project_portal_jwt_token'] = $jwtToken;
+        $_SESSION['project_portal_jwt_token_created_at'] = time();
+    }
+
+    /**
+     * @param string $path
+     */
+    public function includeFile($path)
+    {
+        include_once $path;
+    }
+
+    /**
+     * @return array
+     */
+    public function getProjectPortalList()
+    {
+        return $this->projectPortalList;
+    }
+
+    /**
+     * @param array $projectPortalList
+     */
+    public function setProjectPortalList($projectPortalList)
+    {
+        $this->projectPortalList = $projectPortalList;
     }
 
 
