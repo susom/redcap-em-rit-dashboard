@@ -13,7 +13,7 @@ ProjectSetup = {
             type: 'POST',
             data: {project_portal_id: projectPortalID},
             success: function (data) {
-                alert('hooray!!!')
+                alert('link worked!!!')
             },
             error: function (request, error) {
                 alert("Request: " + JSON.stringify(request));
