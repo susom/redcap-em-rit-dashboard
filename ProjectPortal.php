@@ -164,7 +164,7 @@ class ProjectPortal extends AbstractExternalModule
     {
         // in case we are loading record homepage load its the record children if existed
         if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
-            $this->includeFile("views/project_setup.php");
+            //$this->includeFile("views/project_setup.php");
         }
     }
 
