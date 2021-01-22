@@ -32,6 +32,21 @@
       "type": "text"
     },
     {
+      "key": "portal-username",
+      "name": "<b>Enter the portal username that will be used to authenticate the integration between portal and redcap.</b>",
+      "type": "text"
+    },
+    {
+      "key": "portal-password",
+      "name": "<b>Enter the portal username that will be used to authenticate the integration between portal and redcap.</b>",
+      "type": "text"
+    },
+    {
+      "key": "portal-base-url",
+      "name": "<b>Enter the portal base url to make the integration.</b>",
+      "type": "text"
+    },
+    {
       "key": "ip_whitelist",
       "name": "IP Whitelist",
       "type": "sub_settings",

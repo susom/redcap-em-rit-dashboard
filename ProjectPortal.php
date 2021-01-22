@@ -11,10 +11,6 @@ use Records;
 use ExternalModules\AbstractExternalModule;
 use Sabre\DAV\Exception;
 
-
-define('PROJECT_PORTAL_USERNAME', 'redcap');
-define('PROJECT_PORTAL_PASSWORD', 'qVFcxFge6gue');
-define('PROJECT_PORTAL_URL', 'https://django-dev-dot-som-irt-scci-dev.appspot.com/');
 /**
  * Class ProjectPortal
  * @package Stanford\ProjectPortal
@@ -25,6 +21,9 @@ define('PROJECT_PORTAL_URL', 'https://django-dev-dot-som-irt-scci-dev.appspot.co
  * @property \Project $project
  * @property string $request
  * @property string $jwtToken
+ * @property string $portalUsername
+ * @property string $portalPassword
+ * @property string $portalBaseURL
  * @property array $projectPortalSavedConfig
  * @property array $projectPortalList
  */
@@ -72,6 +71,13 @@ class ProjectPortal extends AbstractExternalModule
      * @var
      */
     private $projectPortalList;
+
+    private $portalUsername;
+
+    private $portalPassword;
+
+    private $portalBaseURL;
+
     /**
      * ProjectPortal constructor.
      */
@@ -80,6 +86,12 @@ class ProjectPortal extends AbstractExternalModule
         parent::__construct();
 
         $this->setToken($this->getSystemSetting('project-portal-api-token'));
+
+        $this->setPortalUsername($this->getSystemSetting('portal-username'));
+
+        $this->setPortalPassword($this->getSystemSetting('portal-password'));
+
+        $this->setPortalBaseURL($this->getSystemSetting('portal-base-url'));
 
         if ($_GET && ($_GET['projectid'] != null || $_GET['pid'] != null)) {
 
@@ -97,24 +109,28 @@ class ProjectPortal extends AbstractExternalModule
      */
     public function attachToProjectPortal($projectId)
     {
-        $this->getProjectPortalJWTToken();
+        try {
+            $this->getProjectPortalJWTToken();
 
-        $client = new \GuzzleHttp\Client();
-        $jwt = $this->getJwtToken();
-        $this->setProject(new \Project($this->getProjectId()));
-        $response = $client->post(PROJECT_PORTAL_URL . 'api/projects/' . $projectId . '/attach-redcap/', [
-            'debug' => false,
-            'form_params' => [
-                'redcap_project_id' => $this->getProjectId(),
-                'redcap_project_name' => $this->getProject()->project['app_title'],
-            ],
-            'headers' => [
-                'Authorization' => "Bearer {$jwt}",
-            ]
-        ]);
-        if ($response->getStatusCode() < 300) {
-            $data = json_decode($response->getBody());
-            $this->setProjectPortalList(json_decode(json_encode($data), true));
+            $client = new \GuzzleHttp\Client();
+            $jwt = $this->getJwtToken();
+            $this->setProject(new \Project($this->getProjectId()));
+            $response = $client->post($this->getPortalBaseURL() . 'api/projects/' . $projectId . '/attach-redcap/', [
+                'debug' => false,
+                'form_params' => [
+                    'redcap_project_id' => $this->getProjectId(),
+                    'redcap_project_name' => $this->getProject()->project['app_title'],
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                $data = json_decode($response->getBody());
+                $this->setProjectPortalList(json_decode(json_encode($data), true));
+            }
+        } catch (\Exception $e) {
+            echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
         }
     }
 
@@ -143,29 +159,33 @@ class ProjectPortal extends AbstractExternalModule
 
     public function prepareProjectPortalList()
     {
-        # get or update current jwt token to make requests to project portal api
-        $this->getProjectPortalJWTToken();
+        try {
+            # get or update current jwt token to make requests to project portal api
+            $this->getProjectPortalJWTToken();
 
-        $client = new \GuzzleHttp\Client();
-        $jwt = $this->getJwtToken();
-        $response = $client->get(PROJECT_PORTAL_URL . 'api/projects/list/', [
-            'debug' => false,
-            'headers' => [
-                'Authorization' => "Bearer {$jwt}",
-            ]
-        ]);
-        if ($response->getStatusCode() < 300) {
-            $data = json_decode($response->getBody());
-            $this->setProjectPortalList(json_decode(json_encode($data), true));
+            $client = new \GuzzleHttp\Client();
+            $jwt = $this->getJwtToken();
+            $response = $client->get($this->getPortalBaseURL() . 'api/projects/list/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                $data = json_decode($response->getBody());
+                $this->setProjectPortalList(json_decode(json_encode($data), true));
+            }
+        } catch (\Exception $e) {
+            echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
         }
     }
 
     public function redcap_every_page_top()
     {
         // in case we are loading record homepage load its the record children if existed
-        if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
-            $this->includeFile("views/project_setup.php");
-        }
+//        if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
+//            $this->includeFile("views/project_setup.php");
+//        }
     }
 
     /**
@@ -189,11 +209,11 @@ class ProjectPortal extends AbstractExternalModule
             } else {
                 $client = new \GuzzleHttp\Client();
 
-                $response = $client->post(PROJECT_PORTAL_URL . 'api/users/token/', [
+                $response = $client->post($this->getPortalBaseURL() . 'api/users/token/', [
                     'debug' => false,
                     'form_params' => [
-                        'username' => PROJECT_PORTAL_USERNAME,
-                        'password' => PROJECT_PORTAL_PASSWORD,
+                        'username' => $this->getPortalUsername(),
+                        'password' => $this->getPortalPassword(),
                     ],
                     'headers' => [
                         'Content-Type' => 'application/x-www-form-urlencoded',
@@ -205,8 +225,8 @@ class ProjectPortal extends AbstractExternalModule
                     $this->setJWTTokenIntoSession($data->token);
                 }
             }
-        } catch (Exception $e) {
-            echo $e;
+        } catch (\Exception $e) {
+            echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
         }
 
     }
@@ -581,6 +601,54 @@ class ProjectPortal extends AbstractExternalModule
     public function setProjectPortalList($projectPortalList)
     {
         $this->projectPortalList = $projectPortalList;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPortalUsername()
+    {
+        return $this->portalUsername;
+    }
+
+    /**
+     * @param string $redcapUsername
+     */
+    public function setPortalUsername($redcapUsername)
+    {
+        $this->portalUsername = $redcapUsername;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPortalPassword()
+    {
+        return $this->portalPassword;
+    }
+
+    /**
+     * @param string $redcapPassword
+     */
+    public function setPortalPassword($redcapPassword)
+    {
+        $this->portalPassword = $redcapPassword;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPortalBaseURL()
+    {
+        return $this->portalBaseURL;
+    }
+
+    /**
+     * @param string $portalBaseURL
+     */
+    public function setPortalBaseURL($portalBaseURL)
+    {
+        $this->portalBaseURL = $portalBaseURL;
     }
 
 

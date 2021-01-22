@@ -89,3 +89,16 @@ try {
     echo "<div class='alert-danger'>" . $e->getMessage() . "</div>";
 }
 ?>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#project-portal-list').select2();
+    });
+</script>
+<style>
+    /* select2: fixes word text wrap issues on long select values*/
+    .select2-container {
+        width: 700px !important;;
+    }
+</style>
