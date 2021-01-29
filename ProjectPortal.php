@@ -107,36 +107,60 @@ class ProjectPortal extends AbstractExternalModule
      * @param $projectId
      * @throws \Exception
      */
-    public function attachToProjectPortal($projectId)
+    public function attachToProjectPortal($portalProjectId, $portalProjectName, $portalProjectDescription)
     {
         try {
-            $this->getProjectPortalJWTToken();
-
-            $client = new \GuzzleHttp\Client();
-            $jwt = $this->getJwtToken();
             $this->setProject(new \Project($this->getProjectId()));
-            $response = $client->post($this->getPortalBaseURL() . 'api/projects/' . $projectId . '/attach-redcap/', [
-                'debug' => false,
-                'form_params' => [
-                    'redcap_project_id' => $this->getProjectId(),
-                    'redcap_project_name' => $this->getProject()->project['app_title'],
-                ],
-                'headers' => [
-                    'Authorization' => "Bearer {$jwt}",
-                ]
-            ]);
-            if ($response->getStatusCode() < 300) {
-                $data = json_decode($response->getBody());
-                $this->setProjectPortalList(json_decode(json_encode($data), true));
-            }
+//            $this->getProjectPortalJWTToken();
+//
+//            $client = new \GuzzleHttp\Client();
+//            $jwt = $this->getJwtToken();
+//            $this->setProject(new \Project($this->getProjectId()));
+//            $response = $client->post($this->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/attach-redcap/', [
+//                'debug' => false,
+//                'form_params' => [
+//                    'redcap_project_id' => $this->getProjectId(),
+//                    'redcap_project_name' => $this->getProject()->project['app_title'],
+//                ],
+//                'headers' => [
+//                    'Authorization' => "Bearer {$jwt}",
+//                ]
+//            ]);
+//            if ($response->getStatusCode() < 300) {
+//                $data = json_decode($response->getBody());
+//                $this->setProjectPortalList(json_decode(json_encode($data), true));
+//            }
+
+            $inputs = array(
+                'portal_project_id' => $portalProjectId,
+                'portal_project_name' => $portalProjectName,
+                'portal_project_description' => $portalProjectDescription,
+                'portal_project_url' => $this->getPortalBaseURL() . 'detail/' . $portalProjectId,
+            );
+            $this->savePortalProjectInfoInREDCap($inputs);
         } catch (\Exception $e) {
             echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
         }
     }
 
+    private function savePortalProjectInfoInREDCap($inputs)
+    {
+        try {
+            #$projects = $this->getSystemSetting('linked-portal-projects');
+            $projects = $this->getProjectSetting('linked-project');
+            $projects = json_decode($projects, true);
+            $projects[$this->getProject()->project_id] = $inputs;
+
+            $settings = json_encode($projects);
+            ExternalModules::saveSettings($this->PREFIX, $this->getProject()->project_id, array('linked-project' => $settings));
+        } catch (\Exception $e) {
+
+        }
+    }
+
     public function isREDCapProjectLinkedToProjectPortalProject()
     {
-        return isset($this->projectPortalSavedConfig['portal-project-id']) && $this->projectPortalSavedConfig['portal-project-id'] != '';
+        return isset($this->projectPortalSavedConfig['portal_project_id']) && $this->projectPortalSavedConfig['portal_project_id'] != '';
     }
 
     public function getProjectPortalSavedConfig()
@@ -147,14 +171,19 @@ class ProjectPortal extends AbstractExternalModule
 
     public function setProjectPortalSavedConfig()
     {
-        $this->projectPortalSavedConfig['portal-project-id'] = $this->getProjectSetting('portal-project-id',
-            $this->getProjectId());
-        $this->projectPortalSavedConfig['portal-project-name'] = $this->getProjectSetting('portal-project-name',
-            $this->getProjectId());
-        $this->projectPortalSavedConfig['portal-project-description'] = $this->getProjectSetting('portal-project-description',
-            $this->getProjectId());
-        $this->projectPortalSavedConfig['portal-project-url'] = $this->getProjectSetting('portal-project-url',
-            $this->getProjectId());
+        #$projects = $this->getSystemSetting('linked-portal-projects');
+        $projects = $this->getProjectSetting('linked-project');
+        if (!empty($projects)) {
+            $projects = json_decode($projects, true);
+            if (isset($projects[$this->getProjectId()])) {
+                $project = $projects[$this->getProjectId()];
+                $this->projectPortalSavedConfig['portal_project_id'] = $project['portal_project_id'];
+                $this->projectPortalSavedConfig['portal_project_name'] = $project['portal_project_name'];
+                $this->projectPortalSavedConfig['portal_project_description'] = $project['portal_project_description'];
+                $this->projectPortalSavedConfig['portal_project_url'] = $project['portal_project_url'];
+            }
+        }
+
     }
 
     public function prepareProjectPortalList()
@@ -165,7 +194,7 @@ class ProjectPortal extends AbstractExternalModule
 
             $client = new \GuzzleHttp\Client();
             $jwt = $this->getJwtToken();
-            $response = $client->get($this->getPortalBaseURL() . 'api/projects/list/', [
+            $response = $client->get($this->getPortalBaseURL() . 'api/users/' . USERID . '/projects/', [
                 'debug' => false,
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",
@@ -183,9 +212,9 @@ class ProjectPortal extends AbstractExternalModule
     public function redcap_every_page_top()
     {
         // in case we are loading record homepage load its the record children if existed
-//        if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
-//            $this->includeFile("views/project_setup.php");
-//        }
+        if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
+            $this->includeFile("views/project_setup.php");
+        }
     }
 
     /**
@@ -293,18 +322,18 @@ class ProjectPortal extends AbstractExternalModule
 
     private function processAddProjectRequest($inputs)
     {
-        $this->emDebug($inputs);
-        $this->setProject(new \Project($inputs['redcap_project_id']));
-        $settings = array(
-            'portal-project-id' => $inputs['portal_project_id'],
-            'portal-project-name' => $inputs['portal_project_name'],
-            'portal-project-description' => $inputs['portal_project_description'],
-            'portal-project-url' => $inputs['portal_project_url'],
-        );
-        ExternalModules::saveSettings($this->PREFIX, $this->getProject()->project_id, $settings);
-        header("Content-type: application/json");
-        http_response_code(200);
-        echo json_encode(array("Project information has been updated."));
+        try {
+            $this->emDebug($inputs);
+            $this->setProject(new \Project($inputs['redcap_project_id']));
+            $this->savePortalProjectInfoInREDCap($inputs);
+            header("Content-type: application/json");
+            http_response_code(200);
+            echo json_encode(array("Project information has been updated."));
+        } catch (\Exception $e) {
+            header("Content-type: application/json");
+            http_response_code(404);
+            echo json_encode(array($e->getMessage()));
+        }
     }
 
     private function processUserRequest($users)

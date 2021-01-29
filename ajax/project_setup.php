@@ -16,7 +16,7 @@ try {
                     <div>
                         <?php
 
-                        if (isset($module->projectPortalSavedConfig['portal-project-id'])) {
+                        if (isset($module->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
                             <img id="img-" src="<?php echo APP_PATH_WEBROOT ?>Resources/images/checkbox_checked.png">
                             <?php
@@ -29,7 +29,7 @@ try {
                     </div>
                     <?php
 
-                    if (isset($module->projectPortalSavedConfig['portal-project-id'])) {
+                    if (isset($module->projectPortalSavedConfig['portal_project_id'])) {
                         ?>
                         <div id="lbl-" style="color:green;"> Linked</div>
                         <?php
@@ -55,8 +55,13 @@ try {
                                 <option value="">SELECT A PROJECT</option>
                                 <?php
                                 foreach ($module->getProjectPortalList() as $project) {
+                                    if ($project['project_deleted_at']) {
+                                        continue;
+                                    }
                                     ?>
-                                    <option value="<?php echo $project['id'] ?>" <?php echo(isset($module->projectPortalSavedConfig['portal-project-id']) && $module->projectPortalSavedConfig['portal-project-id'] == $project['id'] ? 'selected' : '') ?>><?php echo $project['project_name'] ?></option>
+                                    <option data-name="<?php echo $project['project_name'] ?>"
+                                            data-description="<?php echo $project['project_description'] ?>"
+                                            value="<?php echo $project['id'] ?>" <?php echo(isset($module->projectPortalSavedConfig['portal_project_id']) && $module->projectPortalSavedConfig['portal_project_id'] == $project['id'] ? 'selected' : '') ?>><?php echo $project['project_name'] ?></option>
                                     <?php
                                 }
                                 ?>
@@ -66,18 +71,19 @@ try {
                         ?>
                         <button class="btn btn-defaultrc btn-xs fs13" id="attach-redcap-project">Attach Select Project
                         </button>
-                        <pre>
                             <?php
-                            if (isset($module->projectPortalSavedConfig['portal-project-id'])) {
+                            if (isset($module->projectPortalSavedConfig['portal_project_id'])) {
                                 foreach ($module->getProjectPortalList() as $project) {
-                                    if ($module->projectPortalSavedConfig['portal-project-id'] == $project['id']) {
-                                        print_r($project);
+                                    if ($module->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
+                                        echo $project['id'] . '<br>';
+                                        echo $project['project_name'] . '<br>';
+                                        echo $project['project_description'] . '<br>';
+                                        echo '<a target="_blank" href="' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '</a><br>';
                                     }
 
                                 }
                             }
                             ?>
-                        </pre>
                     </div>
                 </td>
             </tr>

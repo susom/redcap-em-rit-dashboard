@@ -61,6 +61,12 @@
       ]
     },
     {
+      "key": "linked-portal-projects",
+      "name": "<b>JSON for all linked projects</b>",
+      "required": false,
+      "type": "textarea"
+    },
+    {
       "key": "enable-system-debug-logging",
       "name": "<b>Enable Debug Logging (system-wide)</b>",
       "required": false,
@@ -69,24 +75,10 @@
   ],
   "project-settings": [
     {
-      "key": "portal-project-id",
-      "name": "<b>Research Project Portal ID</b>",
-      "type": "text"
-    },
-    {
-      "key": "portal-project-name",
-      "name": "<b>Research Project Portal Name</b>",
-      "type": "text"
-    },
-    {
-      "key": "portal-project-description",
-      "name": "<b>Research Project Portal Description</b>",
-      "type": "text"
-    },
-    {
-      "key": "portal-project-url",
-      "name": "<b>Research Project Portal URL</b>",
-      "type": "text"
+      "key": "linked-project",
+      "name": "<b>JSON for all linked projects</b>",
+      "required": false,
+      "type": "textarea"
     }
   ]
 }
