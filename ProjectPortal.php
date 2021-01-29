@@ -111,25 +111,25 @@ class ProjectPortal extends AbstractExternalModule
     {
         try {
             $this->setProject(new \Project($this->getProjectId()));
-//            $this->getProjectPortalJWTToken();
-//
-//            $client = new \GuzzleHttp\Client();
-//            $jwt = $this->getJwtToken();
-//            $this->setProject(new \Project($this->getProjectId()));
-//            $response = $client->post($this->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/attach-redcap/', [
-//                'debug' => false,
-//                'form_params' => [
-//                    'redcap_project_id' => $this->getProjectId(),
-//                    'redcap_project_name' => $this->getProject()->project['app_title'],
-//                ],
-//                'headers' => [
-//                    'Authorization' => "Bearer {$jwt}",
-//                ]
-//            ]);
-//            if ($response->getStatusCode() < 300) {
-//                $data = json_decode($response->getBody());
-//                $this->setProjectPortalList(json_decode(json_encode($data), true));
-//            }
+            $this->getProjectPortalJWTToken();
+
+            $client = new \GuzzleHttp\Client();
+            $jwt = $this->getJwtToken();
+            $this->setProject(new \Project($this->getProjectId()));
+            $response = $client->post($this->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/attach-redcap/', [
+                'debug' => false,
+                'form_params' => [
+                    'redcap_project_id' => $this->getProjectId(),
+                    'redcap_project_name' => $this->getProject()->project['app_title'],
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                $data = json_decode($response->getBody());
+                $this->setProjectPortalList(json_decode(json_encode($data), true));
+            }
 
             $inputs = array(
                 'portal_project_id' => $portalProjectId,
