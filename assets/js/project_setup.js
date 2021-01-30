@@ -21,7 +21,7 @@ ProjectSetup = {
                 project_portal_description: projectPortalDescription,
             },
             success: function (data) {
-                alert('link worked!!!')
+                alert('This REDCap project is not linked to ' + projectPortalName)
             },
             error: function (request, error) {
                 alert("Request: " + JSON.stringify(request));

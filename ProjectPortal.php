@@ -146,12 +146,17 @@ class ProjectPortal extends AbstractExternalModule
     private function savePortalProjectInfoInREDCap($inputs)
     {
         try {
-            #$projects = $this->getSystemSetting('linked-portal-projects');
-            $projects = $this->getProjectSetting('linked-project');
-            $projects = json_decode($projects, true);
-            $projects[$this->getProject()->project_id] = $inputs;
+            if (!empty($inputs)) {
+                #$projects = $this->getSystemSetting('linked-portal-projects');
+                $projects = $this->getProjectSetting('linked-project');
+                $projects = json_decode($projects, true);
+                $projects[$this->getProject()->project_id] = $inputs;
 
-            $settings = json_encode($projects);
+                $settings = json_encode($projects);
+            } else {
+                $settings = '';
+            }
+
             ExternalModules::saveSettings($this->PREFIX, $this->getProject()->project_id, array('linked-project' => $settings));
         } catch (\Exception $e) {
 
@@ -317,7 +322,16 @@ class ProjectPortal extends AbstractExternalModule
 
             $inputs = filter_var_array($_POST, $args);
             $this->processAddProjectRequest($inputs);
+            return 'Portal Project is not Linked to a REDCap project';
+        } elseif ($this->getRequest() == "remove_project") {
+            if (!isset($_POST['redcap_project_id'])) {
+                throw new \LogicException("REDCap project id parameter is missing");
+            }
+            $this->setProject(new \Project(filter_var($_POST['redcap_project_id'], FILTER_SANITIZE_NUMBER_INT)));
+            $this->savePortalProjectInfoInREDCap([]);
+            return 'The linkage between Portal Project and REDCap is not removed!';
         }
+
     }
 
     private function processAddProjectRequest($inputs)
