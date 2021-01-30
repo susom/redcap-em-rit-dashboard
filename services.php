@@ -5,8 +5,7 @@ namespace Stanford\ProjectPortal;
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 
 try {
-    $response = $module->processRequest();
-    echo json_encode(array('status' => 'success', 'message' => $response));
+    $module->processRequest();
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);
