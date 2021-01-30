@@ -146,7 +146,8 @@ class ProjectPortal extends AbstractExternalModule
     private function savePortalProjectInfoInREDCap($inputs)
     {
         try {
-            if (!empty($inputs)) {
+
+            if (!empty($inputs) && $inputs['portal_project_id'] != '') {
                 #$projects = $this->getSystemSetting('linked-portal-projects');
                 $projects = $this->getProjectSetting('linked-project');
                 $projects = json_decode($projects, true);
