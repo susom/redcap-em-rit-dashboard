@@ -149,7 +149,7 @@ class ProjectPortal extends AbstractExternalModule
 
             if (!empty($inputs) && $inputs['portal_project_id'] != '') {
                 #$projects = $this->getSystemSetting('linked-portal-projects');
-                $projects = $this->getProjectSetting('linked-project');
+                $projects = $this->getProjectSetting('linked-project', $this->getProject()->project_id);
                 $projects = json_decode($projects, true);
                 $projects[$this->getProject()->project_id] = $inputs;
 
