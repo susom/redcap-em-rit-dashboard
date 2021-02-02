@@ -1,6 +1,7 @@
 ProjectSetup = {
     attachREDCapURL: '',
     projectPortalSectionURL: '',
+    isLinked: false,
     init: function () {
         ProjectSetup.getProjectPortalLinkageSection();
 
@@ -9,6 +10,38 @@ ProjectSetup = {
             var projectPortalName = jQuery('#project-portal-list').find(":selected").data('name');
             var projectPortalDescription = jQuery('#project-portal-list').find(":selected").data('description');
             ProjectSetup.attacheRedCapProject(projectPortalID, projectPortalName, projectPortalDescription)
+        });
+    },
+    modifyContactAdminButtons: function () {
+        var $link = $('a:contains(" Contact REDCap administrator")');
+
+        // remove origin link
+        console.log($('#linked-project').text() != '')
+
+        if ($('#linked-project').text() == '') {
+            ProjectSetup.isLinked = true;
+            $link.attr('href', 'https://rit-portal.med.stanford.edu/detail/' + $('#linked-project').data('project-id') + '/support');
+            $link.attr('target', '_blank');
+        } else {
+            $link.attr('href', '#');
+            $link.attr('onclick', 'ProjectSetup.warningDialog()');
+        }
+    },
+    warningDialog: function () {
+        $('#warning-dialog').dialog({
+            bgiframe: true, modal: true, width: 400, position: ['center', 20],
+            open: function () {
+                fitDialog(this);
+            },
+            buttons: {
+                Cancel: function () {
+                    $(this).dialog('close');
+                },
+                Link: function () {
+                    $("#project-portal-list").select2('open')
+                    $(this).dialog('close');
+                }
+            }
         });
     },
     attacheRedCapProject: function (projectPortalID, projectPortalName, projectPortalDescription) {
@@ -21,7 +54,10 @@ ProjectSetup = {
                 project_portal_description: projectPortalDescription,
             },
             success: function (data) {
-                alert('This REDCap project is not linked to ' + projectPortalName)
+                alert('This REDCap project is linked to ' + projectPortalName)
+            },
+            complete: function () {
+                ProjectSetup.getProjectPortalLinkageSection()
             },
             error: function (request, error) {
                 alert("Request: " + JSON.stringify(request));
@@ -33,7 +69,15 @@ ProjectSetup = {
             url: ProjectSetup.projectPortalSectionURL,
             type: 'POST',
             success: function (data) {
-                jQuery('#setupChklist-modules').after(data);
+                if ($("#portal-linkage-container").length != 0) {
+                    $("#portal-linkage-container").replaceWith(data)
+                } else {
+                    jQuery('#setupChklist-modify_project').before(data);
+                }
+
+            },
+            complete: function () {
+                ProjectSetup.modifyContactAdminButtons();
             },
             error: function (request, error) {
                 alert("Request: " + JSON.stringify(request));

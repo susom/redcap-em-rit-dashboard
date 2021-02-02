@@ -7,7 +7,7 @@ namespace Stanford\ProjectPortal;
 try {
     $module->prepareProjectPortalList();
     ?>
-    <div class="round chklist col-12">
+    <div id="portal-linkage-container" class="round chklist col-12">
         <table cellspacing="0" width="100%">
             <tbody>
             <tr>
@@ -71,7 +71,7 @@ try {
                         ?>
                         <button class="btn btn-defaultrc btn-xs fs13" id="attach-redcap-project">Attach Select Project
                         </button>
-                            <?php
+                        <div id="linked-project" data-project-id="<?php echo $project['id'] ?>"><?php
                             if (isset($module->projectPortalSavedConfig['portal_project_id'])) {
                                 foreach ($module->getProjectPortalList() as $project) {
                                     if ($module->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
@@ -83,7 +83,7 @@ try {
 
                                 }
                             }
-                            ?>
+                            ?></div>
                     </div>
                 </td>
             </tr>
