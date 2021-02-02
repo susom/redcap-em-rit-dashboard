@@ -71,19 +71,24 @@ try {
                         ?>
                         <button class="btn btn-defaultrc btn-xs fs13" id="attach-redcap-project">Attach Select Project
                         </button>
-                        <div id="linked-project" data-project-id="<?php echo $project['id'] ?>"><?php
+                            <?php
                             if (isset($module->projectPortalSavedConfig['portal_project_id'])) {
-                                foreach ($module->getProjectPortalList() as $project) {
-                                    if ($module->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
-                                        echo $project['id'] . '<br>';
-                                        echo $project['project_name'] . '<br>';
-                                        echo $project['project_description'] . '<br>';
-                                        echo '<a target="_blank" href="' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '</a><br>';
-                                    }
+                                ?>
+                                <div id="linked-project" data-project-id="<?php echo $project['id'] ?>"><?php
+                                    foreach ($module->getProjectPortalList() as $project) {
+                                        if ($module->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
+                                            echo $project['id'] . '<br>';
+                                            echo $project['project_name'] . '<br>';
+                                            echo $project['project_description'] . '<br>';
+                                            echo '<a target="_blank" href="' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '</a><br>';
+                                        }
 
-                                }
+                                    }
+                                    ?>
+                                </div>
+                                <?php
                             }
-                            ?></div>
+                            ?>
                     </div>
                 </td>
             </tr>
