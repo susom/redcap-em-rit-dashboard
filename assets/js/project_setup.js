@@ -16,7 +16,6 @@ ProjectSetup = {
         var $link = $('a:contains(" Contact REDCap administrator")');
 
         // remove origin link
-        console.log($('#linked-project').text() != '')
 
         if ($('#linked-project').text() == '') {
             ProjectSetup.isLinked = true;
