@@ -8,6 +8,7 @@ try {
     $module->prepareProjectPortalList();
     ?>
     <div id="portal-linkage-container" class="round chklist col-12">
+        <div id="portal-errors" class="alert alert-danger hidden"></div>
         <table cellspacing="0" width="100%">
             <tbody>
             <tr>
@@ -81,6 +82,7 @@ try {
                                             echo $project['project_name'] . '<br>';
                                             echo $project['project_description'] . '<br>';
                                             echo '<a target="_blank" href="' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '</a><br>';
+                                            echo '<button id="detach-project" data-redcap-id="' . $module->getProjectId() . '" data-portal-project-id="' . $project['id'] . '">Detach from Portal Project</button>';
                                         }
 
                                     }
