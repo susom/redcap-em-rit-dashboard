@@ -176,7 +176,7 @@ class ProjectPortal extends AbstractExternalModule
             );
             $this->savePortalProjectInfoInREDCap($inputs);
         } catch (\Exception $e) {
-           throw new \LogicException($e->getMessage());
+            throw new \LogicException($e->getMessage());
         }
     }
 
@@ -306,9 +306,10 @@ class ProjectPortal extends AbstractExternalModule
         }
 
     }
+
     public function processRequest()
     {
-        if (!isset($_POST) OR empty($_POST)) {
+        if (!isset($_POST) or empty($_POST)) {
             throw new \LogicException("you are not allowed to access the API");
         }
 
@@ -328,7 +329,15 @@ class ProjectPortal extends AbstractExternalModule
         // set request
         $this->setRequest(filter_var($_POST['request'], FILTER_SANITIZE_STRING));
 
-        if ($this->getRequest() == 'users') {
+        if ($this->getRequest() == 'version') {
+            header("Content-type: application/json");
+            http_response_code(200);
+            echo json_encode(array(REDCAP_VERSION));
+        } elseif ($this->getRequest() == 'webroot_path') {
+            header("Content-type: application/json");
+            http_response_code(200);
+            echo json_encode(array(APP_PATH_WEBROOT));
+        } elseif ($this->getRequest() == 'users') {
             if (!isset($_POST['users'])) {
                 throw new \LogicException("request parameter is missing");
             }
