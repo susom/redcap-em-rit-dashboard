@@ -419,6 +419,7 @@ class ProjectPortal extends AbstractExternalModule
                         $temp = array(
                             'project_name' => $project->project['app_title'],
                             'project_id' => $project->project_id,
+                            'project_status' => $project->project['status'],
                             'last_logged_event' => $project->project['last_logged_event'],
                             'record_count' => Records::getRecordCount($project->project_id),
                         );
