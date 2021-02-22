@@ -66,6 +66,9 @@ try {
                                     <?php
                                 }
                                 ?>
+                                <option data-url="<?php echo $module->getPortalBaseURL() ?>" value="">Creat New Research
+                                    Portal Project
+                                </option>
                             </select>
                             <?php
                         }
@@ -107,6 +110,13 @@ try {
 <script>
     $(document).ready(function () {
         $('#project-portal-list').select2();
+        $('#project-portal-list').on('select2:select', function (e) {
+            // if user selects create new project open new tab with to the portal.
+            if ($("#project-portal-list").select2().find(":selected").data("url") !== undefined) {
+                var url = $("#project-portal-list").select2().find(":selected").data("url")
+                window.open(url, '_blank');
+            }
+        });
     });
 </script>
 <style>
