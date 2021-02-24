@@ -342,10 +342,15 @@ class ProjectPortal extends AbstractExternalModule
                 throw new \LogicException("request parameter is missing");
             }
             $users = explode(',', filter_var($_POST['users'], FILTER_SANITIZE_STRING));
+            if ($_POST['excluded_projects'] != '') {
+                $excludedProject = explode(',', filter_var($_POST['excluded_projects'], FILTER_SANITIZE_STRING));
+            } else {
+                $excludedProject = array();
+            }
             if (empty($users)) {
                 throw new \LogicException("no users were passed");
             }
-            $this->processUserRequest($users);
+            $this->processUserRequest($users, $excludedProject);
         } elseif ($this->getRequest() == "add_project") {
             if (!isset($_POST['redcap_project_id'])) {
                 throw new \LogicException("REDCap project id parameter is missing");
@@ -401,7 +406,7 @@ class ProjectPortal extends AbstractExternalModule
         }
     }
 
-    private function processUserRequest($users)
+    private function processUserRequest($users, $excludedProject)
     {
         $result = array();
         foreach ($users as $user) {
@@ -409,6 +414,10 @@ class ProjectPortal extends AbstractExternalModule
             $q = db_query($sql);
             if (db_num_rows($q) > 0) {
                 while ($row = db_fetch_assoc($q)) {
+                    // exclude redcap projects that are linked to different research project different from the one making this call
+                    if (!empty($excludedProject) && in_array($row['project_id'], $excludedProject)) {
+                        continue;
+                    }
                     $projectId = $row['project_id'];
                     $sql = "SELECT ri.username, ri.user_email, ri.user_firstname, ri.user_lastname FROM redcap_user_rights rr RIGHT JOIN redcap_user_information ri ON rr.username = ri.username WHERE rr.project_id = '$projectId' AND rr.username != '$user'";
                     $records = db_query($sql);
