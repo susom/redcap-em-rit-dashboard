@@ -26,6 +26,8 @@ use Sabre\DAV\Exception;
  * @property string $portalBaseURL
  * @property array $projectPortalSavedConfig
  * @property array $projectPortalList
+ * @property array $jiraIssueTypes
+ * @property \GuzzleHttp\Client $guzzleClient
  */
 class ProjectPortal extends AbstractExternalModule
 {
@@ -78,6 +80,10 @@ class ProjectPortal extends AbstractExternalModule
 
     private $portalBaseURL;
 
+    private $guzzleClient;
+
+    private $jiraIssueTypes;
+
     /**
      * ProjectPortal constructor.
      */
@@ -100,6 +106,8 @@ class ProjectPortal extends AbstractExternalModule
             // set these fields as we might need them later for linkage process.
             $this->setProjectPortalSavedConfig();
         }
+
+        $this->setGuzzleClient(new \GuzzleHttp\Client());
     }
 
     /**
@@ -111,9 +119,9 @@ class ProjectPortal extends AbstractExternalModule
     {
         try {
             $this->setProject(new \Project($this->getProjectId()));
-            $this->getProjectPortalJWTToken();
+            //$this->getProjectPortalJWTToken();
 
-            $client = new \GuzzleHttp\Client();
+            $client = $this->getGuzzleClient();
             $jwt = $this->getJwtToken();
             $this->setProject(new \Project($this->getProjectId()));
             $response = $client->delete($this->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/detach-redcap/' . $redcapProjectId . '/', [
@@ -148,9 +156,9 @@ class ProjectPortal extends AbstractExternalModule
     {
         try {
             $this->setProject(new \Project($this->getProjectId()));
-            $this->getProjectPortalJWTToken();
+            //$this->getProjectPortalJWTToken();
 
-            $client = new \GuzzleHttp\Client();
+            $client = $this->getGuzzleClient();
             $jwt = $this->getJwtToken();
             $this->setProject(new \Project($this->getProjectId()));
             $response = $client->post($this->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/attach-redcap/', [
@@ -229,23 +237,56 @@ class ProjectPortal extends AbstractExternalModule
 
     }
 
+    /**
+     * @param int $redcapProjectId
+     * @param string $summary
+     * @param int $issueTypeId
+     * @param string $description
+     * @param null $portalProjectId
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function createJiraTicketViaPortal($redcapProjectId, $summary, $issueTypeId, $description, $portalProjectId = null)
+    {
+
+        $jwt = $this->getJwtToken();
+        $response = $this->getGuzzleClient()->post($this->getPortalBaseURL() . 'api/issues/add-issue/', [
+            'debug' => false,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ],
+            'form_params' => [
+                'redcap' => $redcapProjectId,
+                'summary' => $summary,
+                'request_type' => $issueTypeId,
+                'description' => $description,
+                'portal_project_id' => $portalProjectId,
+            ],
+        ]);
+        if ($response->getStatusCode() < 300) {
+            return json_decode($response->getBody(), true);
+        }
+    }
+
     public function prepareProjectPortalList()
     {
         try {
             # get or update current jwt token to make requests to project portal api
-            $this->getProjectPortalJWTToken();
+            //$this->getProjectPortalJWTToken();
 
-            $client = new \GuzzleHttp\Client();
-            $jwt = $this->getJwtToken();
-            $response = $client->get($this->getPortalBaseURL() . 'api/users/' . USERID . '/projects/', [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer {$jwt}",
-                ]
-            ]);
-            if ($response->getStatusCode() < 300) {
-                $data = json_decode($response->getBody());
-                $this->setProjectPortalList(json_decode(json_encode($data), true));
+            if (defined('USERID')) {
+                $client = $this->getGuzzleClient();
+                $jwt = $this->getJwtToken();
+                $response = $client->get($this->getPortalBaseURL() . 'api/users/' . USERID . '/projects/', [
+                    'debug' => false,
+                    'headers' => [
+                        'Authorization' => "Bearer {$jwt}",
+                    ]
+                ]);
+                if ($response->getStatusCode() < 300) {
+                    $data = json_decode($response->getBody());
+                    $this->setProjectPortalList(json_decode(json_encode($data), true));
+                }
             }
         } catch (\Exception $e) {
             echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
@@ -258,8 +299,10 @@ class ProjectPortal extends AbstractExternalModule
         if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
             $this->includeFile("views/project_setup.php");
 
-        }
+        } elseif (strpos($_GET['page'], 'create_jira_ticket') !== false) {
+            $this->prepareProjectPortalList();
 
+        }
         // this to override the functionality for contact admin button on all pages.
         $this->includeFile("views/contact_admin_button.php");
     }
@@ -283,7 +326,7 @@ class ProjectPortal extends AbstractExternalModule
             if (isset($_SESSION['project_portal_jwt_token']) && $this->isJWTTokenStillValid()) {
                 $this->setJwtToken($_SESSION['project_portal_jwt_token']);
             } else {
-                $client = new \GuzzleHttp\Client();
+                $client = $this->getGuzzleClient();
 
                 $response = $client->post($this->getPortalBaseURL() . 'api/users/token/', [
                     'debug' => false,
@@ -666,6 +709,9 @@ class ProjectPortal extends AbstractExternalModule
      */
     public function getJwtToken()
     {
+        if (!$this->jwtToken) {
+            $this->getProjectPortalJWTToken();
+        }
         return $this->jwtToken;
     }
 
@@ -753,6 +799,64 @@ class ProjectPortal extends AbstractExternalModule
     public function setPortalBaseURL($portalBaseURL)
     {
         $this->portalBaseURL = $portalBaseURL;
+    }
+
+    /**
+     * @return \GuzzleHttp\Client
+     */
+    public function getGuzzleClient(): \GuzzleHttp\Client
+    {
+        return $this->guzzleClient;
+    }
+
+    /**
+     * @param \GuzzleHttp\Client $guzzleClient
+     */
+    public function setGuzzleClient(\GuzzleHttp\Client $guzzleClient): void
+    {
+        $this->guzzleClient = $guzzleClient;
+    }
+
+    /**
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getJiraIssueTypes(): array
+    {
+        if (!$this->jiraIssueTypes) {
+            $this->setJiraIssueTypes();
+        }
+        return $this->jiraIssueTypes;
+    }
+
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function setJiraIssueTypes(): void
+    {
+        try {
+            # get or update current jwt token to make requests to project portal api
+            //$this->getProjectPortalJWTToken();
+
+            $jwt = $this->getJwtToken();
+            $response = $this->getGuzzleClient()->get($this->getPortalBaseURL() . 'api/jira/request-types/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                $data = json_decode($response->getBody());
+                $values = $data->values;
+                $jiraIssueTypes = array();
+                foreach ($values as $value) {
+                    $jiraIssueTypes[$value->id] = $value->name;
+                }
+                $this->jiraIssueTypes = $jiraIssueTypes;
+            }
+        } catch (\Exception $e) {
+            echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
+        }
     }
 
 

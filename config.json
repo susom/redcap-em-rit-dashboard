@@ -25,6 +25,18 @@
   "no-auth-pages": [
     "services"
   ],
+  "links": {
+    "project": [
+      {
+        "name": "Create Support Ticket",
+        "icon": "fas fa-check-square",
+        "url": "views/create_jira_ticket.php",
+        "show-header-and-footer": true
+      }
+    ],
+    "control-center": [
+    ]
+  },
   "system-settings": [
     {
       "key": "project-portal-api-token",
