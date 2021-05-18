@@ -27,6 +27,7 @@ use Sabre\DAV\Exception;
  * @property array $projectPortalSavedConfig
  * @property array $projectPortalList
  * @property array $jiraIssueTypes
+ * @property array $userJiraTickets
  * @property \GuzzleHttp\Client $guzzleClient
  */
 class ProjectPortal extends AbstractExternalModule
@@ -83,6 +84,8 @@ class ProjectPortal extends AbstractExternalModule
     private $guzzleClient;
 
     private $jiraIssueTypes;
+
+    private $userJiraTickets;
 
     /**
      * ProjectPortal constructor.
@@ -860,6 +863,45 @@ class ProjectPortal extends AbstractExternalModule
             }
         } catch (\Exception $e) {
             echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
+        }
+    }
+
+    /**
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getUserJiraTickets(): array
+    {
+        if (!$this->userJiraTickets) {
+            $this->setUserJiraTickets();
+        }
+        return $this->userJiraTickets;
+    }
+
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function setUserJiraTickets(): void
+    {
+        try {
+            if (!defined('USERID')) {
+                throw new \Exception("no user defined");
+            }
+            //$this->getProjectPortalJWTToken();
+            $jwt = $this->getJwtToken();
+            $response = $this->getGuzzleClient()->get($this->getPortalBaseURL() . 'api/issues/' . USERID . '/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                $data = json_decode($response->getBody());
+                $this->userJiraTickets = json_decode(json_encode($data), true);
+            }
+
+        } catch (\Exception $e) {
+            throw new \LogicException($e->getMessage());
         }
     }
 

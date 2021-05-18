@@ -3,6 +3,8 @@
 
 namespace Stanford\ProjectPortal;
 
+use GuzzleHttp\Exception\GuzzleException;
+
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 ?>
 
@@ -55,6 +57,15 @@ namespace Stanford\ProjectPortal;
 
     </form>
 </div>
+<?php
+echo '<pre>';
+try {
+    print_r($module->getUserJiraTickets());
+} catch (GuzzleException $e) {
+    echo $e->getMessage();
+}
+echo '</pre>';
+?>
 <script src="<?php echo $module->getUrl('assets/js/create_jira_ticket.js') ?>"></script>
 <script>
     JiraTicket.ajaxCreateJiraTicketURL = "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>"
