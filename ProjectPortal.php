@@ -188,6 +188,10 @@ class ProjectPortal extends AbstractExternalModule
         }
     }
 
+    public function getUserSupportTickets()
+    {
+    }
+
     private function savePortalProjectInfoInREDCap($inputs)
     {
         try {
