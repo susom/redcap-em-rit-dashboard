@@ -22,7 +22,7 @@ use GuzzleHttp\Exception\GuzzleException;
             <select class="form-control" id="project-portal-id" name="project-portal-id">
                 <option value="">SELECT A PROJECT</option>
                 <?php
-                foreach ($module->getProjectPortalList() as $project) {
+                foreach ($module->getUser()->getProjectPortalList() as $project) {
                     if ($project['project_deleted_at']) {
                         continue;
                     }
@@ -38,7 +38,7 @@ use GuzzleHttp\Exception\GuzzleException;
             <select class="form-control" id="issue-types-id" name="issue-types-id" required>
                 <option>SELECT ISSUE TYPE</option>
                 <?php
-                foreach ($module->getJiraIssueTypes() as $id => $issueType) {
+                foreach ($module->getSupport()->getJiraIssueTypes() as $id => $issueType) {
                     ?>
                     <option value="<?php echo $id ?>"><?php echo $issueType ?></option>
                     <?php
@@ -60,7 +60,7 @@ use GuzzleHttp\Exception\GuzzleException;
 <?php
 echo '<pre>';
 try {
-    print_r($module->getUserJiraTickets());
+    print_r($module->getUser()->getUserJiraTickets());
 } catch (GuzzleException $e) {
     echo $e->getMessage();
 }

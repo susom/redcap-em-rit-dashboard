@@ -39,6 +39,11 @@
   },
   "system-settings": [
     {
+      "key": "redcap-support-project",
+      "name": "<b>Select the Support Project that will integrate REDCap intake form with RIT Portal.</b>",
+      "type": "project-id"
+    },
+    {
       "key": "project-portal-api-token",
       "name": "<b>Token to be used to get user projects or update REDCap projects with Project Portal`s link.</b>",
       "type": "text"

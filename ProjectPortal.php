@@ -3,32 +3,34 @@
 namespace Stanford\ProjectPortal;
 
 require_once("emLoggerTrait.php");
-
+require_once("classes/User.php");
+require_once("classes/Support.php");
+require_once("classes/Client.php");
+require_once("classes/Portal.php");
 
 use ExternalModules\ExternalModules;
 use REDCap;
 use Records;
 use ExternalModules\AbstractExternalModule;
 use Sabre\DAV\Exception;
+use Stanford\ProjectPortal\Client;
+use Stanford\ProjectPortal\Support;
+use Stanford\ProjectPortal\User;
 
 /**
  * Class ProjectPortal
  * @package Stanford\ProjectPortal
- * @property string $token
- * @property string $user
+ * @property \Stanford\ProjectPortal\User $user
+ * @property \Stanford\ProjectPortal\Support $support
+ * @property \Stanford\ProjectPortal\Client $client
+ * @property \Stanford\ProjectPortal\Portal $portal
  * @property array $ips
  * @property array $projects
  * @property \Project $project
  * @property string $request
- * @property string $jwtToken
- * @property string $portalUsername
- * @property string $portalPassword
- * @property string $portalBaseURL
- * @property array $projectPortalSavedConfig
  * @property array $projectPortalList
  * @property array $jiraIssueTypes
  * @property array $userJiraTickets
- * @property \GuzzleHttp\Client $guzzleClient
  */
 class ProjectPortal extends AbstractExternalModule
 {
@@ -37,15 +39,13 @@ class ProjectPortal extends AbstractExternalModule
     /**
      * @var
      */
-    private $token;
-
-
-    private $jwtToken;
-    /**
-     * @var
-     */
     private $user;
 
+    private $support;
+
+    private $client;
+
+    private $portal;
     /**
      * @var array of whitelisted ips
      */
@@ -65,23 +65,12 @@ class ProjectPortal extends AbstractExternalModule
      */
     private $request;
 
-    /**
-     * @var
-     */
-    public $projectPortalSavedConfig;
 
     /**
      * @var
      */
     private $projectPortalList;
 
-    private $portalUsername;
-
-    private $portalPassword;
-
-    private $portalBaseURL;
-
-    private $guzzleClient;
 
     private $jiraIssueTypes;
 
@@ -94,211 +83,53 @@ class ProjectPortal extends AbstractExternalModule
     {
         parent::__construct();
 
-        $this->setToken($this->getSystemSetting('project-portal-api-token'));
-
-        $this->setPortalUsername($this->getSystemSetting('portal-username'));
-
-        $this->setPortalPassword($this->getSystemSetting('portal-password'));
-
-        $this->setPortalBaseURL($this->getSystemSetting('portal-base-url'));
-
         if ($_GET && ($_GET['projectid'] != null || $_GET['pid'] != null)) {
+
+            $this->setProject(new \Project($this->getProjectId()));
 
             $this->setProjects($this->getEnabledProjects());
 
             // set these fields as we might need them later for linkage process.
-            $this->setProjectPortalSavedConfig();
+
+            $this->setClient(new Client($this->getSystemSetting('project-portal-api-token'), $this->getSystemSetting('portal-username'), $this->getSystemSetting('portal-password'), $this->getSystemSetting('portal-base-url')));
+
+            $this->setUser(new User($this->getClient(), $this->getProjectId()));
+
+            $this->setSupport(new Support($this->getClient()));
+
+            $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title'], $this->getProjectSetting('linked-project')));
         }
 
-        $this->setGuzzleClient(new \GuzzleHttp\Client());
     }
 
     /**
-     * call django endpoint to attach redcap project to portal project. need more testnig
-     * @param $projectId
-     * @throws \Exception
+     * this to save input to the project EM settings
+     * @param array $inputs
      */
-    public function detachPortalProject($portalProjectId, $redcapProjectId)
-    {
-        try {
-            $this->setProject(new \Project($this->getProjectId()));
-            //$this->getProjectPortalJWTToken();
-
-            $client = $this->getGuzzleClient();
-            $jwt = $this->getJwtToken();
-            $this->setProject(new \Project($this->getProjectId()));
-            $response = $client->delete($this->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/detach-redcap/' . $redcapProjectId . '/', [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer {$jwt}",
-                ]
-            ]);
-            if ($response->getStatusCode() < 300) {
-                $data = json_decode($response->getBody());
-                $this->setProjectPortalList(json_decode(json_encode($data), true));
-            }
-
-            $inputs = array(
-                'portal_project_id' => '',
-                'portal_project_name' => '',
-                'portal_project_description' => '',
-                'portal_project_url' => ''
-            );
-            $this->savePortalProjectInfoInREDCap($inputs);
-        } catch (\Exception $e) {
-            throw new \LogicException($e->getMessage());
-        }
-    }
-
-    /**
-     * call django endpoint to attach redcap project to portal project. need more testnig
-     * @param $projectId
-     * @throws \Exception
-     */
-    public function attachToProjectPortal($portalProjectId, $portalProjectName, $portalProjectDescription)
-    {
-        try {
-            $this->setProject(new \Project($this->getProjectId()));
-            //$this->getProjectPortalJWTToken();
-
-            $client = $this->getGuzzleClient();
-            $jwt = $this->getJwtToken();
-            $this->setProject(new \Project($this->getProjectId()));
-            $response = $client->post($this->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/attach-redcap/', [
-                'debug' => false,
-                'form_params' => [
-                    'redcap_project_id' => $this->getProjectId(),
-                    'redcap_project_name' => $this->getProject()->project['app_title'],
-                ],
-                'headers' => [
-                    'Authorization' => "Bearer {$jwt}",
-                ]
-            ]);
-            if ($response->getStatusCode() < 300) {
-                $data = json_decode($response->getBody());
-                $this->setProjectPortalList(json_decode(json_encode($data), true));
-            }
-
-            $inputs = array(
-                'portal_project_id' => $portalProjectId,
-                'portal_project_name' => $portalProjectName,
-                'portal_project_description' => $portalProjectDescription,
-                'portal_project_url' => $this->getPortalBaseURL() . 'detail/' . $portalProjectId,
-            );
-            $this->savePortalProjectInfoInREDCap($inputs);
-        } catch (\Exception $e) {
-            throw new \LogicException($e->getMessage());
-        }
-    }
-
-    public function getUserSupportTickets()
-    {
-    }
-
-    private function savePortalProjectInfoInREDCap($inputs)
+    public function savePortalProjectInfoInREDCap($inputs)
     {
         try {
 
-            if (!empty($inputs) && $inputs['portal_project_id'] != '') {
-                #$projects = $this->getSystemSetting('linked-portal-projects');
-                $projects = $this->getProjectSetting('linked-project', $this->getProject()->project_id);
-                $projects = json_decode($projects, true);
-                $projects[$this->getProject()->project_id] = $inputs;
+            //if (!empty($inputs) && $inputs['portal_project_id'] != '') {
+            #$projects = $this->getSystemSetting('linked-portal-projects');
+            $projects = $this->getProjectSetting('linked-project', $this->getProject()->project_id);
+            $projects = json_decode($projects, true);
+            $projects[$this->getProject()->project_id] = $inputs;
 
-                $settings = json_encode($projects);
-            } else {
-                $settings = '';
-            }
+            $settings = json_encode($projects);
+//            } else {
+//                $settings = '';
+//            }
 
             ExternalModules::saveSettings($this->PREFIX, $this->getProject()->project_id, array('linked-project' => $settings));
+            header("Content-type: application/json");
+            http_response_code(200);
+            echo json_encode(array("Project information has been updated."));
         } catch (\Exception $e) {
 
         }
     }
 
-    public function isREDCapProjectLinkedToProjectPortalProject()
-    {
-        return isset($this->projectPortalSavedConfig['portal_project_id']) && $this->projectPortalSavedConfig['portal_project_id'] != '';
-    }
-
-    public function getProjectPortalSavedConfig()
-    {
-        return $this->projectPortalSavedConfig;
-    }
-
-
-    public function setProjectPortalSavedConfig()
-    {
-        #$projects = $this->getSystemSetting('linked-portal-projects');
-        $projects = $this->getProjectSetting('linked-project');
-        if (!empty($projects)) {
-            $projects = json_decode($projects, true);
-            if (isset($projects[$this->getProjectId()])) {
-                $project = $projects[$this->getProjectId()];
-                $this->projectPortalSavedConfig['portal_project_id'] = $project['portal_project_id'];
-                $this->projectPortalSavedConfig['portal_project_name'] = $project['portal_project_name'];
-                $this->projectPortalSavedConfig['portal_project_description'] = $project['portal_project_description'];
-                $this->projectPortalSavedConfig['portal_project_url'] = $project['portal_project_url'];
-            }
-        }
-
-    }
-
-    /**
-     * @param int $redcapProjectId
-     * @param string $summary
-     * @param int $issueTypeId
-     * @param string $description
-     * @param null $portalProjectId
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function createJiraTicketViaPortal($redcapProjectId, $summary, $issueTypeId, $description, $portalProjectId = null)
-    {
-
-        $jwt = $this->getJwtToken();
-        $response = $this->getGuzzleClient()->post($this->getPortalBaseURL() . 'api/issues/add-issue/', [
-            'debug' => false,
-            'headers' => [
-                'Authorization' => "Bearer {$jwt}",
-            ],
-            'form_params' => [
-                'redcap' => $redcapProjectId,
-                'summary' => $summary,
-                'request_type' => $issueTypeId,
-                'description' => $description,
-                'portal_project_id' => $portalProjectId,
-            ],
-        ]);
-        if ($response->getStatusCode() < 300) {
-            return json_decode($response->getBody(), true);
-        }
-    }
-
-    public function prepareProjectPortalList()
-    {
-        try {
-            # get or update current jwt token to make requests to project portal api
-            //$this->getProjectPortalJWTToken();
-
-            if (defined('USERID')) {
-                $client = $this->getGuzzleClient();
-                $jwt = $this->getJwtToken();
-                $response = $client->get($this->getPortalBaseURL() . 'api/users/' . USERID . '/projects/', [
-                    'debug' => false,
-                    'headers' => [
-                        'Authorization' => "Bearer {$jwt}",
-                    ]
-                ]);
-                if ($response->getStatusCode() < 300) {
-                    $data = json_decode($response->getBody());
-                    $this->setProjectPortalList(json_decode(json_encode($data), true));
-                }
-            }
-        } catch (\Exception $e) {
-            echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
-        }
-    }
 
     public function redcap_every_page_top()
     {
@@ -306,55 +137,13 @@ class ProjectPortal extends AbstractExternalModule
         if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
             $this->includeFile("views/project_setup.php");
 
-        } elseif (strpos($_GET['page'], 'create_jira_ticket') !== false) {
-            $this->prepareProjectPortalList();
-
         }
+//        elseif (strpos($_GET['page'], 'create_jira_ticket') !== false) {
+//            $this->prepareProjectPortalList();
+//
+//        }
         // this to override the functionality for contact admin button on all pages.
         $this->includeFile("views/contact_admin_button.php");
-    }
-
-    /**
-     * check is jwt token is still valid current expiration time is 2 days
-     * @return bool
-     */
-    private function isJWTTokenStillValid()
-    {
-        if (isset($_SESSION['project_portal_jwt_token_created_at']) && (time() - $_SESSION['project_portal_jwt_token_created_at'] < 60 * 60 * 24 * 2)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private function getProjectPortalJWTToken()
-    {
-        try {
-            if (isset($_SESSION['project_portal_jwt_token']) && $this->isJWTTokenStillValid()) {
-                $this->setJwtToken($_SESSION['project_portal_jwt_token']);
-            } else {
-                $client = $this->getGuzzleClient();
-
-                $response = $client->post($this->getPortalBaseURL() . 'api/users/token/', [
-                    'debug' => false,
-                    'form_params' => [
-                        'username' => $this->getPortalUsername(),
-                        'password' => $this->getPortalPassword(),
-                    ],
-                    'headers' => [
-                        'Content-Type' => 'application/x-www-form-urlencoded',
-                    ]
-                ]);
-                if ($response->getStatusCode() < 300) {
-                    $data = json_decode($response->getBody());
-                    $this->setJwtToken($data->token);
-                    $this->setJWTTokenIntoSession($data->token);
-                }
-            }
-        } catch (\Exception $e) {
-            echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
-        }
-
     }
 
     public function processRequest()
@@ -400,7 +189,7 @@ class ProjectPortal extends AbstractExternalModule
             if (empty($users)) {
                 throw new \LogicException("no users were passed");
             }
-            $this->processUserRequest($users, $excludedProject);
+            $this->getUser()->processUserRequest($users, $excludedProject);
         } elseif ($this->getRequest() == "add_project") {
             if (!isset($_POST['redcap_project_id'])) {
                 throw new \LogicException("REDCap project id parameter is missing");
@@ -446,9 +235,7 @@ class ProjectPortal extends AbstractExternalModule
             $this->emDebug($inputs);
             $this->setProject(new \Project($inputs['redcap_project_id']));
             $this->savePortalProjectInfoInREDCap($inputs);
-            header("Content-type: application/json");
-            http_response_code(200);
-            echo json_encode(array("Project information has been updated."));
+
         } catch (\Exception $e) {
             header("Content-type: application/json");
             http_response_code(404);
@@ -456,47 +243,6 @@ class ProjectPortal extends AbstractExternalModule
         }
     }
 
-    private function processUserRequest($users, $excludedProject)
-    {
-        $result = array();
-        foreach ($users as $user) {
-            $sql = "SELECT project_id FROM redcap_user_information ri JOIN redcap_user_rights rr ON ri.username = rr.username WHERE ri.username = '$user' OR ri.user_email LIKE '%$user%' OR ri.user_firstname LIKE '%$user%' OR ri.user_lastname LIKE '%$user%'";
-            $q = db_query($sql);
-            if (db_num_rows($q) > 0) {
-                while ($row = db_fetch_assoc($q)) {
-                    // exclude redcap projects that are linked to different research project different from the one making this call
-                    if (!empty($excludedProject) && in_array($row['project_id'], $excludedProject)) {
-                        continue;
-                    }
-                    $projectId = $row['project_id'];
-                    $sql = "SELECT ri.username, ri.user_email, ri.user_firstname, ri.user_lastname FROM redcap_user_rights rr RIGHT JOIN redcap_user_information ri ON rr.username = ri.username WHERE rr.project_id = '$projectId' AND rr.username != '$user'";
-                    $records = db_query($sql);
-                    if (db_num_rows($records) > 0) {
-                        // init project object to get basic information about the project
-                        $project = new \Project($projectId);
-
-                        $temp = array(
-                            'project_name' => $project->project['app_title'],
-                            'project_id' => $project->project_id,
-                            'project_status' => $project->project['status'] ? 'Production' : 'Development',
-                            'last_logged_event' => $project->project['last_logged_event'],
-                            'record_count' => Records::getRecordCount($project->project_id),
-                        );
-                        // get project users other the main one we sent via API
-                        while ($record = db_fetch_assoc($records)) {
-                            $temp['users'][] = $record;
-                        }
-                        $result[$user][] = $temp;
-                        unset($temp);
-                    }
-                }
-            }
-
-        }
-        header("Content-type: application/json");
-        http_response_code(200);
-        echo json_encode($result);
-    }
 
     /**
      * Apply the IP filter if set
@@ -544,7 +290,7 @@ class ProjectPortal extends AbstractExternalModule
      */
     private function verifyToken($token)
     {
-        return $token == $this->getToken();
+        return $token == $this->getClient()->getToken();
     }
 
 
@@ -615,37 +361,8 @@ class ProjectPortal extends AbstractExternalModule
         return ($ip_ip_net == $ip_net);
     }
 
-    /**
-     * @return string
-     */
-    public function getToken()
-    {
-        return $this->token;
-    }
 
-    /**
-     * @param string $token
-     */
-    public function setToken($token)
-    {
-        $this->token = $token;
-    }
 
-    /**
-     * @return string
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param string $user
-     */
-    public function setUser($user)
-    {
-        $this->user = $user;
-    }
 
     /**
      * @return array
@@ -711,30 +428,6 @@ class ProjectPortal extends AbstractExternalModule
         $this->project = $project;
     }
 
-    /**
-     * @return string
-     */
-    public function getJwtToken()
-    {
-        if (!$this->jwtToken) {
-            $this->getProjectPortalJWTToken();
-        }
-        return $this->jwtToken;
-    }
-
-    /**
-     * @param string $jwtToken
-     */
-    public function setJwtToken($jwtToken)
-    {
-        $this->jwtToken = $jwtToken;
-    }
-
-    private function setJWTTokenIntoSession($jwtToken)
-    {
-        $_SESSION['project_portal_jwt_token'] = $jwtToken;
-        $_SESSION['project_portal_jwt_token_created_at'] = time();
-    }
 
     /**
      * @param string $path
@@ -744,166 +437,69 @@ class ProjectPortal extends AbstractExternalModule
         include_once $path;
     }
 
+
     /**
-     * @return array
+     * @return User
      */
-    public function getProjectPortalList()
+    public function getUser(): User
     {
-        return $this->projectPortalList;
+        return $this->user;
     }
 
     /**
-     * @param array $projectPortalList
+     * @param User $user
      */
-    public function setProjectPortalList($projectPortalList)
+    public function setUser(User $user): void
     {
-        $this->projectPortalList = $projectPortalList;
+        $this->user = $user;
     }
 
     /**
-     * @return string
+     * @return Support
      */
-    public function getPortalUsername()
+    public function getSupport(): Support
     {
-        return $this->portalUsername;
+        return $this->support;
     }
 
     /**
-     * @param string $redcapUsername
+     * @param Support $support
      */
-    public function setPortalUsername($redcapUsername)
+    public function setSupport(Support $support): void
     {
-        $this->portalUsername = $redcapUsername;
+        $this->support = $support;
     }
 
     /**
-     * @return string
+     * @return Client
      */
-    public function getPortalPassword()
+    public function getClient(): Client
     {
-        return $this->portalPassword;
+        return $this->client;
     }
 
     /**
-     * @param string $redcapPassword
+     * @param Client $client
      */
-    public function setPortalPassword($redcapPassword)
+    public function setClient(Client $client): void
     {
-        $this->portalPassword = $redcapPassword;
+        $this->client = $client;
     }
 
     /**
-     * @return string
+     * @return Portal
      */
-    public function getPortalBaseURL()
+    public function getPortal(): Portal
     {
-        return $this->portalBaseURL;
+        return $this->portal;
     }
 
     /**
-     * @param string $portalBaseURL
+     * @param Portal $portal
      */
-    public function setPortalBaseURL($portalBaseURL)
+    public function setPortal(Portal $portal): void
     {
-        $this->portalBaseURL = $portalBaseURL;
+        $this->portal = $portal;
     }
-
-    /**
-     * @return \GuzzleHttp\Client
-     */
-    public function getGuzzleClient(): \GuzzleHttp\Client
-    {
-        return $this->guzzleClient;
-    }
-
-    /**
-     * @param \GuzzleHttp\Client $guzzleClient
-     */
-    public function setGuzzleClient(\GuzzleHttp\Client $guzzleClient): void
-    {
-        $this->guzzleClient = $guzzleClient;
-    }
-
-    /**
-     * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function getJiraIssueTypes(): array
-    {
-        if (!$this->jiraIssueTypes) {
-            $this->setJiraIssueTypes();
-        }
-        return $this->jiraIssueTypes;
-    }
-
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function setJiraIssueTypes(): void
-    {
-        try {
-            # get or update current jwt token to make requests to project portal api
-            //$this->getProjectPortalJWTToken();
-
-            $jwt = $this->getJwtToken();
-            $response = $this->getGuzzleClient()->get($this->getPortalBaseURL() . 'api/jira/request-types/', [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer {$jwt}",
-                ]
-            ]);
-            if ($response->getStatusCode() < 300) {
-                $data = json_decode($response->getBody());
-                $values = $data->values;
-                $jiraIssueTypes = array();
-                foreach ($values as $value) {
-                    $jiraIssueTypes[$value->id] = $value->name;
-                }
-                $this->jiraIssueTypes = $jiraIssueTypes;
-            }
-        } catch (\Exception $e) {
-            echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
-        }
-    }
-
-    /**
-     * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function getUserJiraTickets(): array
-    {
-        if (!$this->userJiraTickets) {
-            $this->setUserJiraTickets();
-        }
-        return $this->userJiraTickets;
-    }
-
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function setUserJiraTickets(): void
-    {
-        try {
-            if (!defined('USERID')) {
-                throw new \Exception("no user defined");
-            }
-            //$this->getProjectPortalJWTToken();
-            $jwt = $this->getJwtToken();
-            $response = $this->getGuzzleClient()->get($this->getPortalBaseURL() . 'api/issues/' . USERID . '/', [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer {$jwt}",
-                ]
-            ]);
-            if ($response->getStatusCode() < 300) {
-                $data = json_decode($response->getBody());
-                $this->userJiraTickets = json_decode(json_encode($data), true);
-            }
-
-        } catch (\Exception $e) {
-            throw new \LogicException($e->getMessage());
-        }
-    }
-
 
 }

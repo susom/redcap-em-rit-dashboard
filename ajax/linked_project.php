@@ -6,13 +6,13 @@ namespace Stanford\ProjectPortal;
 
 try {
     $result = array();
-    $module->prepareProjectPortalList();
-    foreach ($module->getProjectPortalList() as $project) {
+
+    foreach ($module->getUser()->getProjectPortalList() as $project) {
         if ($project['project_deleted_at']) {
             continue;
         }
 
-        if (isset($module->projectPortalSavedConfig['portal_project_id']) && $module->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
+        if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) && $module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
 
             $project['status'] = 'success';
             $result = $project;

@@ -29,7 +29,7 @@ try {
     $issueType = filter_var($_POST['issue-types-id'], FILTER_SANITIZE_NUMBER_INT);
     $description = filter_var($_POST['description'], FILTER_SANITIZE_STRING);
 
-    $data = $module->createJiraTicketViaPortal($redcapProjectId, $summary, $issueType, $description, $portalProjectId);
+    $data = $module->getSupport()->createJiraTicketViaPortal($redcapProjectId, $summary, $issueType, $description, $portalProjectId);
     echo json_encode(array_merge($data, array('status' => 'success')));
 } catch (\LogicException $e) {
     header("Content-type: application/json");

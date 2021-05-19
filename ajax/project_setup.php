@@ -5,7 +5,6 @@ namespace Stanford\ProjectPortal;
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 
 try {
-    $module->prepareProjectPortalList();
     ?>
     <div id="portal-linkage-container" class="round chklist col-12">
         <div id="portal-errors" class="alert alert-danger hidden"></div>
@@ -17,7 +16,7 @@ try {
                     <div>
                         <?php
 
-                        if (isset($module->projectPortalSavedConfig['portal_project_id'])) {
+                        if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
                             <img id="img-" src="<?php echo APP_PATH_WEBROOT ?>Resources/images/checkbox_checked.png">
                             <?php
@@ -30,7 +29,7 @@ try {
                     </div>
                     <?php
 
-                    if (isset($module->projectPortalSavedConfig['portal_project_id'])) {
+                    if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                         ?>
                         <div id="lbl-" style="color:green;"> Linked</div>
                         <?php
@@ -50,23 +49,24 @@ try {
                     <div class="chklisttext">
                         COPY TO BE ADDED HERE
                         <?php
-                        if ($module->getProjectPortalList()) {
+                        if ($module->getUser()->getProjectPortalList()) {
                             ?>
                             <select id="project-portal-list" name="project-portal-list">
                                 <option value="">SELECT A PROJECT</option>
                                 <?php
-                                foreach ($module->getProjectPortalList() as $project) {
+                                foreach ($module->getUser()->getProjectPortalList() as $project) {
                                     if ($project['project_deleted_at']) {
                                         continue;
                                     }
                                     ?>
                                     <option data-name="<?php echo $project['project_name'] ?>"
                                             data-description="<?php echo $project['project_description'] ?>"
-                                            value="<?php echo $project['id'] ?>" <?php echo(isset($module->projectPortalSavedConfig['portal_project_id']) && $module->projectPortalSavedConfig['portal_project_id'] == $project['id'] ? 'selected' : '') ?>><?php echo $project['project_name'] ?></option>
+                                            value="<?php echo $project['id'] ?>" <?php echo(isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) && $module->projectPortalSavedConfig['portal_project_id'] == $project['id'] ? 'selected' : '') ?>><?php echo $project['project_name'] ?></option>
                                     <?php
                                 }
                                 ?>
-                                <option data-url="<?php echo $module->getPortalBaseURL() ?>" value="">Creat New Research
+                                <option data-url="<?php echo $module->getClient()->getPortalBaseURL() ?>" value="">Creat
+                                    New Research
                                     Portal Project
                                 </option>
                             </select>
@@ -76,15 +76,15 @@ try {
                         <button class="btn btn-defaultrc btn-xs fs13" id="attach-redcap-project">Attach Select Project
                         </button>
                             <?php
-                            if (isset($module->projectPortalSavedConfig['portal_project_id'])) {
+                            if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                                 ?>
                                 <div id="linked-project" data-project-id="<?php echo $project['id'] ?>"><?php
-                                    foreach ($module->getProjectPortalList() as $project) {
-                                        if ($module->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
+                                    foreach ($module->getUser()->getProjectPortalList() as $project) {
+                                        if ($module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
                                             echo $project['id'] . '<br>';
                                             echo $project['project_name'] . '<br>';
                                             echo $project['project_description'] . '<br>';
-                                            echo '<a target="_blank" href="' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '</a><br>';
+                                            echo '<a target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '</a><br>';
                                             echo '<button id="detach-project" data-redcap-id="' . $module->getProjectId() . '" data-portal-project-id="' . $project['id'] . '">Detach from Portal Project</button>';
                                         }
 
