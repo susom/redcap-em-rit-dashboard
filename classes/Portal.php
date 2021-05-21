@@ -29,7 +29,7 @@ class Portal
      * User constructor.
      * @param \Stanford\ProjectPortal\Client $client
      */
-    public function __construct(Client $client, $projectId, $projectTitle, $projects)
+    public function __construct(Client $client, $projectId = null, $projectTitle = null, $projects = null)
     {
         $this->setClient($client);
 
@@ -158,9 +158,9 @@ class Portal
     }
 
     /**
-     * @param int $projectId
+     * @param int|null $projectId
      */
-    public function setProjectId(int $projectId): void
+    public function setProjectId($projectId): void
     {
         $this->projectId = $projectId;
     }
@@ -174,9 +174,9 @@ class Portal
     }
 
     /**
-     * @param string $projectTitle
+     * @param string|null $projectTitle
      */
-    public function setProjectTitle(string $projectTitle): void
+    public function setProjectTitle($projectTitle): void
     {
         $this->projectTitle = $projectTitle;
     }

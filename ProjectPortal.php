@@ -83,22 +83,24 @@ class ProjectPortal extends AbstractExternalModule
     {
         parent::__construct();
 
+
+        $this->setClient(new Client($this->getSystemSetting('project-portal-api-token'), $this->getSystemSetting('portal-username'), $this->getSystemSetting('portal-password'), $this->getSystemSetting('portal-base-url')));
+
+
         if ($_GET && ($_GET['projectid'] != null || $_GET['pid'] != null)) {
 
             $this->setProject(new \Project($this->getProjectId()));
 
             $this->setProjects($this->getEnabledProjects());
 
-            // set these fields as we might need them later for linkage process.
-
-            $this->setClient(new Client($this->getSystemSetting('project-portal-api-token'), $this->getSystemSetting('portal-username'), $this->getSystemSetting('portal-password'), $this->getSystemSetting('portal-base-url')));
-
-            $this->setUser(new User($this->getClient(), $this->getProjectId()));
-
-            $this->setSupport(new Support($this->getClient()));
-
             $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title'], $this->getProjectSetting('linked-project')));
+
         }
+
+        // set these fields as we might need them later for linkage process.
+
+        $this->setUser(new User($this->getClient(), $this->getProjectId()));
+
 
     }
 

@@ -25,7 +25,7 @@ class User
      * User constructor.
      * @param \Stanford\ProjectPortal\Client $client
      */
-    public function __construct($client, $projectId)
+    public function __construct($client, $projectId = null)
     {
         $this->setClient($client);
 
@@ -139,9 +139,9 @@ class User
     }
 
     /**
-     * @param int $projectId
+     * @param int|null $projectId
      */
-    public function setProjectId(int $projectId): void
+    public function setProjectId($projectId): void
     {
         $this->projectId = $projectId;
     }
