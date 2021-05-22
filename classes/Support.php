@@ -48,6 +48,7 @@ class Support
                 'request_type' => $issueTypeId,
                 'description' => $description,
                 'portal_project_id' => $portalProjectId,
+                'raise_on_behalf_of' => USERID
             ],
         ]);
         if ($response->getStatusCode() < 300) {

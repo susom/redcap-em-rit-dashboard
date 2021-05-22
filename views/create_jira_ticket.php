@@ -1,9 +1,5 @@
 <?php
-
-
 namespace Stanford\ProjectPortal;
-
-use GuzzleHttp\Exception\GuzzleException;
 
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 ?>
@@ -51,23 +47,5 @@ use GuzzleHttp\Exception\GuzzleException;
             <label for="description">Description of Issue</label>
             <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
         </div>
-        <div class="form-group">
-            <button type="button" class="save-ticket btn btn-primary">Submit</button>
-        </div>
-
     </form>
 </div>
-<?php
-echo '<pre>';
-try {
-    print_r($module->getUser()->getUserJiraTickets());
-} catch (GuzzleException $e) {
-    echo $e->getMessage();
-}
-echo '</pre>';
-?>
-<script src="<?php echo $module->getUrl('assets/js/create_jira_ticket.js') ?>"></script>
-<script>
-    JiraTicket.ajaxCreateJiraTicketURL = "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>"
-    JiraTicket.init()
-</script>

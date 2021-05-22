@@ -32,6 +32,12 @@
         "icon": "fas fa-check-square",
         "url": "views/create_jira_ticket.php",
         "show-header-and-footer": true
+      },
+      {
+        "name": "User Main Index Page",
+        "icon": "fas fa-check-square",
+        "url": "views/index.php",
+        "show-header-and-footer": true
       }
     ],
     "control-center": [
