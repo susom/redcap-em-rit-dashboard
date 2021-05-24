@@ -34,7 +34,7 @@ Main = {
             "processing": true,
             'language': {
                 'loadingRecords': '&nbsp;',
-                'processing': '<i class="mt-1 fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading..n.</span>'
+                'processing': '<div class="spinner-border " role="status"><span class="sr-only">Loading...</span></div>'
             }
         });
         // jQuery.ajax({
