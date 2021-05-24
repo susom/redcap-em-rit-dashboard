@@ -22,6 +22,8 @@ Main = {
         })
     },
     getUserTickets: function () {
+
+        // move loader in correct position.
         $("#user-tickets").dataTable({
             "ajax": {
                 "url": Main.ajaxUserTicketURL,
@@ -29,10 +31,7 @@ Main = {
             },
             // dom: '<"previous-filter"><lf<t>ip>',
             // data: data.data,
-            pageLength: 50,
-            "aaSorting": [[0, "asc"]],
             "processing": true,
-            "serverSide": true,
             'language': {
                 'loadingRecords': '&nbsp;',
                 'processing': '<i class="mt-1 fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading..n.</span>'

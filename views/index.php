@@ -11,7 +11,11 @@ try {
 
 
     ?>
-
+    <style>
+        #user-tickets_processing {
+            margin-top: 5% !important;
+        }
+    </style>
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm">

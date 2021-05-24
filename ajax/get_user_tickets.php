@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\GuzzleException;
 
 try {
     $result = array();
+    $pointer = 0;
     foreach ($module->getUser()->getUserJiraTickets() as $jiraTicket) {
         $row = array(
             $jiraTicket['id'],
@@ -19,8 +20,11 @@ try {
             $jiraTicket['jira']['fields']['status']['name'],
             date('m/d/Y', strtotime($jiraTicket['created_at']))
         );
+        $pointer++;
         $result['data'][] = $row;
     }
+    $result['draw'] = $pointer;
+    $result['recordsTotal'] = $pointer;
     header('Content-Type: application/json');
     echo json_encode($result);
 } catch (\LogicException $e) {
