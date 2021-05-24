@@ -35,9 +35,14 @@ try {
         <div class="row">
             <div class="col-sm pt-4">
                 <ul class="nav nav-tabs" id="tabs" role="tablist">
+
                     <li class="nav-item">
-                        <a class="nav-link active" id="services-tab" data-toggle="tab" href="#services" role="tab"
-                           aria-controls="services" aria-selected="true">Services</a>
+                        <a class="nav-link active" id="history-tab" data-toggle="tab" href="#tickets" role="tab"
+                           aria-controls="tickets" aria-selected="true">Tickets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " id="services-tab" data-toggle="tab" href="#services" role="tab"
+                           aria-controls="services" aria-selected="false">Services</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="snapshot-tab" data-toggle="tab" href="#snapshot" role="tab"
@@ -47,14 +52,10 @@ try {
                         <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab"
                            aria-controls="history" aria-selected="false">History</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="history-tab" data-toggle="tab" href="#tickets" role="tab"
-                           aria-controls="tickets" aria-selected="false">Tickets</a>
-                    </li>
                 </ul>
 
                 <div class="tab-content pt-4" id="myTabContent">
-                    <div class="tab-pane fade show active" id="services" role="tabpanel" aria-labelledby="services-tab">
+                    <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
                         <div class="row">
                             <div class="col-sm">
                                 <div class="card">
@@ -161,7 +162,7 @@ try {
                     <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
 
                     </div>
-                    <div class="tab-pane fade" id="tickets" role="tabpanel" aria-labelledby="tickets-tab">
+                    <div class="tab-pane fade   show active" id="tickets" role="tabpanel" aria-labelledby="tickets-tab">
                         <div class="row">
                             <div class="float-right mb-3"><a href="#" class="add-ticket btn btn-primary btn-lg active"
                                                              role="button"
