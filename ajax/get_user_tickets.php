@@ -27,20 +27,12 @@ try {
     $result['recordsTotal'] = $pointer;
     header('Content-Type: application/json');
     echo json_encode($result);
-} catch (\LogicException $e) {
+} catch (\LogicException | ClientException | GuzzleException $e) {
     header("Content-type: application/json");
-    http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
-} catch (ClientException $e) {
-    // for regular request if failed try to generate new token and try again. otherwise throw exception.
-    header("Content-type: application/json");
-    http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
+//    http_response_code(404);
+    $result['data'] = [];
+    echo json_encode($result);
 } catch (\Exception $e) {
-    header("Content-type: application/json");
-    http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
-} catch (GuzzleException $e) {
     header("Content-type: application/json");
     http_response_code(404);
     echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
