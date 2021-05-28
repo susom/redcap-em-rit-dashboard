@@ -66,8 +66,11 @@ Main = {
             type: 'POST',
             data: data,
             success: function (data) {
-                var re = JSON.parse(data)
+                var re = JSON.parse(data);
+                $('#user-tickets').DataTable().clear();
+                $('#user-tickets').DataTable().destroy();
                 Main.getUserTickets();
+
                 $('#generic-modal').modal('hide');
             },
             error: function (request, error) {
