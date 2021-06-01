@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 
 try {
-    $portalProjectId = filter_var($_POST['portal-project-id'], FILTER_SANITIZE_NUMBER_INT);
+    $portalProjectId = filter_var($_POST['project-portal-id'], FILTER_SANITIZE_NUMBER_INT);
     $redcapProjectId = filter_var($_POST['redcap-project-id'], FILTER_SANITIZE_NUMBER_INT);
     if (!isset($_POST['redcap-project-id'])) {
         $redcapProjectId = $module->getProjectId();

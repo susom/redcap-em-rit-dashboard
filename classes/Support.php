@@ -37,20 +37,36 @@ class Support
     {
 
         $jwt = $this->getClient()->getJwtToken();
-        $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/issues/add-issue/', [
-            'debug' => false,
-            'headers' => [
-                'Authorization' => "Bearer {$jwt}",
-            ],
-            'form_params' => [
-                'redcap' => $redcapProjectId,
-                'summary' => $summary,
-                'request_type' => $issueTypeId,
-                'description' => $description,
-                'portal_project_id' => $portalProjectId,
-                'raise_on_behalf_of' => USERID
-            ],
-        ]);
+        if (is_null($portalProjectId)) {
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/issues/add-issue/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ],
+                'form_params' => [
+                    'redcap' => $redcapProjectId,
+                    'summary' => $summary,
+                    'request_type' => $issueTypeId,
+                    'description' => $description,
+                    'raise_on_behalf_of' => USERID
+                ],
+            ]);
+        } else {
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/add-issue/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ],
+                'form_params' => [
+                    'redcap' => $redcapProjectId,
+                    'summary' => $summary,
+                    'request_type' => $issueTypeId,
+                    'description' => $description,
+                    'raise_on_behalf_of' => USERID
+                ],
+            ]);
+        }
+
         if ($response->getStatusCode() < 300) {
             return json_decode($response->getBody(), true);
         }
