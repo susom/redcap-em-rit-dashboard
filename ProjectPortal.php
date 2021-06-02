@@ -229,6 +229,15 @@ class ProjectPortal extends AbstractExternalModule
             $this->setProject(new \Project(filter_var($_POST['redcap_project_id'], FILTER_SANITIZE_NUMBER_INT)));
             $this->savePortalProjectInfoInREDCap([]);
             return 'The linkage between Portal Project and REDCap is not removed!';
+        } elseif ($this->getRequest() == "custom_survey") {
+            if (!isset($_POST['instrument'])) {
+                throw new \LogicException("REDCap instrument is missing!");
+            }
+            if (!array_key_exists($_POST['instrument'], $this->getProject()->forms)) {
+                throw new \LogicException("REDCap instrument does not exist!");
+            }
+
+            echo json_encode($this->getUser()->generateCustomSurveyRecord($this->getProjectId(), filter_var($_POST['instrument'], FILTER_SANITIZE_STRING)));
         }
 
     }
