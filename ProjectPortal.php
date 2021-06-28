@@ -7,6 +7,7 @@ require_once("classes/User.php");
 require_once("classes/Support.php");
 require_once("classes/Client.php");
 require_once("classes/Portal.php");
+require_once("classes/Entity.php");
 
 use ExternalModules\ExternalModules;
 use REDCap;
@@ -24,6 +25,7 @@ use Stanford\ProjectPortal\User;
  * @property \Stanford\ProjectPortal\Support $support
  * @property \Stanford\ProjectPortal\Client $client
  * @property \Stanford\ProjectPortal\Portal $portal
+ * @property \Stanford\ProjectPortal\Entity $entity
  * @property array $ips
  * @property array $projects
  * @property \Project $project
@@ -103,6 +105,7 @@ class ProjectPortal extends AbstractExternalModule
 
         $this->setSupport(new Support($this->getClient()));
 
+        $this->setEntity(new Entity());
 
     }
 
@@ -238,6 +241,13 @@ class ProjectPortal extends AbstractExternalModule
             }
 
             echo json_encode($this->getUser()->generateCustomSurveyRecord($this->getProjectId(), filter_var($_POST['instrument'], FILTER_SANITIZE_STRING)));
+        } elseif ($this->getRequest() == "get_redcap_record") {
+            if (!isset($_POST['record_id'])) {
+                throw new \LogicException("REDCap Record ID is missing!");
+            }
+            $result = $this->getEntity()->getREDCapRecordViaID($this->getProjectId(), $this->getFirstEventId(), filter_var($_POST['record_id'], FILTER_SANITIZE_STRING));
+
+            echo json_encode($result[filter_var($_POST['record_id'], FILTER_SANITIZE_STRING)][$this->getFirstEventId()]);
         }
 
     }
@@ -514,5 +524,22 @@ class ProjectPortal extends AbstractExternalModule
     {
         $this->portal = $portal;
     }
+
+    /**
+     * @return Entity
+     */
+    public function getEntity(): Entity
+    {
+        return $this->entity;
+    }
+
+    /**
+     * @param Entity $entity
+     */
+    public function setEntity(Entity $entity): void
+    {
+        $this->entity = $entity;
+    }
+
 
 }
