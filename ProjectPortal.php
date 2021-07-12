@@ -239,8 +239,13 @@ class ProjectPortal extends AbstractExternalModule
             if (!array_key_exists($_POST['instrument'], $this->getProject()->forms)) {
                 throw new \LogicException("REDCap instrument does not exist!");
             }
-            $this->emDebug($_SERVER);
-            echo json_encode($this->getUser()->generateCustomSurveyRecord($this->getProjectId(), filter_var($_POST['instrument'], FILTER_SANITIZE_STRING)));
+
+            $data = array();
+            if (isset($_POST['portal_redirect_url'])) {
+                $data['portal_redirect_url'] = filter_var($_POST['portal_redirect_url'], FILTER_SANITIZE_URL);
+            }
+
+            echo json_encode($this->getUser()->generateCustomSurveyRecord($this->getProjectId(), filter_var($_POST['instrument'], FILTER_SANITIZE_STRING), $data));
         } elseif ($this->getRequest() == "get_redcap_record") {
             if (!isset($_POST['record_id'])) {
                 throw new \LogicException("REDCap Record ID is missing!");

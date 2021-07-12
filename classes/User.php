@@ -88,11 +88,10 @@ class User
         return $this->userJiraTickets;
     }
 
-    public function generateCustomSurveyRecord($projectId, $instrument)
+    public function generateCustomSurveyRecord($projectId, $instrument, $data = array())
     {
         $reservedRecordId = REDCap::reserveNewRecordId($this->getProjectId());
         $data[REDCap::getRecordIdField()] = $reservedRecordId;
-        $data['portal_redirect_url'] = $_SERVER['HTTP_REFERER'];
         $response = \REDCap::saveData($projectId, 'json', json_encode(array($data)));
         if (empty($response['errors'])) {
             $url = REDCap::getSurveyLink($reservedRecordId, $instrument);
