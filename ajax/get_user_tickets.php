@@ -12,11 +12,11 @@ try {
     $pointer = 0;
     foreach ($module->getUser()->getUserJiraTickets() as $jiraTicket) {
         $row = array(
-            $jiraTicket['id'],
-            $jiraTicket['jira']['fields']['summary'],
+            "<a target='_blank' href='https://rit-portal.med.stanford.edu/support?id=" . $jiraTicket['id'] . "'>" . $jiraTicket['id'] . "</a>",
+            "<a target='_blank' href='https://rit-portal.med.stanford.edu/support?id=" . $jiraTicket['id'] . "'>" . $jiraTicket['jira']['fields']['summary'] . "</a>",
             $jiraTicket['jira']['fields']['description'],
             $jiraTicket['jira']['fields']['issuetype']['name'],
-            $jiraTicket['jira']['key'],
+            "<a target='_blank' href='https://stanfordmed.atlassian.net/browse/" . $jiraTicket['jira']['key'] . "'>" . $jiraTicket['jira']['key'] . "</a>",
             $jiraTicket['jira']['fields']['status']['name'],
             date('m/d/Y', strtotime($jiraTicket['created_at']))
         );
