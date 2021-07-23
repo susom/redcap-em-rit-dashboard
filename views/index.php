@@ -17,25 +17,10 @@ try {
         }
     </style>
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm">
-                <h1>
-                    REDCap Costs and Fees Overview
-                </h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                <!--            <h2 class="d-inline-block"><i class="fas fa-door-open"></i></h2>-->
-                <p class="d-inline">
-                    Check here to learn about the many features and support options built around the Stanford REDCap
-                    service.
-                    You can review current monthly fees (if any) and also initiate requests for additional support,
-                    feature
-                    changes, and more.
-                </p>
-            </div>
-        </div>
+
+        <?php
+        echo $module->getSystemSetting('rit-dashboard-main-header');
+        ?>
         <div class="row">
             <div class="col-sm pt-4">
                 <ul class="nav nav-tabs" id="tabs" role="tablist">
@@ -44,18 +29,18 @@ try {
                         <a class="nav-link active" id="history-tab" data-toggle="tab" href="#tickets" role="tab"
                            aria-controls="tickets" aria-selected="true">Tickets</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link " id="services-tab" data-toggle="tab" href="#services" role="tab"
-                           aria-controls="services" aria-selected="false">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="snapshot-tab" data-toggle="tab" href="#snapshot" role="tab"
-                           aria-controls="snapshot" aria-selected="false">Current Snapshot</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab"
-                           aria-controls="history" aria-selected="false">History</a>
-                    </li>
+                    <!--                    <li class="nav-item">-->
+                    <!--                        <a class="nav-link " id="services-tab" data-toggle="tab" href="#services" role="tab"-->
+                    <!--                           aria-controls="services" aria-selected="false">Services</a>-->
+                    <!--                    </li>-->
+                    <!--                    <li class="nav-item">-->
+                    <!--                        <a class="nav-link" id="snapshot-tab" data-toggle="tab" href="#snapshot" role="tab"-->
+                    <!--                           aria-controls="snapshot" aria-selected="false">Current Snapshot</a>-->
+                    <!--                    </li>-->
+                    <!--                    <li class="nav-item">-->
+                    <!--                        <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab"-->
+                    <!--                           aria-controls="history" aria-selected="false">History</a>-->
+                    <!--                    </li>-->
                 </ul>
 
                 <div class="tab-content pt-4" id="myTabContent">
@@ -171,6 +156,11 @@ try {
                             <div class="float-right mb-3"><a href="#" class="add-ticket btn btn-primary btn-lg active"
                                                              role="button"
                                                              aria-pressed="true">Add Ticket</a></div>
+                        </div>
+                        <div class="row">
+                            <?php
+                            echo $module->getSystemSetting('rit-dashboard-ticket-tab-header');
+                            ?>
                         </div>
                         <div class="row">
                             <table id="user-tickets" width="100%" class="table table-bordered table-striped">

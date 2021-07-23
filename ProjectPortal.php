@@ -93,7 +93,7 @@ class ProjectPortal extends AbstractExternalModule
 
             $this->setProject(new \Project($this->getProjectId()));
 
-            $this->setProjects($this->getEnabledProjects());
+            //$this->setProjects($this->getEnabledProjects());
 
             $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title'], $this->getProjectSetting('linked-project')));
 
