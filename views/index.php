@@ -168,9 +168,7 @@ try {
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Summary</th>
-                                    <th scope="col">Description</th>
                                     <th scope="col">Request Type</th>
-                                    <th scope="col">Jira Ticket Key</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Created At</th>
                                 </tr>
