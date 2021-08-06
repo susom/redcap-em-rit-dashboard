@@ -95,6 +95,14 @@ class User
         $response = \REDCap::saveData($projectId, 'json', json_encode(array($data)));
         if (empty($response['errors'])) {
             $url = REDCap::getSurveyLink($reservedRecordId, $instrument);
+
+            $parts = explode("s=", $url);
+            $hash = end($parts);
+            if (isset($data['portal_redirect_url'])) {
+                $data['portal_redirect_url'] = $data['portal_redirect_url'] . '?svh=' . $hash;
+                \REDCap::saveData($projectId, 'json', json_encode(array($data)));
+            }
+
             return array('status' => 'success', 'record_id' => $reservedRecordId, 'url' => $url);
         } else {
             throw new \LogicException("cant create new record");
