@@ -2,6 +2,7 @@
 
 namespace Stanford\ProjectPortal;
 
+require __DIR__ . '/vendor/autoload.php';
 require_once("emLoggerTrait.php");
 require_once("classes/User.php");
 require_once("classes/Support.php");
@@ -9,6 +10,7 @@ require_once("classes/Client.php");
 require_once("classes/Portal.php");
 require_once("classes/Entity.php");
 
+const MAJOR_VERSION = 7 ;
 use ExternalModules\ExternalModules;
 use REDCap;
 use Records;
@@ -244,6 +246,18 @@ class ProjectPortal extends AbstractExternalModule
             if (isset($_POST['portal_redirect_url'])) {
                 $data['portal_redirect_url'] = filter_var($_POST['portal_redirect_url'], FILTER_SANITIZE_URL);
             }
+            // use the title from portal if available.
+            if (isset($_POST['project_title'])) {
+                if($this->isFieldInInstrument(filter_var($_POST['instrument'], FILTER_SANITIZE_STRING), 'project_title')){
+                    $data['project_title'] = filter_var($_POST['project_title'], FILTER_SANITIZE_STRING);
+                }
+            }
+
+            if (isset($_POST['webauth_user'])) {
+                if($this->isFieldInInstrument(filter_var($_POST['instrument'], FILTER_SANITIZE_STRING), 'webauth_user')){
+                    $data['webauth_user'] = filter_var($_POST['webauth_user'], FILTER_SANITIZE_STRING);
+                }
+            }
 
             echo json_encode($this->getUser()->generateCustomSurveyRecord($this->getProjectId(), filter_var($_POST['instrument'], FILTER_SANITIZE_STRING), $data));
         } elseif ($this->getRequest() == "get_redcap_record") {
@@ -255,6 +269,17 @@ class ProjectPortal extends AbstractExternalModule
             echo json_encode($result[filter_var($_POST['record_id'], FILTER_SANITIZE_STRING)][$this->getFirstEventId()]);
         }
 
+    }
+
+
+    /**
+     * @param $instrument
+     * @param $field
+     * @return bool
+     */
+    private function isFieldInInstrument($instrument, $field){
+        $fields = $this->getProject()->forms[$instrument]['fields'];
+        return array_key_exists($field, $fields);
     }
 
     private function processAddProjectRequest($inputs)
