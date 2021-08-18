@@ -12,6 +12,7 @@ Main = {
 
         Main.getUserTickets()
         Main.getProjectEMs()
+        Main.getPortalProjectsList()
 
         $(".add-ticket").click(function () {
             $('#generic-modal').modal('show');
@@ -84,28 +85,43 @@ Main = {
                 'processing': '<div class="spinner-border " role="status"><span class="sr-only">Loading...</span></div>'
             }
         });
-        // jQuery.ajax({
-        //     url: Main.ajaxUserTicketURL,
-        //     type: 'POST',
-        //     'success': function (data) {
-        //         $("#user-tickets").dataTable({
-        //             dom: '<"previous-filter"><lf<t>ip>',
-        //             data: data.data,
-        //             pageLength: 50,
-        //             "bDestroy": true,
-        //             "aaSorting": [[0, "asc"]],
-        //             'processing': true,
-        //             'language': {
-        //                 'loadingRecords': '&nbsp;',
-        //                 'processing': 'Loading...'
-        //             }
-        //         });
-        //     },
-        //     'error': function (request, error) {
-        //         var data = JSON.parse(request.responseText)
-        //         alert(data.message);
-        //     },
-        // });
+    },
+    getPortalProjectsList: function () {
+        // move loader in correct position.
+        jQuery.ajax({
+            url: Main.ajaxPortalProjectsListURL,
+            type: 'POST',
+            success: function (data) {
+                var re = data.data;
+                var sel = $('<select id="portal-project-list">').appendTo('#portal-project');
+                $(re).each(function () {
+                    if (this.url == '') {
+                        if ((this.linked == undefined || this.linked == false)) {
+                            sel.append($("<option>").attr('value', this.id).attr('data-name', this.name).attr('data-description', this.description).text(this.name));
+                        } else {
+                            sel.append($("<option>").attr('value', this.id).attr('selected', 'selected').attr('data-name', this.name).attr('data-description', this.description).text(this.name));
+                        }
+                    } else {
+                        sel.append($("<option>").attr('data-url', this.url).text(this.name));
+                    }
+
+                });
+            },
+            error: function (request, error) {
+                var re = JSON.parse(request.responseText)
+                $(".messages").addClass("alert-danger").removeClass('hidden').text(re.message);
+            },
+            complete: function () {
+                $('#portal-project-list').select2();
+                $(document).on('select2:select', '#portal-project-list', function (e) {
+                    // if user selects create new project open new tab with to the portal.
+                    if (e.params.data.element.dataset.url !== undefined) {
+                        var url = e.params.data.element.dataset.url
+                        window.open(url, '_blank');
+                    }
+                });
+            }
+        });
     },
     createTicket(data) {
         jQuery.ajax({

@@ -11,6 +11,8 @@ try {
 
 
     ?>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
     <style>
         #user-tickets_processing {
             margin-top: 5% !important;
@@ -211,6 +213,31 @@ try {
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-3">
+                <?php
+                if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
+                    ?>
+                    <div id="lbl-" style="color:green;"> Linked</div>
+                    <?php
+                } else {
+                    ?>
+                    <div id="lbl-" style="color:#F47F6C;">Not Linked</div>
+                    <?php
+                }
+                ?>
+            </div>
+            <div class="col-9">
+                <div id="portal-project"></div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="offset-3 mt-2">
+                <button class="btn btn-defaultrc btn-xs fs13" id="attach-redcap-project">Attach Select Project
+                </button>
+            </div>
+        </div>
     </div>
     <!-- Generic Modal -->
 
@@ -242,10 +269,12 @@ try {
     </div>
     <!-- END Time Slots Modal -->
     <script src="<?php echo $module->getUrl('assets/js/index.js') ?>"></script>
+    <script src="<?php echo $module->getUrl('assets/js/project_setup.js') ?>"></script>
     <script>
         Main.ajaxCreateJiraTicketURL = "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>"
         Main.ajaxUserTicketURL = "<?php echo $module->getUrl('ajax/get_user_tickets.php') ?>"
         Main.ajaxProjectEMstURL = "<?php echo $module->getUrl('ajax/get_project_external_modules.php') ?>"
+        Main.ajaxPortalProjectsListURL = "<?php echo $module->getUrl('ajax/portal_project_list.php') ?>"
         Main.init()
     </script>
     <?php
