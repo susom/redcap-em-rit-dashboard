@@ -29,6 +29,11 @@ try {
                         <a class="nav-link active" id="history-tab" data-toggle="tab" href="#tickets" role="tab"
                            aria-controls="tickets" aria-selected="true">Tickets</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="external-modules-tab" data-toggle="tab" href="#external-modules"
+                           role="tab"
+                           aria-controls="external-modules" aria-selected="true">External Modules</a>
+                    </li>
                     <!--                    <li class="nav-item">-->
                     <!--                        <a class="nav-link " id="services-tab" data-toggle="tab" href="#services" role="tab"-->
                     <!--                           aria-controls="services" aria-selected="false">Services</a>-->
@@ -148,9 +153,7 @@ try {
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
 
-                    </div>
                     <div class="tab-pane fade   show active" id="tickets" role="tabpanel" aria-labelledby="tickets-tab">
                         <div class="row">
                             <div class="float-right mb-3"><a href="#" class="add-ticket btn btn-primary btn-lg active"
@@ -176,6 +179,32 @@ try {
                                 <tbody>
 
                                 </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="external-modules" role="tabpanel"
+                         aria-labelledby="external-modules-tab">
+                        <div class="row">
+                            Below Table has list of enabled External Modules for this Project.
+                        </div>
+                        <div class="row">
+                            <table id="external-modules-table" width="100%" class="table table-bordered table-striped">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Modules Prefix</th>
+                                    <th scope="col">Is Enabled</th>
+                                    <th scope="col">Maintenance Fees</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th colspan="2" style="text-align:right">Total:</th>
+                                    <th></th>
+                                </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -216,6 +245,7 @@ try {
     <script>
         Main.ajaxCreateJiraTicketURL = "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>"
         Main.ajaxUserTicketURL = "<?php echo $module->getUrl('ajax/get_user_tickets.php') ?>"
+        Main.ajaxProjectEMstURL = "<?php echo $module->getUrl('ajax/get_project_external_modules.php') ?>"
         Main.init()
     </script>
     <?php

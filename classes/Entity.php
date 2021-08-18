@@ -24,6 +24,15 @@ class Entity
         return $data;
     }
 
+    public function getProjectEmUsageRecords($projectId)
+    {
+        $factory = new \REDCapEntity\EntityFactory();
+        $entities = $factory->query('project_external_modules_usage')->condition('project_id', $projectId)
+            ->execute();;
+
+        return $entities;
+    }
+
     /**
      * @return array
      */
