@@ -31,7 +31,7 @@ Main = {
             // dom: '<"previous-filter"><lf<t>ip>',
             // data: data.data,
             "processing": true,
-            "serverSide": true,
+            // "serverSide": true,
             'language': {
                 'loadingRecords': '&nbsp;',
                 'processing': '<div class="spinner-border " role="status"><span class="sr-only">Loading...</span></div>'
@@ -53,6 +53,7 @@ Main = {
                     .reduce(function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0);
+
                 // Total over this page
                 pageTotal = api
                     .column(2, {page: 'current'})
@@ -63,7 +64,7 @@ Main = {
 
                 // Update footer
                 $(api.column(2).footer()).html(
-                    '$' + total
+                    '$' + pageTotal + ' ( $' + total + ' total)'
                 );
             }
         });

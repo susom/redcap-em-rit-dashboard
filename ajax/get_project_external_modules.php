@@ -15,7 +15,7 @@ try {
         $row = array(
             $data['module_prefix'],
             $data['is_em_enabled'] == true ? 'Yes' : 'No',
-            $data['maintenance_fees'] != '' ? $data['maintenance_fees'] : 0,
+            $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? $data['maintenance_fees'] : 0,
         );
         $pointer++;
         $result['data'][] = $row;
