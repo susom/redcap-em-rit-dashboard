@@ -23,7 +23,7 @@ namespace Stanford\ProjectPortal;
                         continue;
                     }
                     ?>
-                    <option value="<?php echo $project['id'] ?>"><?php echo $project['project_name'] ?></option>
+                    <option value="<?php echo $project['id'] ?>" <?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) && $module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id'] ? 'selected' : '' ?>><?php echo $project['project_name'] ?></option>
                     <?php
                 }
                 ?>

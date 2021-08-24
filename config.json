@@ -103,6 +103,18 @@
       "type": "rich-text"
     },
     {
+      "key": "rit-dashboard-portal-linkage-tab-header",
+      "name": "Portal Linkage Tab Header",
+      "required": false,
+      "type": "rich-text"
+    },
+    {
+      "key": "rit-dashboard-external-modules-tab-header",
+      "name": "External Modules Tab Header",
+      "required": false,
+      "type": "rich-text"
+    },
+    {
       "key": "enable-system-debug-logging",
       "name": "<b>Enable Debug Logging (system-wide)</b>",
       "required": false,
