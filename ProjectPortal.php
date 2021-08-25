@@ -247,15 +247,15 @@ class ProjectPortal extends AbstractExternalModule
                 $data['portal_redirect_url'] = filter_var($_POST['portal_redirect_url'], FILTER_SANITIZE_URL);
             }
             // use the title from portal if available.
-            if (isset($_POST['project_title'])) {
-                if($this->isFieldInInstrument(filter_var($_POST['instrument'], FILTER_SANITIZE_STRING), 'project_title')){
-                    $data['project_title'] = filter_var($_POST['project_title'], FILTER_SANITIZE_STRING);
+            if (isset($_POST['portal_project_title'])) {
+                if ($this->isFieldInInstrument(filter_var($_POST['instrument'], FILTER_SANITIZE_STRING), 'portal_project_title')) {
+                    $data['portal_project_title'] = filter_var($_POST['portal_project_title'], FILTER_SANITIZE_STRING);
                 }
             }
 
-            if (isset($_POST['webauth_user'])) {
-                if($this->isFieldInInstrument(filter_var($_POST['instrument'], FILTER_SANITIZE_STRING), 'webauth_user')){
-                    $data['webauth_user'] = filter_var($_POST['webauth_user'], FILTER_SANITIZE_STRING);
+            if (isset($_POST['portal_webauth_user'])) {
+                if ($this->isFieldInInstrument(filter_var($_POST['instrument'], FILTER_SANITIZE_STRING), 'portal_webauth_user')) {
+                    $data['portal_webauth_user'] = filter_var($_POST['portal_webauth_user'], FILTER_SANITIZE_STRING);
                 }
             }
 
