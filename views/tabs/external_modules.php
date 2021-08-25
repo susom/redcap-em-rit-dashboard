@@ -1,16 +1,5 @@
-<?php
-
-namespace Stanford\ProjectPortal;
-
-use GuzzleHttp\Exception\GuzzleException;
-
-/** @var \Stanford\ProjectPortal\ProjectPortal $module */
-
-?>
 <div class="row">
-    <?php
-    echo $module->getSystemSetting('rit-dashboard-external-modules-tab-header');
-    ?>
+    <span v-html="external_modules_header"></span>
 </div>
 <b-row>
     <b-col lg="6" class="my-1">

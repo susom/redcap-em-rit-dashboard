@@ -108,6 +108,8 @@ try {
                         description: "",
                         project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
                     },
+                    portal_projects_list: <?php echo json_encode($module->getUser()->getProjectPortalList()) ?>,
+                    ticket_types: <?php echo json_encode($module->getSupport()->getJiraIssueTypes()) ?>,
                     project_portal_id: "",
                     header: "<?php echo $module->getSystemSetting('rit-dashboard-main-header'); ?>",
                     ajaxCreateJiraTicketURL: "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>",
@@ -117,11 +119,13 @@ try {
                     attachREDCapURL: "<?php echo $module->getURL('ajax/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     detachREDCapURL: "<?php echo $module->getURL('ajax/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSectionURL: "<?php echo $module->getURL('ajax/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    portal_linkage_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
+                    tickets_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
+                    external_modules_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
                 }
             },
             methods: {
                 linked: function () {
-                    console.log('asdasdasdas')
                     if (this.ticket.project_portal_id !== '') {
                         return true;
                     }
@@ -169,11 +173,17 @@ try {
                     ;
                 },
                 attachRedCapProject: function () {
-                    const project = this.$refs.selectedProject
+                    var project = []
+                    for (var i = 0; i < this.portal_projects_list.length; i++) {
+                        if (this.portal_projects_list[i].id == this.ticket.project_portal_id) {
+                            project = this.portal_projects_list[i]
+                        }
+                    }
+                    console.log(project)
                     axios.post(this.attachREDCapURL, {
-                        project_portal_id: this.ticket.project_portal_id,
-                        project_portal_name: project.dataset.name,
-                        project_portal_description: project.dataset.description
+                        project_portal_id: project.project_portal_id,
+                        project_portal_name: project.project_name,
+                        project_portal_description: project.project_description
                     })
                         .then(response => {
                             this.variant = 'success'

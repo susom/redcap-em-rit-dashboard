@@ -1,21 +1,10 @@
-<?php
-
-namespace Stanford\ProjectPortal;
-
-use GuzzleHttp\Exception\GuzzleException;
-
-/** @var \Stanford\ProjectPortal\ProjectPortal $module */
-
-?>
 <div class="row">
     <div class="float-right mb-3">
         <b-button v-b-modal.generic-modal>Add Ticket</b-button>
     </div>
 </div>
 <div class="row">
-    <?php
-    echo $module->getSystemSetting('rit-dashboard-ticket-tab-header');
-    ?>
+    <span v-html="tickets_header"></span>
 </div>
 <b-row>
     <b-col lg="6" class="my-1">
