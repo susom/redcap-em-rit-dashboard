@@ -8,26 +8,25 @@ use GuzzleHttp\Exception\GuzzleException;
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 
 try {
-    $portalProjectId = filter_var($_POST['project-portal-id'], FILTER_SANITIZE_NUMBER_INT);
-    $redcapProjectId = filter_var($_POST['redcap-project-id'], FILTER_SANITIZE_NUMBER_INT);
-    if (!isset($_POST['redcap-project-id'])) {
+    $body = json_decode(file_get_contents('php://input'), true);
+    $portalProjectId = $body['project_portal_id'];
+    $redcapProjectId = $body['redcap_project_id'];;
+    if (!isset($body['redcap-project-id'])) {
         $redcapProjectId = $module->getProjectId();
     }
-    if (!isset($_POST['summary'])) {
+    if (!isset($body['summary'])) {
         throw new \Exception("summary is required");
     }
-    if (!isset($_POST['summary'])) {
-        throw new \Exception("summary is required");
-    }
-    if (!isset($_POST['issue-types-id'])) {
+
+    if (!isset($body['type'])) {
         throw new \Exception("Issue Type is required");
     }
-    if (!isset($_POST['description'])) {
+    if (!isset($body['description'])) {
         throw new \Exception("description is required");
     }
-    $summary = filter_var($_POST['summary'], FILTER_SANITIZE_STRING);
-    $issueType = filter_var($_POST['issue-types-id'], FILTER_SANITIZE_NUMBER_INT);
-    $description = filter_var($_POST['description'], FILTER_SANITIZE_STRING);
+    $summary = filter_var($body['summary'], FILTER_SANITIZE_STRING);
+    $issueType = filter_var($body['type'], FILTER_SANITIZE_NUMBER_INT);
+    $description = filter_var($body['description'], FILTER_SANITIZE_STRING);
 
     $data = $module->getSupport()->createJiraTicketViaPortal($redcapProjectId, $summary, $issueType, $description, $portalProjectId);
     echo json_encode(array_merge($data, array('status' => 'success')));

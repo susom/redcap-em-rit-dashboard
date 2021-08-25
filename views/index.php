@@ -77,10 +77,6 @@ try {
     <script>
         new Vue({
             el: "#app",
-            components: {
-                mdbBtn: mdbvue.mdbBtn,
-                mdbDatatable2: mdbvue.mdbDatatable2,
-            },
             data() {
                 return {
                     fields: ['id', 'title', 'type', 'status', 'created_at'],
@@ -89,12 +85,21 @@ try {
                     totalRows: 0,
                     perPage: 10,
                     items: [],
+                    alertMessage: '',
                     fields_em: ['prefix', 'is_enabled', 'maintenance_fees'],
                     filter_em: null,
                     currentPage_em: 1,
                     totalRows_em: 0,
                     perPage_em: 10,
                     items_em: [],
+                    showDismissibleAlert: false,
+                    ticket: {
+                        redcap_project_id: "<?php echo $module->getProjectId() ?>",
+                        summary: "",
+                        type: "",
+                        description: "",
+                        project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
+                    },
                     header: "<?php echo $module->getSystemSetting('rit-dashboard-main-header'); ?>",
                     ajaxCreateJiraTicketURL: "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>",
                     ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/get_user_tickets.php') ?>",
@@ -130,6 +135,19 @@ try {
                             this.items_em = response.data.data;
                             this.totalRows_em = this.items.length
                         });
+                },
+                submitTicket: function () {
+                    console.log(this.ticket)
+                    axios.post(this.ajaxCreateJiraTicketURL, this.ticket)
+                        .then(response => {
+                            this.getUserTickets()
+                            this.$refs['generic-modal'].hide()
+                        }).catch(err => {
+
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
+                    ;
                 }
             },
             mounted() {
