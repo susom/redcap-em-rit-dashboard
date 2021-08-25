@@ -13,9 +13,9 @@ try {
     foreach ($module->getEntity()->getProjectEmUsageRecords($module->getProjectId()) as $entity) {
         $data = $entity->getData();
         $row = array(
-            $data['module_prefix'],
-            $data['is_em_enabled'] == true ? 'Yes' : 'No',
-            $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? $data['maintenance_fees'] : 0,
+            'prefix' => $data['module_prefix'],
+            'is_enabled' => $data['is_em_enabled'] == true ? 'Yes' : 'No',
+            'maintenance_fees' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? $data['maintenance_fees'] : 0,
         );
         $pointer++;
         $result['data'][] = $row;
