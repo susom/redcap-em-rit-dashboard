@@ -28,15 +28,30 @@ use GuzzleHttp\Exception\GuzzleException;
             ?>
         </div>
         <div class="col-9">
-            <div id="portal-project"></div>
+            <b-form-select v-model="ticket.project_portal_id" class="mb-3">
+                <?php
+                foreach ($module->getUser()->getProjectPortalList() as $project) {
+                    if ($project['project_deleted_at']) {
+                        continue;
+                    }
+                    ?>
+                    <b-form-select-option ref="selectedProject" data-name="<?php echo $project['project_name'] ?>"
+                                          data-description="<?php echo $project['project_description'] ?>"
+                                          value="<?php echo $project['id'] ?>"><?php echo $project['project_name'] ?></b-form-select-option>
+
+                    <?php
+                }
+                ?>
+            </b-form-select>
         </div>
 
     </div>
     <div class="row">
         <div class="offset-3 mt-2">
-            <button class="btn btn-defaultrc btn-xs fs13" id="attach-redcap-project">Attach
-                Select Project
-            </button>
+            <b-button v-if="linked() == false" @click="attachRedCapProject()" variant="success">Attache Selected
+                Project
+            </b-button>
+            <b-button v-else @click="detachRedCapProject()" variant="danger">Detach Selected Project</b-button>
         </div>
     </div>
 </div>

@@ -49,6 +49,13 @@ try {
         //Main.init()
     </script>
     <div id="app">
+        <b-alert :variant="variant"
+                 dismissible
+                 fade
+                 :show="showDismissibleAlert"
+        >
+            {{alertMessage}}
+        </b-alert>
         <p v-html="header"></p>
         <div>
             <b-tabs content-class="mt-3">
@@ -79,6 +86,7 @@ try {
             el: "#app",
             data() {
                 return {
+                    variant: "danger",
                     fields: ['id', 'title', 'type', 'status', 'created_at'],
                     filter: null,
                     currentPage: 1,
@@ -100,14 +108,25 @@ try {
                         description: "",
                         project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
                     },
+                    project_portal_id: "",
                     header: "<?php echo $module->getSystemSetting('rit-dashboard-main-header'); ?>",
                     ajaxCreateJiraTicketURL: "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>",
                     ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/get_user_tickets.php') ?>",
                     ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/get_project_external_modules.php') ?>",
                     ajaxPortalProjectsListURL: "<?php echo $module->getUrl('ajax/portal_project_list.php') ?>",
+                    attachREDCapURL: "<?php echo $module->getURL('ajax/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    detachREDCapURL: "<?php echo $module->getURL('ajax/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalSectionURL: "<?php echo $module->getURL('ajax/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                 }
             },
             methods: {
+                linked: function () {
+                    console.log('asdasdasdas')
+                    if (this.ticket.project_portal_id !== '') {
+                        return true;
+                    }
+                    return false;
+                },
                 onFiltered(filteredItems) {
                     // Trigger pagination to update the number of buttons/pages due to filtering
                     this.totalRows = filteredItems.length
@@ -143,11 +162,43 @@ try {
                             this.getUserTickets()
                             this.$refs['generic-modal'].hide()
                         }).catch(err => {
-
+                        this.variant = 'danger'
                         this.showDismissibleAlert = true
                         this.alertMessage = err.response.data.message
                     });
                     ;
+                },
+                attachRedCapProject: function () {
+                    const project = this.$refs.selectedProject
+                    axios.post(this.attachREDCapURL, {
+                        project_portal_id: this.ticket.project_portal_id,
+                        project_portal_name: project.dataset.name,
+                        project_portal_description: project.dataset.description
+                    })
+                        .then(response => {
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.alertMessage = response.data.message
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
+                },
+                detachRedCapProject: function () {
+                    axios.post(this.detachREDCapURL, {
+                        project_portal_id: this.ticket.project_portal_id,
+                        redcap_project_id: this.ticket.redcap_project_id
+                    })
+                        .then(response => {
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.alertMessage = response.data.message
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
                 }
             },
             mounted() {

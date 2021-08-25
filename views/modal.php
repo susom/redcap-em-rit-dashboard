@@ -1,13 +1,7 @@
 <!-- Generic Modal -->
 <b-modal id="generic-modal" title="Create New Ticket">
-    <b-alert variant="danger"
-             dismissible
-             fade
-             :show="showDismissibleAlert"
-    >
-        {{alertMessage}}
-    </b-alert>
-    <?php
+
+<?php
     require_once("create_jira_ticket.php");
     ?>
     <template #modal-footer="{ ok, cancel, hide }">
