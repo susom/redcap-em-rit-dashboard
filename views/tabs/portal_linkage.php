@@ -17,7 +17,7 @@
     </div>
     <div class="row">
         <div class="offset-3 mt-2">
-            <b-button @click="attachRedCapProject()" variant="success">Attache Selected
+            <b-button v-if="linked() == false" @click="attachRedCapProject()" variant="success">Attache Selected
                 Project
             </b-button>
             <b-button v-else @click="detachRedCapProject()" variant="danger">Detach Selected Project</b-button>
