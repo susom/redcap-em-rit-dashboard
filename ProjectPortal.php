@@ -133,7 +133,7 @@ class ProjectPortal extends AbstractExternalModule
             ExternalModules::saveSettings($this->PREFIX, $this->getProject()->project_id, array('linked-project' => $settings));
             header("Content-type: application/json");
             http_response_code(200);
-            echo json_encode(array("Project information has been updated."));
+            echo json_encode(array('status' => 'error', 'message' => "Project information has been updated."));
         } catch (\Exception $e) {
 
         }

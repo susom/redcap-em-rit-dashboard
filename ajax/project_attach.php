@@ -5,9 +5,10 @@ namespace Stanford\ProjectPortal;
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 
 try {
-    $portalProjectId = filter_var($_POST['project_portal_id'], FILTER_SANITIZE_NUMBER_INT);
-    $portalProjectName = filter_var($_POST['project_portal_name'], FILTER_SANITIZE_STRING);
-    $portalProjectDescription = filter_var($_POST['project_portal_description'], FILTER_SANITIZE_STRING);
+    $body = json_decode(file_get_contents('php://input'), true);
+    $portalProjectId = filter_var($body['project_portal_id'], FILTER_SANITIZE_NUMBER_INT);
+    $portalProjectName = filter_var($body['project_portal_name'], FILTER_SANITIZE_STRING);
+    $portalProjectDescription = filter_var($body['project_portal_description'], FILTER_SANITIZE_STRING);
     $inputs = $module->getPortal()->attachToProjectPortal($portalProjectId, $portalProjectName, $portalProjectDescription);
     $module->savePortalProjectInfoInREDCap($inputs);
 } catch (\LogicException $e) {
