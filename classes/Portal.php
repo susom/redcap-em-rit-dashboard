@@ -57,6 +57,55 @@ class Portal
 
     }
 
+    public function getREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId)
+    {
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/sow/get-signed-auth/', [
+                'debug' => false,
+                'form_params' => [
+                    'redcap_project_id' => $redcapProjectId,
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+
+    public function generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, $username)
+    {
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/sow/generate-signed-auth/', [
+                'debug' => false,
+                'form_params' => [
+                    'redcap_project_id' => $redcapProjectId,
+                    'external_modules' => $external_modules,
+                    'username' => $username,
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not generate REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            throw new \LogicException($e->getMessage());
+        }
+    }
+
     /**
      * call django endpoint to attach redcap project to portal project. need more testnig
      * @param $projectId
@@ -65,7 +114,7 @@ class Portal
     public function detachPortalProject($portalProjectId, $redcapProjectId)
     {
         try {
-            $this->setProject(new \Project($this->getProjectId()));
+//            $this->setProject(new \Project($this->getProjectId()));
             //$this->getProjectPortalJWTToken();
 
             $client = $this->getClient()->getGuzzleClient();
@@ -76,10 +125,10 @@ class Portal
                     'Authorization' => "Bearer {$jwt}",
                 ]
             ]);
-            if ($response->getStatusCode() < 300) {
-                $data = json_decode($response->getBody());
-                $this->setProjectPortalList(json_decode(json_encode($data), true));
-            }
+//            if ($response->getStatusCode() < 300) {
+//                $data = json_decode($response->getBody());
+//                $this->setProjectPortalList(json_decode(json_encode($data), true));
+//            }
 
             $inputs = array(
                 'portal_project_id' => '',
@@ -115,10 +164,10 @@ class Portal
                     'Authorization' => "Bearer {$jwt}",
                 ]
             ]);
-            if ($response->getStatusCode() < 300) {
-                $data = json_decode($response->getBody());
-                $this->setProjectPortalList(json_decode(json_encode($data), true));
-            }
+//            if ($response->getStatusCode() < 300) {
+//                $data = json_decode($response->getBody());
+//                $this->setProjectPortalList(json_decode(json_encode($data), true));
+//            }
 
             $inputs = array(
                 'portal_project_id' => $portalProjectId,

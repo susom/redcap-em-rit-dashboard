@@ -102,6 +102,7 @@ try {
                     totalRows_em: 0,
                     perPage_em: 10,
                     items_em: [],
+                    totalFees: 0,
                     showDismissibleAlert: false,
                     ticket: {
                         redcap_project_id: "<?php echo $module->getProjectId() ?>",
@@ -117,6 +118,8 @@ try {
                     ajaxCreateJiraTicketURL: "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>",
                     ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/get_user_tickets.php') ?>",
                     ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/get_project_external_modules.php') ?>",
+                    ajaxGenerateSignedAuthURL: "<?php echo $module->getUrl('ajax/generate_signed_auth.php') ?>",
+                    ajaxGetSignedAuthURL: "<?php echo $module->getUrl('ajax/get_signed_auth.php') ?>",
                     ajaxPortalProjectsListURL: "<?php echo $module->getUrl('ajax/portal_project_list.php') ?>",
                     attachREDCapURL: "<?php echo $module->getURL('ajax/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     detachREDCapURL: "<?php echo $module->getURL('ajax/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
@@ -124,6 +127,8 @@ try {
                     portal_linkage_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
                     tickets_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
                     external_modules_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
+                    hasManagePermission: "<?php echo $module->getUser()->isUserHasManagePermission(); ?>",
+                    portalSignedAuth: [],
                 }
             },
             methods: {
@@ -146,6 +151,7 @@ try {
                 prepareComponent: function () {
                     this.getUserTickets()
                     this.getProjectEMs()
+                    this.getSignedAuth()
                 },
                 getUserTickets: function () {
                     axios.get(this.ajaxUserTicketURL)
@@ -158,7 +164,10 @@ try {
                     axios.post(this.ajaxProjectEMstURL)
                         .then(response => {
                             this.items_em = response.data.data;
-                            this.totalRows_em = this.items.length
+                            this.totalRows_em = this.items_em.length;
+                            for (var i = 0; i < this.items_em.length; i++) {
+                                this.totalFees += parseFloat(this.items_em[i].maintenance_fees)
+                            }
                         });
                 },
                 submitTicket: function () {
@@ -211,6 +220,29 @@ try {
                         this.showDismissibleAlert = true
                         this.alertMessage = err.response.data.message
                     });
+                },
+                generateSignedAuth: function () {
+                    axios.post(this.ajaxGenerateSignedAuthURL, {
+                        project_portal_id: this.ticket.project_portal_id,
+                        redcap_project_id: this.ticket.redcap_project_id,
+                        external_modules: this.items_em
+                    })
+                        .then(response => {
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.alertMessage = response.data.message
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
+                },
+                getSignedAuth: function () {
+                    axios.get(this.ajaxGetSignedAuthURL)
+                        .then(response => {
+                            console.log(response.data.project_id)
+                            this.portalSignedAuth = response.data;
+                        });
                 }
             },
             mounted() {

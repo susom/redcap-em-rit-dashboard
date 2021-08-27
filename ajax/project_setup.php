@@ -48,52 +48,26 @@ try {
                     </div>
                     <div class="chklisttext">
                         COPY TO BE ADDED HERE
+
                         <?php
-                        if ($module->getUser()->getProjectPortalList()) {
+                        if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
-                            <select id="project-portal-list" name="project-portal-list">
-                                <option value="">SELECT A PROJECT</option>
-                                <?php
+                            <div id="linked-project" data-project-id="<?php echo $project['id'] ?>"><?php
                                 foreach ($module->getUser()->getProjectPortalList() as $project) {
-                                    if ($project['project_deleted_at']) {
-                                        continue;
+                                    if ($module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
+                                        echo $project['id'] . '<br>';
+                                        echo $project['project_name'] . '<br>';
+                                        echo $project['project_description'] . '<br>';
+                                        echo '<a target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '</a><br>';
+//                                        echo '<button id="detach-project" data-redcap-id="' . $module->getProjectId() . '" data-portal-project-id="' . $project['id'] . '">Detach from Portal Project</button>';
                                     }
-                                    ?>
-                                    <option data-name="<?php echo $project['project_name'] ?>"
-                                            data-description="<?php echo $project['project_description'] ?>"
-                                            value="<?php echo $project['id'] ?>" <?php echo(isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) && $module->projectPortalSavedConfig['portal_project_id'] == $project['id'] ? 'selected' : '') ?>><?php echo $project['project_name'] ?></option>
-                                    <?php
+
                                 }
                                 ?>
-                                <option data-url="<?php echo $module->getClient()->getPortalBaseURL() ?>" value="">Creat
-                                    New Research
-                                    Portal Project
-                                </option>
-                            </select>
+                            </div>
                             <?php
                         }
                         ?>
-                        <button class="btn btn-defaultrc btn-xs fs13" id="attach-redcap-project">Attach Select Project
-                        </button>
-                            <?php
-                            if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-                                ?>
-                                <div id="linked-project" data-project-id="<?php echo $project['id'] ?>"><?php
-                                    foreach ($module->getUser()->getProjectPortalList() as $project) {
-                                        if ($module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
-                                            echo $project['id'] . '<br>';
-                                            echo $project['project_name'] . '<br>';
-                                            echo $project['project_description'] . '<br>';
-                                            echo '<a target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $module->getPortalBaseURL() . 'detail/' . $project['id'] . '</a><br>';
-                                            echo '<button id="detach-project" data-redcap-id="' . $module->getProjectId() . '" data-portal-project-id="' . $project['id'] . '">Detach from Portal Project</button>';
-                                        }
-
-                                    }
-                                    ?>
-                                </div>
-                                <?php
-                            }
-                            ?>
                     </div>
                 </td>
             </tr>

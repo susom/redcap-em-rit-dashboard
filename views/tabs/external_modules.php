@@ -42,4 +42,26 @@
     <!--    <template #cell(id)="data">-->
     <!--        <span v-html="data.value"></span>-->
     <!--    </template>-->
+
 </b-table>
+<b-row>
+    <b-col class="float-left" md="8">
+        Total Fees:
+    </b-col>
+    <b-col md="4">
+        ${{totalFees}}
+    </b-col>
+</b-row>
+<b-row v-if="linked() == true && hasManagePermission == true && portalSignedAuth.project_id == undefined">
+    <b-col md="12">
+        <b-button variant="success"
+
+                  @click="generateSignedAuth()">
+            Generate Signed Authorization for above EM
+        </b-button>
+    </b-col>
+</b-row>
+<b-row v-else-if="portalSignedAuth.project_id != undefined">
+    <b-col md="12"><p>Signed Auth already created for this project. Click
+            <a target="_blank" :href="portalSignedAuth.link">here</a> to access the SOW</p></b-col>
+</b-row>
