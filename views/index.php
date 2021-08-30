@@ -14,7 +14,7 @@ try {
     <!-- Add this to <head> -->
 
     <!-- Load required Bootstrap and BootstrapVue CSS -->
-    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>
+    <!--    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>-->
     <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css"/>
 
     <!-- Load polyfills to support older browsers -->
@@ -110,7 +110,9 @@ try {
                         type: "",
                         description: "",
                         project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
+                        project_portal_id_saved: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? "true" : "false" ?>"
                     },
+
                     portal_projects_list: <?php echo json_encode($module->getUser()->getProjectPortalList()) ?>,
                     ticket_types: <?php echo json_encode($module->getSupport()->getJiraIssueTypes()) ?>,
                     project_portal_id: "",
@@ -133,7 +135,7 @@ try {
             },
             methods: {
                 linked: function () {
-                    if (this.ticket.project_portal_id !== '') {
+                    if (this.ticket.project_portal_id !== '' && this.ticket.project_portal_id_saved === "true") {
                         return true;
                     }
                     return false;
@@ -151,7 +153,10 @@ try {
                 prepareComponent: function () {
                     this.getUserTickets()
                     this.getProjectEMs()
-                    this.getSignedAuth()
+                    // only try to get signed auth if project is linekd
+                    if (this.linked()) {
+                        this.getSignedAuth()
+                    }
                 },
                 getUserTickets: function () {
                     axios.get(this.ajaxUserTicketURL)
@@ -163,10 +168,12 @@ try {
                 getProjectEMs: function () {
                     axios.post(this.ajaxProjectEMstURL)
                         .then(response => {
-                            this.items_em = response.data.data;
-                            this.totalRows_em = this.items_em.length;
-                            for (var i = 0; i < this.items_em.length; i++) {
-                                this.totalFees += parseFloat(this.items_em[i].maintenance_fees)
+                            if (response.data.data != undefined) {
+                                this.items_em = response.data.data;
+                                this.totalRows_em = this.items_em.length;
+                                for (var i = 0; i < this.items_em.length; i++) {
+                                    this.totalFees += parseFloat(this.items_em[i].maintenance_fees)
+                                }
                             }
                         });
                 },
@@ -199,6 +206,7 @@ try {
                         .then(response => {
                             this.variant = 'success'
                             this.showDismissibleAlert = true
+                            this.ticket.project_portal_id_saved = "true"
                             this.alertMessage = response.data.message
                         }).catch(err => {
                         this.variant = 'danger'
@@ -240,7 +248,6 @@ try {
                 getSignedAuth: function () {
                     axios.get(this.ajaxGetSignedAuthURL)
                         .then(response => {
-                            console.log(response.data.project_id)
                             this.portalSignedAuth = response.data;
                         });
                 }
