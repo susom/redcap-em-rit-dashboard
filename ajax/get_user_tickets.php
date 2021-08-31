@@ -16,7 +16,8 @@ try {
             'title' => $jiraTicket['jira']['fields']['summary'],
             'type' => $jiraTicket['jira']['fields']['issuetype']['name'],
             'status' => $jiraTicket['jira']['fields']['status']['name'],
-            'created_at' => date('m/d/Y', strtotime($jiraTicket['created_at']))
+            'created_at' => date('m/d/Y', strtotime($jiraTicket['created_at'])),
+            'for_current_pid' => $jiraTicket['redcap_pid'] == $module->getProjectId() ? 'Yes' : 'No'
         );
         $pointer++;
         $result['data'][] = $row;

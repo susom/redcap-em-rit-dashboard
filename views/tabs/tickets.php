@@ -41,6 +41,28 @@
         ></b-pagination>
     </b-col>
 </b-row>
+<b-row>
+    <b-col lg="6" class="my-1">
+        <b-form-group
+                description="Display all users tickets including ticket for different REDCap projects. "
+                label-cols-sm="3"
+                label-align-sm="right"
+                label-size="sm"
+                class="mb-0"
+                v-slot="{ ariaDescribedby }"
+        >
+
+            <b-form-checkbox v-model="currentProjectTickets"
+                             name="all-tickets"
+                             id="all-tickets"
+                             value="Yes"
+                             unchecked-value="No" @change="filterTickets($event)">Display Tickets for current REDCap
+                projects
+            </b-form-checkbox>
+
+        </b-form-group>
+    </b-col>
+</b-row>
 <b-table striped hover :items="items" :fields="fields" :current-page="currentPage"
          :per-page="perPage"
          :filter="filter" @filtered="onFiltered">

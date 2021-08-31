@@ -89,12 +89,13 @@ try {
             data() {
                 return {
                     variant: "danger",
-                    fields: ['id', 'title', 'type', 'status', 'created_at'],
+                    fields: ['id', 'title', 'type', 'status', 'created_at', 'for_current_pid'],
                     filter: null,
                     currentPage: 1,
                     totalRows: 0,
                     perPage: 10,
                     items: [],
+                    allItems: [],
                     alertMessage: '',
                     fields_em: ['prefix', 'is_enabled', 'maintenance_fees'],
                     filter_em: null,
@@ -131,6 +132,7 @@ try {
                     external_modules_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
                     hasManagePermission: "<?php echo $module->getUser()->isUserHasManagePermission(); ?>",
                     portalSignedAuth: [],
+                    currentProjectTickets: 'Yes',
                 }
             },
             methods: {
@@ -139,6 +141,16 @@ try {
                         return true;
                     }
                     return false;
+                },
+                filterTickets() {
+                    if (this.currentProjectTickets === 'Yes') {
+                        this.items = this.allItems.filter(function (n) {
+                            return n.for_current_pid === 'Yes';
+                        });
+                    } else {
+                        this.items = this.allItems
+                    }
+
                 },
                 onFiltered(filteredItems) {
                     // Trigger pagination to update the number of buttons/pages due to filtering
@@ -161,8 +173,9 @@ try {
                 getUserTickets: function () {
                     axios.get(this.ajaxUserTicketURL)
                         .then(response => {
-                            this.items = response.data.data;
+                            this.items = this.allItems = response.data.data;
                             this.totalRows = this.items.length
+                            this.filterTickets()
                         });
                 },
                 getProjectEMs: function () {
@@ -199,7 +212,7 @@ try {
                     }
                     console.log(project)
                     axios.post(this.attachREDCapURL, {
-                        project_portal_id: project.project_portal_id,
+                        project_portal_id: project.id,
                         project_portal_name: project.project_name,
                         project_portal_description: project.project_description
                     })
