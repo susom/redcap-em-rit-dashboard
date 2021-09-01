@@ -258,6 +258,7 @@ try {
                             this.variant = 'success'
                             this.showDismissibleAlert = true
                             this.alertMessage = response.data.message
+                            this.portalSignedAuth = response.data;
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
