@@ -26,7 +26,7 @@ try {
     $external_modules = json_encode($body['external_modules']);
 
     $data = $module->getPortal()->generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, USERID);
-    echo json_encode(array_merge($data, array('status' => 'success', 'message' => 'A Signed authorization was generated for this REDCap project in the portal.')));
+    echo json_encode(array_merge($data, array('status' => 'success', 'message' => 'A Signed authorization was generated for this REDCap project in the portal.', 'link' => $module->getClient()->getPortalBaseURL() . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);
