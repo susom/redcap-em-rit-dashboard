@@ -66,8 +66,7 @@
 <b-table show-empty striped hover :items="items" :fields="fields" :current-page="currentPage"
          :per-page="perPage"
          :filter="filter" @filtered="onFiltered"
-         :empty-text="emptyTicketsTable"
-         :empty-filtered-text="emptyTicketsTable">
+         :empty-text="emptyTicketsTable">
     <template #cell(id)="data">
         <span v-html="data.value"></span>
     </template>
