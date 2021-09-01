@@ -133,6 +133,7 @@ try {
                     hasManagePermission: "<?php echo $module->getUser()->isUserHasManagePermission(); ?>",
                     portalSignedAuth: [],
                     currentProjectTickets: 'Yes',
+                    emptyTicketsTable: "No Tickets Found"
                 }
             },
             methods: {
@@ -171,10 +172,14 @@ try {
                     }
                 },
                 getUserTickets: function () {
+                    this.emptyTicketsTable = 'Loading'
                     axios.get(this.ajaxUserTicketURL)
                         .then(response => {
                             this.items = this.allItems = response.data.data;
                             this.totalRows = this.items.length
+                            if (this.items.length == undefined || this.items.length == 0) {
+                                this.emptyTicketsTable = 'No Tickets Found'
+                            }
                             this.filterTickets()
                         });
                 },
