@@ -133,7 +133,8 @@ try {
                     hasManagePermission: "<?php echo $module->getUser()->isUserHasManagePermission(); ?>",
                     portalSignedAuth: [],
                     currentProjectTickets: 'Yes',
-                    emptyTicketsTable: "No Tickets Found"
+                    emptyTicketsTable: "No Tickets Found",
+                    emptyFilteredTicketsTable: "No tickets attached to this REDCap Project. To See full list uncheck 'Display Tickets for current REDCap projects' checkbox"
                 }
             },
             methods: {
