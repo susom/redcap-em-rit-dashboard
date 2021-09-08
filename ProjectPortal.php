@@ -152,7 +152,7 @@ class ProjectPortal extends AbstractExternalModule
 //
 //        }
         // this to override the functionality for contact admin button on all pages.
-        $this->includeFile("views/contact_admin_button.php");
+        //$this->includeFile("views/contact_admin_button.php");
     }
 
     public function processRequest()
