@@ -51,33 +51,42 @@ try {
         //Main.init()
     </script>
     <div id="app">
-        <b-alert :variant="variant"
-                 dismissible
-                 fade
-                 :show="showDismissibleAlert"
-        >
-            {{alertMessage}}
-        </b-alert>
-        <p v-html="header"></p>
-        <div>
-            <b-tabs content-class="mt-3">
-                <b-tab title="Portal Linkage" active>
-                    <?php
-                    require("tabs/portal_linkage.php");
-                    ?>
-                </b-tab>
-                <b-tab title="Tickets">
-                    <?php
-                    require("tabs/tickets.php");
-                    ?>
-                </b-tab>
-                <b-tab title="External Modules">
-                    <?php
-                    require("tabs/external_modules.php");
-                    ?>
-                </b-tab>
-            </b-tabs>
-        </div>
+        <b-container>
+            <b-alert :variant="noneDismissibleVariant"
+                     fade
+                     :show="showNoneDismissibleAlert"
+            >
+                {{noneDismissibleAlertMessage}}
+            </b-alert>
+            <b-alert :variant="variant"
+                     dismissible
+                     fade
+                     :show="showDismissibleAlert"
+            >
+                {{alertMessage}}
+            </b-alert>
+            <p v-html="header"></p>
+            <div>
+                <b-tabs content-class="mt-3">
+                    <b-tab title="Research IT Portal Project" active>
+                        <?php
+                        require("tabs/portal_linkage.php");
+                        ?>
+                    </b-tab>
+                    <b-tab title="Support Tickets">
+                        <?php
+                        require("tabs/tickets.php");
+                        ?>
+                    </b-tab>
+                    <b-tab title="External Modules">
+                        <?php
+                        require("tabs/external_modules.php");
+                        ?>
+                    </b-tab>
+                </b-tabs>
+            </div>
+
+        </b-container>
         <?php
         require("modal.php");
         ?>
@@ -89,6 +98,8 @@ try {
             data() {
                 return {
                     variant: "danger",
+                    noneDismissibleVariant: "danger",
+                    emVariant: "danger",
                     fields: ['id', 'title', 'type', 'status', 'created_at', 'for_current_pid'],
                     filter: null,
                     currentPage: 1,
@@ -97,7 +108,9 @@ try {
                     items: [],
                     allItems: [],
                     alertMessage: '',
-                    fields_em: ['prefix', 'is_enabled', 'maintenance_fees'],
+                    EMAlertMessage: '',
+                    noneDismissibleAlertMessage: '',
+                    fields_em: ['prefix', 'maintenance_fees_text'],
                     filter_em: null,
                     currentPage_em: 1,
                     totalRows_em: 0,
@@ -105,15 +118,18 @@ try {
                     items_em: [],
                     totalFees: 0,
                     showDismissibleAlert: false,
+                    showNoneDismissibleAlert: false,
+                    showEMDismissibleAlert: false,
                     ticket: {
                         redcap_project_id: "<?php echo $module->getProjectId() ?>",
                         summary: "",
                         type: "",
                         description: "",
                         project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
+                        project_portal_name: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_name']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_name'] : '' ?>",
                         project_portal_id_saved: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? "true" : "false" ?>"
                     },
-
+                    project_status: "<?php echo $module->getProject()->project['status'] ?>",
                     portal_projects_list: <?php echo json_encode($module->getUser()->getProjectPortalList()) ?>,
                     ticket_types: <?php echo json_encode($module->getSupport()->getJiraIssueTypes()) ?>,
                     project_portal_id: "",
@@ -127,9 +143,9 @@ try {
                     attachREDCapURL: "<?php echo $module->getURL('ajax/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     detachREDCapURL: "<?php echo $module->getURL('ajax/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSectionURL: "<?php echo $module->getURL('ajax/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    portal_linkage_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
-                    tickets_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
-                    external_modules_header: "<?php echo $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header'); ?>",
+                    portal_linkage_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header')); ?>",
+                    tickets_header: '<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-ticket-tab-header')); ?>',
+                    external_modules_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-external-modules-tab-header')); ?>",
                     hasManagePermission: "<?php echo $module->getUser()->isUserHasManagePermission(); ?>",
                     portalSignedAuth: [],
                     currentProjectTickets: 'Yes',
@@ -138,6 +154,18 @@ try {
                 }
             },
             methods: {
+                setEMAlertMessage: function (variant, message, show) {
+                    // EM tab alert message
+                    this.EMAlertMessage = message
+                    this.showEMDismissibleAlert = show
+                    this.emVariant = variant
+                },
+                hasSignedAuthorization: function () {
+                    if (this.linked() == true && this.hasManagePermission == true && this.portalSignedAuth.project_id == undefined) {
+                        return false
+                    }
+                    return true;
+                },
                 linked: function () {
                     if (this.ticket.project_portal_id !== '' && this.ticket.project_portal_id_saved === "true") {
                         return true;
@@ -167,9 +195,19 @@ try {
                 prepareComponent: function () {
                     this.getUserTickets()
                     this.getProjectEMs()
-                    // only try to get signed auth if project is linekd
+                    // only try to get signed auth if project is linked
                     if (this.linked()) {
                         this.getSignedAuth()
+                    } else {
+                        // global alert message that is none dismissible
+                        if (this.project_status == "0") {
+                            this.showNoneDismissibleAlert = true
+                            this.noneDismissibleAlertMessage += "This REDCap project uses External Modules that require a monthly maintenance subscription.  Please link this REDCap project to the Research IT Portal and complete the REDCap External Module Maintenance Approval process to maintain use of the External Modules."
+                            this.noneDismissibleVariant = "danger"
+                        }
+
+                        // EM tab alert message
+                        this.setEMAlertMessage("danger", "You must first link this REDCap project to the Research IT Portal.  Please click on the Research IT Portal tab to continue.", true)
                     }
                 },
                 getUserTickets: function () {
@@ -269,6 +307,12 @@ try {
                     axios.get(this.ajaxGetSignedAuthURL)
                         .then(response => {
                             this.portalSignedAuth = response.data;
+                            if (this.hasSignedAuthorization() === false) {
+                                this.setEMAlertMessage("warning", "Please click below to generate the REDCap Maintenance Agreement which will need to be authorized on the Research IT Portal with a PTA number..", true)
+                            } else if (this.portalSignedAuth.sow_status == "0") {
+                                this.setEMAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
+
+                            }
                         });
                 }
             },
