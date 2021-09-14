@@ -1,5 +1,5 @@
 {
-  "name": "Project Portal API",
+  "name": "Research IT Dashboard",
   "namespace": "Stanford\\ProjectPortal",
   "description": "A module that links redcap projects to Stanford Research Project Portal",
   "framework-version": 6,
@@ -35,7 +35,7 @@
         "show-header-and-footer": true
       },
       {
-        "name": "RIT Project Dashboard",
+        "name": "My Research IT Dashboard",
         "icon": "fas fa-columns",
         "url": "views/index.php",
         "show-header-and-footer": true

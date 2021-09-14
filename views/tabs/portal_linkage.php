@@ -8,13 +8,13 @@
             below:
         </b-row>
         <b-row class="my-1">
-            <b-col lg="4" class="my-1">
+            <b-col lg="7" class="my-1">
                 <b-form-select v-model="ticket.project_portal_id" :options="portal_projects_list" class="mb-3"
                                value-field="id"
                                text-field="project_name">
                 </b-form-select>
             </b-col>
-            <b-col lg="3">
+            <b-col lg="5">
                 <b-button @click="attachRedCapProject()" variant="success">Attache Selected
                     Project
                 </b-button>
@@ -39,17 +39,17 @@
     </div>
     <div v-else>
         <b-row class="my-1">
-            <b-col lg="6">
+            <b-col lg="12">
                 Your REDCap project has been linked to the following Research IT Portal Project:
             </b-col>
         </b-row>
         <b-row class="my-1">
-            <b-col lg="4">
-                <h3>{{ticket.project_portal_name}}</h3>
+            <b-col lg="12">
+                <h5>{{ticket.project_portal_name}}</h5>
             </b-col>
         </b-row>
         <b-row class="my-1">
-            <b-col lg="4">
+            <b-col lg="12">
                 If this is incorrect, please open a support ticket with additional details.
             </b-col>
         </b-row>

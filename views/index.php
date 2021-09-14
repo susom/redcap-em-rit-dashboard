@@ -133,7 +133,7 @@ try {
                     portal_projects_list: <?php echo json_encode($module->getUser()->getProjectPortalList()) ?>,
                     ticket_types: <?php echo json_encode($module->getSupport()->getJiraIssueTypes()) ?>,
                     project_portal_id: "",
-                    header: "<?php echo $module->getSystemSetting('rit-dashboard-main-header'); ?>",
+                    header: "<?php echo str_replace(array("\n", "\r", "\""), array("\\n", "\\r", ""), $module->getSystemSetting('rit-dashboard-main-header'));; ?>",
                     ajaxCreateJiraTicketURL: "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>",
                     ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/get_user_tickets.php') ?>",
                     ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/get_project_external_modules.php') ?>",
@@ -211,7 +211,7 @@ try {
                     }
                 },
                 getUserTickets: function () {
-                    this.emptyTicketsTable = 'Loading'
+                    this.emptyTicketsTable = 'No Ticker for this REDCap project'
                     axios.get(this.ajaxUserTicketURL)
                         .then(response => {
                             this.items = this.allItems = response.data.data;
@@ -264,6 +264,8 @@ try {
                             this.variant = 'success'
                             this.showDismissibleAlert = true
                             this.ticket.project_portal_id_saved = "true"
+                            this.ticket.project_portal_name = project.project_name
+                            this.showNoneDismissibleAlert = false
                             this.alertMessage = response.data.message
                         }).catch(err => {
                         this.variant = 'danger'
