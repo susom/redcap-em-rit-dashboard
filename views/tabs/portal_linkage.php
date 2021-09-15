@@ -1,5 +1,14 @@
 <b-container>
     <b-row>
+        <b-alert :variant="emVariant"
+                 dismissible
+                 fade
+                 :show="showEMDismissibleAlert"
+        >
+            {{EMAlertMessage}}
+        </b-alert>
+    </b-row>
+    <b-row>
         <span v-html="portal_linkage_header"></span>
     </b-row>
     <div v-if="linked() == false">
@@ -40,17 +49,47 @@
     <div v-else>
         <b-row class="my-1">
             <b-col lg="12">
-                Your REDCap project has been linked to the following Research IT Portal Project:
+                This REDCap project is part of <strong>{{ticket.project_portal_name}}</strong>: You can view this
+                research project’s
+                details on the
+                <b-button :href="ticket.project_portal_url" target="_blank" variant="success">
+                    Research IT Portal {{ticket.project_portal_name}}
+                </b-button>
             </b-col>
         </b-row>
-        <b-row class="my-1">
-            <b-col lg="12">
-                <h5>{{ticket.project_portal_name}}</h5>
-            </b-col>
-        </b-row>
+        <!--        <b-row class="my-1">-->
+        <!--            <b-col lg="12">-->
+        <!--                <h5>{{ticket.project_portal_name}}</h5>-->
+        <!--            </b-col>-->
+        <!--        </b-row>-->
         <b-row class="my-1">
             <b-col lg="12">
                 If this is incorrect, please open a support ticket with additional details.
+            </b-col>
+        </b-row>
+        <b-row v-if="hasSignedAuthorization() == false" class="mt-2">
+            <b-col md="6">
+                <b-button variant="success"
+
+                          @click="generateSignedAuth()">
+                    Generate Signed Authorization for above EM
+                </b-button>
+            </b-col>
+        </b-row>
+        <b-row v-if="portalSignedAuth.redcap != undefined" class="mt-2">
+            <b-col md="6">
+                <b-button variant="success"
+
+                          @click="appendSignedAuth()">
+                    Authorize this REDCap Project to user Approved Maintenance Agreement
+                </b-button>
+            </b-col>
+        </b-row>
+        <b-row v-else-if="portalSignedAuth.project_id != undefined && portalSignedAuth.redcap == undefined"
+               class="mt-2">
+            <b-col md="12">
+                This REDCap project has an active REDCap External Module Maintenance Agreement. Please see the External
+                Modules tab for details.
             </b-col>
         </b-row>
     </div>

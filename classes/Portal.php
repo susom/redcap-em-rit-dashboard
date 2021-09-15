@@ -106,6 +106,31 @@ class Portal
         }
     }
 
+    public function appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSOWID, $username)
+    {
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/sow/append-signed-auth/', [
+                'debug' => false,
+                'form_params' => [
+                    'redcap_project_id' => $redcapProjectId,
+                    'portal_sow_id' => $portalSOWID,
+                    'username' => $username,
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not generate REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            throw new \LogicException($e->getMessage());
+        }
+    }
+
     /**
      * call django endpoint to attach redcap project to portal project. need more testnig
      * @param $projectId

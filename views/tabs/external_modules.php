@@ -1,11 +1,5 @@
 <b-container>
-    <b-alert :variant="emVariant"
-             dismissible
-             fade
-             :show="showEMDismissibleAlert"
-    >
-        {{EMAlertMessage}}
-    </b-alert>
+
     <div class="row">
         <span v-html="external_modules_header"></span>
     </div>
@@ -47,15 +41,8 @@
             ${{totalFees}}
         </b-col>
     </b-row>
-    <b-row v-if="hasSignedAuthorization() == false" class="mt-2">
-        <b-col md="6">
-            <b-button variant="success"
-
-                      @click="generateSignedAuth()">
-                Generate Signed Authorization for above EM
-            </b-button>
-        </b-col>
-        <b-col sm="6" md="6" class="my-1">
+    <b-row class="mt-2">
+        <b-col offset="6" sm="6" md="6" class="my-1">
             <b-pagination
                     v-model="currentPage_em"
                     :total-rows="totalRows_em"
@@ -66,20 +53,12 @@
             ></b-pagination>
         </b-col>
     </b-row>
-    <b-row v-else-if="portalSignedAuth.project_id != undefined" class="mt-2">
-        <b-col md="6"><p>Signed Auth already created for this project. Click
+
+    <b-row v-if="portalSignedAuth.project_id != undefined" class="mt-2">
+        <b-col md="12"><p>Signed Auth already created for this project. Click
                 <a target="_blank" :href="portalSignedAuth.link">here</a> to access the SOW</p>
         </b-col>
-        <b-col sm="6" md="6" class="my-1">
-            <b-pagination
-                    v-model="currentPage_em"
-                    :total-rows="totalRows_em"
-                    :per-page="perPage_em"
-                    align="fill"
-                    size="sm"
-                    class="my-0"
-            ></b-pagination>
-        </b-col>
+
     </b-row>
 
 </b-container>

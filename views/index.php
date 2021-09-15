@@ -68,7 +68,7 @@ try {
             <p v-html="header"></p>
             <div>
                 <b-tabs content-class="mt-3">
-                    <b-tab title="Research IT Portal Project" active>
+                    <b-tab title="Research IT Portal" active>
                         <?php
                         require("tabs/portal_linkage.php");
                         ?>
@@ -127,7 +127,8 @@ try {
                         description: "",
                         project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
                         project_portal_name: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_name']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_name'] : '' ?>",
-                        project_portal_id_saved: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? "true" : "false" ?>"
+                        project_portal_id_saved: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? "true" : "false" ?>",
+                        project_portal_url: "<?php echo $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] ?>"
                     },
                     project_status: "<?php echo $module->getProject()->project['status'] ?>",
                     portal_projects_list: <?php echo json_encode($module->getUser()->getProjectPortalList()) ?>,
@@ -138,6 +139,7 @@ try {
                     ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/get_user_tickets.php') ?>",
                     ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/get_project_external_modules.php') ?>",
                     ajaxGenerateSignedAuthURL: "<?php echo $module->getUrl('ajax/generate_signed_auth.php') ?>",
+                    ajaxAppendSignedAuthURL: "<?php echo $module->getUrl('ajax/append_approved_signed_auth.php') ?>",
                     ajaxGetSignedAuthURL: "<?php echo $module->getUrl('ajax/get_signed_auth.php') ?>",
                     ajaxPortalProjectsListURL: "<?php echo $module->getUrl('ajax/portal_project_list.php') ?>",
                     attachREDCapURL: "<?php echo $module->getURL('ajax/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
@@ -305,17 +307,47 @@ try {
                         this.alertMessage = err.response.data.message
                     });
                 },
+                appendSignedAuth: function () {
+                    axios.post(this.ajaxAppendSignedAuthURL, {
+                        project_portal_id: this.ticket.project_portal_id,
+                        redcap_project_id: this.ticket.redcap_project_id,
+                        portal_sow_id: this.portalSignedAuth.id
+                    })
+                        .then(response => {
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.alertMessage = response.data.message
+                            this.portalSignedAuth = response.data;
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
+                },
                 getSignedAuth: function () {
                     axios.get(this.ajaxGetSignedAuthURL)
                         .then(response => {
                             this.portalSignedAuth = response.data;
-                            if (this.hasSignedAuthorization() === false) {
-                                this.setEMAlertMessage("warning", "Please click below to generate the REDCap Maintenance Agreement which will need to be authorized on the Research IT Portal with a PTA number..", true)
+                            if (this.hasSignedAuthorization() === false && this.portalSignedAuth.redcap != undefined) {
+                                this.setEMAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
+                            } else if (this.portalSignedAuth.redcap != undefined) {
+                                var projects = this.getREDCapProjectsNames()
+                                this.setEMAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
+
                             } else if (this.portalSignedAuth.sow_status == "0") {
                                 this.setEMAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
 
                             }
                         });
+                },
+                getREDCapProjectsNames: function () {
+                    var projects = ''
+
+                    for (var i = 0; i < this.portalSignedAuth.redcap.length; i++) {
+                        projects += this.portalSignedAuth.redcap[i]['redcap_project_name'] + ','
+
+                    }
+                    return projects.substring(0, projects.length - 1);
                 }
             },
             mounted() {
