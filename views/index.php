@@ -51,7 +51,7 @@ try {
         //Main.init()
     </script>
     <div id="app">
-        <b-overlay :show="isLoading" rounded="sm">
+        <b-overlay :show="isLoading" variant="secondary" opacity="0.80" rounded="sm">
             <b-container>
 
                 <b-alert :variant="noneDismissibleVariant"
@@ -68,7 +68,7 @@ try {
                     {{alertMessage}}
                 </b-alert>
                 <p v-html="header"></p>
-                <div>
+                <div class="mt-3">
                     <b-tabs content-class="mt-3">
                         <b-tab title="Research IT Portal" active>
                             <?php
