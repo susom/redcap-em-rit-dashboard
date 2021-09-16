@@ -49,7 +49,7 @@ try {
                         <?php
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
-                            <div id="linked-project" data-project-id="<?php echo $project['id'] ?>"><?php
+                            <div id="linked-project" data-project-id="<?php echo $module->getProjectId() ?>"><?php
                                 foreach ($module->getUser()->getProjectPortalList() as $project) {
                                     if ($module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
                                         echo 'This project is part of <a class="btn btn-primary" target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $project['project_name'] . '</a><br>';
