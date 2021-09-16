@@ -15,7 +15,6 @@ try {
                     <!-- Icon -->
                     <div>
                         <?php
-
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
                             <img id="img-" src="<?php echo APP_PATH_WEBROOT ?>Resources/images/checkbox_checked.png">
@@ -47,23 +46,28 @@ try {
                         <span>Link Your REDCap Project to RIT Research Project Portal</span>
                     </div>
                     <div class="chklisttext">
-                        COPY TO BE ADDED HERE
-
                         <?php
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
                             <div id="linked-project" data-project-id="<?php echo $project['id'] ?>"><?php
                                 foreach ($module->getUser()->getProjectPortalList() as $project) {
                                     if ($module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
-                                        echo $project['id'] . '<br>';
-                                        echo $project['project_name'] . '<br>';
-                                        echo $project['project_description'] . '<br>';
-                                        echo '<a target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '</a><br>';
+                                        echo 'This project is part of <a class="btn btn-primary" target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $project['project_name'] . '</a><br>';
 //                                        echo '<button id="detach-project" data-redcap-id="' . $module->getProjectId() . '" data-portal-project-id="' . $project['id'] . '">Detach from Portal Project</button>';
+                                        break;
                                     }
 
                                 }
                                 ?>
+                            </div>
+                            <?php
+                        } else {
+                            ?>
+                            <div>
+                                This project is NOT linked to the Research IT Portal. <a id="what-is-this" href="#">What
+                                    is this?</a> <br>Link now with the <a class="btn btn-success"
+                                                                          href="<?php echo $module->getUrl("views/index.php") ?>">My
+                                    Research IT Dashboard</a>
                             </div>
                             <?php
                         }
@@ -79,6 +83,11 @@ try {
     echo "<div class='alert-danger'>" . $e->getMessage() . "</div>";
 }
 ?>
+<div id="what-is-this-dialog" style="top: 10% !important; display: none"
+     title="What is Research IT Project Portal">The Research IT Portal is a web platform that is responsible for
+    tracking, communicating, and supporting research projects affiliated with Stanford TDS.<a
+            href="https://rit-portal.med.stanford.edu" target="_blank">https://rit-portal.med.stanford.edu</a> and
+    create your research project.</d></div>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>
@@ -91,6 +100,24 @@ try {
                 window.open(url, '_blank');
             }
         });
+
+        $(document).on('click', '#what-is-this', function (e) {
+            $('#what-is-this-dialog').dialog({
+                bgiframe: true, modal: true, width: 400, position: ['center', 20],
+                open: function () {
+                    fitDialog(this);
+                },
+                buttons: {
+                    Cancel: function () {
+                        $(this).dialog('close');
+                    },
+                    // Link: function () {
+                    //     $("#project-portal-list").select2('open')
+                    //     $(this).dialog('close');
+                    // }
+                }
+            });
+        })
     });
 </script>
 <style>
