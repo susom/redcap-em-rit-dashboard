@@ -51,55 +51,60 @@ try {
         //Main.init()
     </script>
     <div id="app">
-        <b-container>
-            <b-alert :variant="noneDismissibleVariant"
-                     fade
-                     :show="showNoneDismissibleAlert"
-            >
-                {{noneDismissibleAlertMessage}}
-            </b-alert>
-            <b-alert :variant="variant"
-                     dismissible
-                     fade
-                     :show="showDismissibleAlert"
-            >
-                {{alertMessage}}
-            </b-alert>
-            <p v-html="header"></p>
-            <div>
-                <b-tabs content-class="mt-3">
-                    <b-tab title="Research IT Portal" active>
-                        <?php
-                        require("tabs/portal_linkage.php");
-                        ?>
-                    </b-tab>
-                    <b-tab title="Support Tickets">
-                        <?php
-                        require("tabs/tickets.php");
-                        ?>
-                    </b-tab>
-                    <b-tab title="External Modules">
-                        <?php
-                        require("tabs/external_modules.php");
-                        ?>
-                    </b-tab>
-                </b-tabs>
-            </div>
+        <b-overlay :show="isLoading" rounded="sm">
+            <b-container>
 
-        </b-container>
+                <b-alert :variant="noneDismissibleVariant"
+                         fade
+                         :show="showNoneDismissibleAlert"
+                >
+                    {{noneDismissibleAlertMessage}}
+                </b-alert>
+                <b-alert :variant="variant"
+                         dismissible
+                         fade
+                         :show="showDismissibleAlert"
+                >
+                    {{alertMessage}}
+                </b-alert>
+                <p v-html="header"></p>
+                <div>
+                    <b-tabs content-class="mt-3">
+                        <b-tab title="Research IT Portal" active>
+                            <?php
+                            require("tabs/portal_linkage.php");
+                            ?>
+                        </b-tab>
+                        <b-tab title="Support Tickets">
+                            <?php
+                            require("tabs/tickets.php");
+                            ?>
+                        </b-tab>
+                        <b-tab title="External Modules">
+                            <?php
+                            require("tabs/external_modules.php");
+                            ?>
+                        </b-tab>
+                    </b-tabs>
+                </div>
+
+            </b-container>
+        </b-overlay>
         <?php
         require("modal.php");
         ?>
     </div>
 
     <script>
+        var ajaxCalls = []
         new Vue({
             el: "#app",
             data() {
                 return {
                     variant: "danger",
                     noneDismissibleVariant: "danger",
-                    emVariant: "danger",
+                    portalLinkageVariant: "danger",
+                    EMVariant: "danger",
                     fields: ['id', 'title', 'type', 'status', 'created_at', 'for_current_pid'],
                     filter: null,
                     currentPage: 1,
@@ -108,9 +113,10 @@ try {
                     items: [],
                     allItems: [],
                     alertMessage: '',
+                    portalLinkageAlertMessage: '',
                     EMAlertMessage: '',
                     noneDismissibleAlertMessage: '',
-                    fields_em: ['prefix', 'maintenance_fees_text'],
+                    fields_em: ['prefix', 'maintenance_monthly_cost'],
                     filter_em: null,
                     currentPage_em: 1,
                     totalRows_em: 0,
@@ -119,6 +125,7 @@ try {
                     totalFees: 0,
                     showDismissibleAlert: false,
                     showNoneDismissibleAlert: false,
+                    showPortalLinkageDismissibleAlert: false,
                     showEMDismissibleAlert: false,
                     ticket: {
                         redcap_project_id: "<?php echo $module->getProjectId() ?>",
@@ -150,17 +157,47 @@ try {
                     external_modules_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-external-modules-tab-header')); ?>",
                     hasManagePermission: "<?php echo $module->getUser()->isUserHasManagePermission(); ?>",
                     portalSignedAuth: [],
+                    refCount: 0,
+                    isLoading: true,
                     currentProjectTickets: 'Yes',
                     emptyTicketsTable: "No Tickets Found",
                     emptyFilteredTicketsTable: "No tickets attached to this REDCap Project. To See full list uncheck 'Display Tickets for current REDCap projects' checkbox"
                 }
             },
+            created() {
+                axios.interceptors.request.use((config) => {
+                    // trigger 'loading=true' event here
+                    ajaxCalls.push(config)
+                    return config;
+                }, (error) => {
+                    // trigger 'loading=false' event here
+                    return Promise.reject(error);
+                });
+
+                axios.interceptors.response.use((response) => {
+                    // trigger 'loading=false' event here
+                    temp = ajaxCalls.pop()
+                    if (ajaxCalls.length === 0) {
+                        this.isLoading = false
+                    }
+                    return response;
+                }, (error) => {
+                    // trigger 'loading=false' event here
+                    return Promise.reject(error);
+                });
+            },
             methods: {
+                setPortalLinkageAlertMessage: function (variant, message, show) {
+                    // Portal Linkage tab alert message
+                    this.portalLinkageAlertMessage = message
+                    this.showPortalLinkageDismissibleAlert = show
+                    this.portalLinkageVariant = variant
+                },
                 setEMAlertMessage: function (variant, message, show) {
                     // EM tab alert message
                     this.EMAlertMessage = message
                     this.showEMDismissibleAlert = show
-                    this.emVariant = variant
+                    this.EMVariant = variant
                 },
                 hasSignedAuthorization: function () {
                     if (this.linked() == true && this.hasManagePermission == true && this.portalSignedAuth.project_id == undefined) {
@@ -209,7 +246,7 @@ try {
                         }
 
                         // EM tab alert message
-                        this.setEMAlertMessage("danger", "You must first link this REDCap project to the Research IT Portal.  Please click on the Research IT Portal tab to continue.", true)
+                        this.setPortalLinkageAlertMessage("danger", "You must first link this REDCap project to the Research IT Portal.  Please click on the Research IT Portal tab to continue.", true)
                     }
                 },
                 getUserTickets: function () {
@@ -234,7 +271,28 @@ try {
                                     this.totalFees += parseFloat(this.items_em[i].maintenance_fees)
                                 }
                             }
-                        });
+                        }).then(() => {
+                        if (this.hasSignedAuthorization() === false) {
+                            // project in dev mode but has EM with monthly fees
+                            if (this.totalFees > 0 && this.project_status == "0") {
+                                if (this.linked() === false) {
+                                    this.setEMAlertMessage("warning", "Prior to moving this project to production mode, you will first need to associate it with a Resaerch IT Portal project and ensure you have an active REDCap External Module Maintenance agreement in place.  See the Portal tab for next steps.", true)
+                                } else {
+                                    this.setEMAlertMessage("warning", "Prior to moving this project to production mode, you will first need ensure you have an active REDCap External Module Maintenance agreement in place.  See the Portal tab for next steps.", true)
+                                }
+
+
+                                // project in prod mode but has EM with monthly fees
+                            }
+                            if (this.totalFees > 0 && this.project_status == "1") {
+                                this.setEMAlertMessage("danger", "This project uses External Modules that require a REDCap External Module Maintenance agreement.  Please complete the required steps on the Portal Tab or the external modules may be deactivated.", true)
+                                // project in analysis mode but has EM with monthly fees
+                            }
+                            if (this.totalFees > 0 && this.project_status == "2") {
+                                this.setEMAlertMessage("info", "The external module maintenance costs only apply while a project is in Production mode.  The current fees are on-hold will not be charged while the project is in analysis/archival mode.", true)
+                            }
+                        }
+                    });
                 },
                 submitTicket: function () {
                     console.log(this.ticket)
@@ -299,6 +357,8 @@ try {
                         .then(response => {
                             this.variant = 'success'
                             this.showDismissibleAlert = true
+                            this.showPortalLinkageDismissibleAlert = false
+                            this.showEMDismissibleAlert = false
                             this.alertMessage = response.data.message
                             this.portalSignedAuth = response.data;
                         }).catch(err => {
@@ -311,11 +371,14 @@ try {
                     axios.post(this.ajaxAppendSignedAuthURL, {
                         project_portal_id: this.ticket.project_portal_id,
                         redcap_project_id: this.ticket.redcap_project_id,
-                        portal_sow_id: this.portalSignedAuth.id
+                        portal_sow_id: this.portalSignedAuth.id,
+                        external_modules: this.items_em
                     })
                         .then(response => {
                             this.variant = 'success'
                             this.showDismissibleAlert = true
+                            this.showPortalLinkageDismissibleAlert = false
+                            this.showEMDismissibleAlert = false
                             this.alertMessage = response.data.message
                             this.portalSignedAuth = response.data;
                         }).catch(err => {
@@ -328,14 +391,14 @@ try {
                     axios.get(this.ajaxGetSignedAuthURL)
                         .then(response => {
                             this.portalSignedAuth = response.data;
-                            if (this.hasSignedAuthorization() === false && this.portalSignedAuth.redcap != undefined) {
-                                this.setEMAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
+                            if (this.hasSignedAuthorization() === false) {
+                                this.setPortalLinkageAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
+
                             } else if (this.portalSignedAuth.redcap != undefined) {
-                                var projects = this.getREDCapProjectsNames()
-                                this.setEMAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
+                                this.setPortalLinkageAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
 
                             } else if (this.portalSignedAuth.sow_status == "0") {
-                                this.setEMAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
+                                this.setPortalLinkageAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
 
                             }
                         });

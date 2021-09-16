@@ -106,7 +106,7 @@ class Portal
         }
     }
 
-    public function appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSOWID, $username)
+    public function appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSOWID, $external_modules, $username)
     {
         try {
             $jwt = $this->getClient()->getJwtToken();
@@ -116,6 +116,7 @@ class Portal
                     'redcap_project_id' => $redcapProjectId,
                     'portal_sow_id' => $portalSOWID,
                     'username' => $username,
+                    'external_modules' => $external_modules,
                 ],
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",

@@ -16,7 +16,7 @@ try {
             'prefix' => $data['module_prefix'],
 //            'is_enabled' => $data['is_em_enabled'] == true ? 'Yes' : 'No',
             'maintenance_fees' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? $data['maintenance_fees'] : 0,
-            'maintenance_fees_text' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? '$' . $data['maintenance_fees'] : 'No Monthly Charge',
+            'maintenance_monthly_cost' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? '$' . $data['maintenance_fees'] : 'No Monthly Charge',
         );
         $pointer++;
         $result['data'][] = $row;

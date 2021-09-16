@@ -1,5 +1,13 @@
 <b-container>
-
+    <b-row>
+        <b-alert :variant="EMVariant"
+                 dismissible
+                 fade
+                 :show="showEMDismissibleAlert"
+        >
+            {{EMAlertMessage}}
+        </b-alert>
+    </b-row>
     <div class="row">
         <span v-html="external_modules_header"></span>
     </div>
@@ -35,7 +43,7 @@
     </b-table>
     <b-row>
         <b-col class="float-left" md="8">
-            Total Fees:
+            Monthly Total:
         </b-col>
         <b-col md="4">
             ${{totalFees}}

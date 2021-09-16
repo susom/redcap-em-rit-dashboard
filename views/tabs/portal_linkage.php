@@ -1,11 +1,11 @@
 <b-container>
     <b-row>
-        <b-alert :variant="emVariant"
+        <b-alert :variant="portalLinkageVariant"
                  dismissible
                  fade
-                 :show="showEMDismissibleAlert"
+                 :show="showPortalLinkageDismissibleAlert"
         >
-            {{EMAlertMessage}}
+            {{portalLinkageAlertMessage}}
         </b-alert>
     </b-row>
     <b-row>
