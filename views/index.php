@@ -168,6 +168,10 @@ try {
                 axios.interceptors.request.use((config) => {
                     // trigger 'loading=true' event here
                     ajaxCalls.push(config)
+                    if (this.isLoading != undefined) {
+                        this.isLoading = true
+                    }
+
                     return config;
                 }, (error) => {
                     // trigger 'loading=false' event here
