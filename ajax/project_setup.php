@@ -6,53 +6,41 @@ namespace Stanford\ProjectPortal;
 
 try {
     ?>
-    <div id="portal-linkage-container" class="round chklist col-12">
+    <div id="portal-linkage-container">
         <div id="portal-errors" class="alert alert-danger hidden"></div>
-        <table cellspacing="0" width="100%">
-            <tbody>
-            <tr>
-                <td valign="top" style="width:70px;text-align:center;">
-                    <!-- Icon -->
-                    <div>
+        <div class="rounded alert alert-<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? 'success' : 'danger' ?>">
+
+            <div class="row">
+                <div class="col-2">
+                    <div class="row">
                         <?php
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
-                            <img id="img-" src="<?php echo APP_PATH_WEBROOT ?>Resources/images/checkbox_checked.png">
+                            <i style="font-size: 75px; margin-left: 20%;" class="fas fa-check"></i>
                             <?php
                         } else {
                             ?>
-                            <img id="img-" src="<?php echo APP_PATH_WEBROOT ?>Resources/images/checkbox_cross.png">
+                            <i style="font-size: 85px; margin-left: 20%;" class="fas fa-times"></i>
                             <?php
                         }
                         ?>
                     </div>
-                    <?php
 
-                    if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-                        ?>
-                        <div id="lbl-" style="color:green;"> Linked</div>
-                        <?php
-                    } else {
-                        ?>
-                        <div id="lbl-" style="color:#F47F6C;">Not Linked</div>
-                        <?php
-                    }
-                    ?>
-
-                    <!-- "I'm done!" button OR "Not complete?" link -->
-                </td>
-                <td valign="top" style="padding-left:30px;">
-                    <div class="chklisthdr">
-                        <span>Link Your REDCap Project to RIT Research Project Portal</span>
+                </div>
+                <div class="col-10">
+                    <div class="row">
+                        <div class="chklisthdr">
+                            <span><i class="fas fa-wrench"></i> Link Your REDCap Project to RIT Research Project Portal</span>
+                        </div>
                     </div>
-                    <div class="chklisttext">
+                    <div class="row">
                         <?php
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
                             <div id="linked-project" data-project-id="<?php echo $module->getProjectId() ?>"><?php
                                 foreach ($module->getUser()->getProjectPortalList() as $project) {
                                     if ($module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
-                                        echo 'This project is part of <a class="btn btn-primary" target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $project['project_name'] . '</a><br>';
+                                        echo 'This project is part of <a class="btn btn-success" target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $project['project_name'] . '</a><br>';
 //                                        echo '<button id="detach-project" data-redcap-id="' . $module->getProjectId() . '" data-portal-project-id="' . $project['id'] . '">Detach from Portal Project</button>';
                                         break;
                                     }
@@ -73,10 +61,10 @@ try {
                         }
                         ?>
                     </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                </div>
+
+            </div>
+        </div>
     </div>
     <?php
 } catch (\LogicException $e) {

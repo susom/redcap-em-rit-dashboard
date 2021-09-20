@@ -175,6 +175,7 @@ try {
                     return config;
                 }, (error) => {
                     // trigger 'loading=false' event here
+                    this.isLoading = false
                     return Promise.reject(error);
                 });
 
@@ -187,6 +188,7 @@ try {
                     return response;
                 }, (error) => {
                     // trigger 'loading=false' event here
+                    this.isLoading = false
                     return Promise.reject(error);
                 });
             },
