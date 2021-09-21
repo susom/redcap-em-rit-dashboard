@@ -6,6 +6,11 @@ namespace Stanford\ProjectPortal;
 
 try {
     ?>
+    <style>
+        a:hover {
+            text-decoration: none !important;
+        }
+    </style>
     <div id="portal-linkage-container">
         <div id="portal-errors" class="alert alert-danger hidden"></div>
         <div class="rounded alert alert-<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? 'success' : 'danger' ?>">
@@ -16,11 +21,11 @@ try {
                         <?php
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
-                            <i style="font-size: 75px; margin-left: 20%;" class="fas fa-check"></i>
+                            <i style="font-size: 50px; margin-left: 20%;" class="fas fa-check"></i>
                             <?php
                         } else {
                             ?>
-                            <i style="font-size: 85px; margin-left: 20%;" class="fas fa-times"></i>
+                            <i style="font-size: 55px; margin-left: 20%;" class="fas fa-times"></i>
                             <?php
                         }
                         ?>
@@ -40,7 +45,7 @@ try {
                             <div id="linked-project" data-project-id="<?php echo $module->getProjectId() ?>"><?php
                                 foreach ($module->getUser()->getProjectPortalList() as $project) {
                                     if ($module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
-                                        echo 'This project is part of <a class="btn btn-success" target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '">' . $project['project_name'] . '</a><br>';
+                                        echo 'This project is part of <a class="portal-setup" target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '"> <span class="btn-xs btn-success">' . $project['project_name'] . '</span></a><br>';
 //                                        echo '<button id="detach-project" data-redcap-id="' . $module->getProjectId() . '" data-portal-project-id="' . $project['id'] . '">Detach from Portal Project</button>';
                                         break;
                                     }
@@ -53,9 +58,10 @@ try {
                             ?>
                             <div>
                                 This project is NOT linked to the Research IT Portal. <a id="what-is-this" href="#">What
-                                    is this?</a> <br>Link now with the <a class="btn btn-success"
-                                                                          href="<?php echo $module->getUrl("views/index.php") ?>">My
-                                    Research IT Dashboard</a>
+                                    is this?</a> <br>Link now with the <a class="portal-setup"
+                                                                          href="<?php echo $module->getUrl("views/index.php") ?>"><span
+                                            class="btn btn-success">My
+                                    Research IT Dashboard</span></a>
                             </div>
                             <?php
                         }

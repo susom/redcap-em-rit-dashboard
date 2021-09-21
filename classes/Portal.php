@@ -29,30 +29,44 @@ class Portal
      * User constructor.
      * @param \Stanford\ProjectPortal\Client $client
      */
-    public function __construct(Client $client, $projectId = null, $projectTitle = null, $projects = null)
+    public function __construct(Client $client, $projectId = null, $projectTitle = null)
     {
         $this->setClient($client);
 
         $this->setProjectId($projectId);
 
         $this->setProjectTitle($projectTitle);
-
-        $this->setProjectPortalSavedConfig($projects);
+        if (!is_null($this->getProjectId())) {
+            $this->setProjectPortalSavedConfig($this->getProjectId());
+        }
     }
 
 
-    public function setProjectPortalSavedConfig($projects)
+    public function setProjectPortalSavedConfig($redcapProjectId)
     {
-        #$projects = $this->getSystemSetting('linked-portal-projects');
-        if (!empty($projects)) {
-            $projects = json_decode($projects, true);
-            if (isset($projects[$this->getProjectId()])) {
-                $project = $projects[$this->getProjectId()];
-                $this->projectPortalSavedConfig['portal_project_id'] = $project['portal_project_id'];
-                $this->projectPortalSavedConfig['portal_project_name'] = $project['portal_project_name'];
-                $this->projectPortalSavedConfig['portal_project_description'] = $project['portal_project_description'];
-                $this->projectPortalSavedConfig['portal_project_url'] = $project['portal_project_url'];
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/redcap/search/' . $redcapProjectId . '/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                $projects = json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
             }
+            if (!empty($projects)) {
+                //$projects = json_decode($projects, true);
+                $this->projectPortalSavedConfig['portal_project_id'] = $projects['project_id'];
+                $this->projectPortalSavedConfig['portal_project_name'] = $projects['portal_project_name'];
+                $this->projectPortalSavedConfig['portal_project_description'] = $projects['portal_project_description'];
+                $this->projectPortalSavedConfig['portal_project_url'] = $this->getClient()->getPortalBaseURL() . 'detail/' . $projects['project_id'];
+
+            }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
 
     }

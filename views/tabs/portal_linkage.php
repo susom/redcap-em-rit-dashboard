@@ -1,4 +1,4 @@
-<b-container>
+<b-container fluid>
     <b-row class="mt-2">
         <b-alert :variant="portalLinkageVariant"
                  dismissible
@@ -26,7 +26,7 @@
                     </b-form-select>
                 </b-col>
                 <b-col lg="5">
-                    <b-button @click="attachRedCapProject()" variant="success">Attache Selected
+                    <b-button size="sm" @click="attachRedCapProject()" variant="success">Attache Selected
                         Project
                     </b-button>
                 </b-col>
@@ -59,8 +59,8 @@
                     This REDCap project is part of <strong>{{ticket.project_portal_name}}</strong>: You can view this
                     research project’s
                     details on the
-                    <b-button :href="ticket.project_portal_url" target="_blank" variant="success">
-                        Research IT Portal {{ticket.project_portal_name}}
+                    <b-button size="sm" :href="ticket.project_portal_url" target="_blank" size="sm" variant="success">
+                        <span class="btn-xs btn-success">Research IT Portal {{ticket.project_portal_name}}</span>
                     </b-button>
                 </b-col>
             </b-row>
@@ -74,7 +74,7 @@
         <b-card sub-title="REDCap Maintenance Agreement" class="mt-3">
             <b-row v-if="hasSignedAuthorization() == false" class="mt-2">
                 <b-col md="6">
-                    <b-button variant="success"
+                    <b-button size="sm" variant="success"
 
                               @click="generateSignedAuth()">
                         Generate Signed Authorization for above EM
@@ -83,7 +83,7 @@
             </b-row>
             <b-row v-if="portalSignedAuth.redcap != undefined" class="mt-2">
                 <b-col md="6">
-                    <b-button variant="success"
+                    <b-button size="sm" variant="success"
 
                               @click="appendSignedAuth()">
                         Authorize this REDCap Project to user Approved Maintenance Agreement

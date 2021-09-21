@@ -38,6 +38,10 @@ try {
         #user-tickets_processing {
             margin-top: 5% !important;
         }
+
+        a:hover {
+            text-decoration: none !important;
+        }
     </style>
 
 
@@ -52,7 +56,7 @@ try {
     </script>
     <div id="app">
         <b-overlay :show="isLoading" variant="secondary" opacity="0.80" rounded="sm">
-            <b-container>
+            <b-container fluid>
 
                 <b-alert :variant="noneDismissibleVariant"
                          fade
@@ -105,7 +109,33 @@ try {
                     noneDismissibleVariant: "danger",
                     portalLinkageVariant: "danger",
                     EMVariant: "danger",
-                    fields: ['id', 'title', 'type', 'status', 'created_at', 'for_current_pid'],
+                    // fields: ['id', 'title', 'type', 'status', 'created_at', 'for_current_pid'],
+                    fields: [
+                        {
+                            key: 'id',
+                            sortable: true
+                        },
+                        {
+                            key: 'title',
+                            sortable: true
+                        },
+                        {
+                            key: 'type',
+                            sortable: true
+                        },
+                        {
+                            key: 'status',
+                            sortable: true
+                        },
+                        {
+                            key: 'created_at',
+                            sortable: true
+                        },
+                        {
+                            key: 'for_current_pid',
+                            sortable: true
+                        }
+                    ],
                     filter: null,
                     currentPage: 1,
                     totalRows: 0,
@@ -116,7 +146,16 @@ try {
                     portalLinkageAlertMessage: '',
                     EMAlertMessage: '',
                     noneDismissibleAlertMessage: '',
-                    fields_em: ['prefix', 'maintenance_monthly_cost'],
+                    fields_em: [
+                        {
+                            key: 'prefix',
+                            sortable: true
+                        },
+                        {
+                            key: 'maintenance_monthly_cost',
+                            sortable: true
+                        }
+                    ],
                     filter_em: null,
                     currentPage_em: 1,
                     totalRows_em: 0,
@@ -256,7 +295,7 @@ try {
                     }
                 },
                 getUserTickets: function () {
-                    this.emptyTicketsTable = 'No Ticker for this REDCap project'
+                    this.emptyTicketsTable = 'No Tickets for this REDCap project'
                     axios.get(this.ajaxUserTicketURL)
                         .then(response => {
                             this.items = this.allItems = response.data.data;

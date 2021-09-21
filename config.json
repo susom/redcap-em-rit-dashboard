@@ -122,11 +122,5 @@
     }
   ],
   "project-settings": [
-    {
-      "key": "linked-project",
-      "name": "<b>JSON for all linked projects</b>",
-      "required": false,
-      "type": "textarea"
-    }
   ]
 }

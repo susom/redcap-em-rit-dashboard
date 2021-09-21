@@ -1,4 +1,4 @@
-<b-container>
+<b-container fluid>
     <b-row>
         <b-alert :variant="EMVariant"
                  dismissible
@@ -11,28 +11,7 @@
     <div class="row">
         <span v-html="external_modules_header"></span>
     </div>
-    <b-row>
-        <b-col lg="6" class="my-1">
-            <b-form-group
-                    label-for="filter-input"
-                    label-size="sm"
-                    class="mb-0"
-            >
-                <b-input-group size="sm">
-                    <b-form-input
-                            id="filter-input"
-                            v-model="filter_em"
-                            type="search"
-                            placeholder="Type to Search"
-                    ></b-form-input>
 
-                    <b-input-group-append>
-                        <b-button :disabled="!filter_em" @click="filter_em = ''">Clear</b-button>
-                    </b-input-group-append>
-                </b-input-group>
-            </b-form-group>
-        </b-col>
-    </b-row>
     <b-table striped hover :items="items_em" :fields="fields_em" :current-page="currentPage_em"
              :per-page="perPage_em"
              :filter="filter_em" @filtered="onFilteredEM">
@@ -40,13 +19,35 @@
         <!--        <span v-html="data.value"></span>-->
         <!--    </template>-->
 
+        <template #thead-top="data">
+            <b-tr style="background-color: #D7D7D7">
+                <b-th></b-th>
+                <b-th>
+                    <b-form-group
+                            label-for="filter-input"
+                            label-size="sm"
+                            class="mb-0"
+                    >
+                        <b-input-group size="sm">
+                            <b-form-input
+                                    id="filter-input"
+                                    v-model="filter_em"
+                                    type="search"
+                                    placeholder="Type to Search"
+                            ></b-form-input>
+
+                            <b-input-group-append>
+                                <b-button size="sm" :disabled="!filter_em" @click="filter_em = ''">Clear</b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-form-group>
+                </b-th>
+            </b-tr>
+        </template>
     </b-table>
     <b-row>
-        <b-col class="float-left" md="8">
-            Monthly Total:
-        </b-col>
-        <b-col md="4">
-            ${{totalFees}}
+        <b-col class="float-left" md="12">
+            Monthly Total: <strong>${{totalFees}}</strong>
         </b-col>
     </b-row>
     <b-row class="mt-2">

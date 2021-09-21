@@ -10,7 +10,7 @@ try {
     $portalProjectName = filter_var($body['project_portal_name'], FILTER_SANITIZE_STRING);
     $portalProjectDescription = filter_var($body['project_portal_description'], FILTER_SANITIZE_STRING);
     $inputs = $module->getPortal()->attachToProjectPortal($portalProjectId, $portalProjectName, $portalProjectDescription);
-    $module->savePortalProjectInfoInREDCap($inputs);
+    //$module->savePortalProjectInfoInREDCap($inputs);
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);
