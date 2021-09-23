@@ -33,6 +33,24 @@ class Entity
         return $entities;
     }
 
+    public function generateProjectEMUsageArray($projectID): array
+    {
+        $result = array();
+        $pointer = 0;
+        foreach ($this->getProjectEmUsageRecords($projectID) as $entity) {
+            $data = $entity->getData();
+            $row = array(
+                'prefix' => $data['module_prefix'],
+//            'is_enabled' => $data['is_em_enabled'] == true ? 'Yes' : 'No',
+                'maintenance_fees' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? $data['maintenance_fees'] : 0,
+                'maintenance_monthly_cost' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? '$' . $data['maintenance_fees'] : 'No Monthly Charge',
+            );
+            $pointer++;
+            $result[] = $row;
+        }
+        return $result;
+    }
+
     /**
      * @return array
      */

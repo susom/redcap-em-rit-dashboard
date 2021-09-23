@@ -36,6 +36,9 @@ class Portal
         $this->setProjectId($projectId);
 
         $this->setProjectTitle($projectTitle);
+
+
+        //TODO call this when needed only.
         if (!is_null($this->getProjectId())) {
             $this->setProjectPortalSavedConfig($this->getProjectId());
         }

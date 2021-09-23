@@ -155,6 +155,9 @@ class ProjectPortal extends AbstractExternalModule
         //$this->includeFile("views/contact_admin_button.php");
     }
 
+    /**
+     * @throws \Exception
+     */
     public function processRequest()
     {
         if (!isset($_POST) or empty($_POST)) {
@@ -267,6 +270,15 @@ class ProjectPortal extends AbstractExternalModule
             $result = $this->getEntity()->getREDCapRecordViaID($this->getProjectId(), $this->getFirstEventId(), filter_var($_POST['record_id'], FILTER_SANITIZE_STRING));
 
             echo json_encode($result[filter_var($_POST['record_id'], FILTER_SANITIZE_STRING)][$this->getFirstEventId()]);
+        } elseif ($this->getRequest() == "get_redcap_enabled_ems") {
+            if (!isset($_POST['redcap_project_id'])) {
+                throw new \LogicException("REDCap Project ID is missing!");
+            }
+            $result = $this->getEntity()->generateProjectEMUsageArray(filter_var($_POST['redcap_project_id'], FILTER_SANITIZE_NUMBER_INT));
+            header('Content-Type: application/json');
+            echo json_encode($result);
+        } else {
+            throw new \Exception("something went wrong!");
         }
 
     }
