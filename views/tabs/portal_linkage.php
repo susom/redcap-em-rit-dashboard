@@ -4,7 +4,7 @@
                  dismissible
                  fade
                  :show="showPortalLinkageDismissibleAlert"
-        >
+        ><i class="fas fa-exclamation-circle"></i>
             {{portalLinkageAlertMessage}}
         </b-alert>
     </b-row>
@@ -12,9 +12,10 @@
         <span v-html="portal_linkage_header"></span>
     </b-row>
     <div v-if="linked() == false">
-        <b-card sub-title="Research IT Portal Project" class="mt-3">
+        <b-card sub-title="R2P2 (RIT Research Project Portal)" class="mt-3">
             <b-row class="mt-3">
-                Your REDCap project has not been linked to a Research IT Portal Project. Please register/link this
+                Your REDCap project has not been linked to a R2P2 (RIT Research Project Portal). Please register/link
+                this
                 project
                 below:
             </b-row>
@@ -25,8 +26,8 @@
                                    text-field="project_name">
                     </b-form-select>
                 </b-col>
-                <b-col lg="5">
-                    <b-button size="sm" @click="attachRedCapProject()" variant="success">Attache Selected
+                <b-col lg="5" class="justify-content-center align-self-center">
+                    <b-button size="sm" @click="attachRedCapProject()" variant="success">Attach Selected
                         Project
                     </b-button>
                 </b-col>
@@ -53,15 +54,11 @@
         </b-card>
     </div>
     <div v-else>
-        <b-card sub-title="Research IT Portal Project" class="mt-3">
+        <b-card sub-title="R2P2 (RIT Research Project Portal)" class="mt-3">
             <b-row class="mt-3">
                 <b-col lg="12">
-                    This REDCap project is part of <strong>{{ticket.project_portal_name}}</strong>: You can view this
-                    research project’s
-                    details on the
-                    <b-button size="sm" :href="ticket.project_portal_url" target="_blank" size="sm" variant="success">
-                        <span class="btn-xs btn-success">Research IT Portal {{ticket.project_portal_name}}</span>
-                    </b-button>
+                    This REDCap project is part of <a :href="ticket.project_portal_url" target="_blank"><i
+                                class="fas fa-external-link-alt"></i> <span>{{ticket.project_portal_name}}</span></a>
                 </b-col>
             </b-row>
 
@@ -73,11 +70,12 @@
         </b-card>
         <b-card sub-title="REDCap Maintenance Agreement" class="mt-3">
             <b-row v-if="hasSignedAuthorization() == false" class="mt-2">
+                TODO Add about REMA paragraph.
                 <b-col md="6">
                     <b-button size="sm" variant="success"
 
                               @click="generateSignedAuth()">
-                        Generate Signed Authorization for above EM
+                        Generate REDCap Maintenance Agreement
                     </b-button>
                 </b-col>
             </b-row>
@@ -86,7 +84,7 @@
                     <b-button size="sm" variant="success"
 
                               @click="appendSignedAuth()">
-                        Authorize this REDCap Project to user Approved Maintenance Agreement
+                        Authorize this REDCap Project to use an Approved REDCap Maintenance Agreement
                     </b-button>
                 </b-col>
             </b-row>

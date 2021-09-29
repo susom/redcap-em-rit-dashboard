@@ -60,7 +60,7 @@ try {
                                 This project is NOT linked to the Research IT Portal. <a id="what-is-this" href="#">What
                                     is this?</a> <br>Link now with the <a class="portal-setup"
                                                                           href="<?php echo $module->getUrl("views/index.php") ?>"><span
-                                            class="btn btn-success">My
+                                            class="btn-xs btn-success">My
                                     Research IT Dashboard</span></a>
                             </div>
                             <?php

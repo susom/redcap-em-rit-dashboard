@@ -4,7 +4,7 @@
                  dismissible
                  fade
                  :show="showEMDismissibleAlert"
-        >
+        ><i class="fas fa-exclamation-circle"></i>
             {{EMAlertMessage}}
         </b-alert>
     </b-row>

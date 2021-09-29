@@ -42,6 +42,10 @@ try {
         a:hover {
             text-decoration: none !important;
         }
+
+        .height-100 {
+            min-height: 100vh !important;
+        }
     </style>
 
 
@@ -56,12 +60,12 @@ try {
     </script>
     <div id="app">
         <b-overlay :show="isLoading" variant="secondary" opacity="0.80" rounded="sm">
-            <b-container fluid>
+            <b-container fluid class="height-100">
 
                 <b-alert :variant="noneDismissibleVariant"
                          fade
                          :show="showNoneDismissibleAlert"
-                >
+                ><i class="fas fa-exclamation-circle"></i>
                     {{noneDismissibleAlertMessage}}
                 </b-alert>
                 <b-alert :variant="variant"
@@ -94,13 +98,17 @@ try {
 
             </b-container>
         </b-overlay>
+        <!--        <my-component-name></my-component-name>-->
         <?php
         require("modal.php");
         ?>
     </div>
 
-    <script>
+    <script type="module">
         var ajaxCalls = []
+        //import MyComponent from "<?php echo $module->getUrl('views/tabs/Test.vue', false, true) ?>"
+
+        //Vue.component('my-component-name', MyComponent)
         new Vue({
             el: "#app",
             data() {
@@ -149,10 +157,12 @@ try {
                     fields_em: [
                         {
                             key: 'prefix',
+                            label: 'Name',
                             sortable: true
                         },
                         {
                             key: 'maintenance_monthly_cost',
+                            label: 'Monthly Maintenance Cost',
                             sortable: true
                         }
                     ],
@@ -220,6 +230,7 @@ try {
 
                 axios.interceptors.response.use((response) => {
                     // trigger 'loading=false' event here
+                    var temp = []
                     temp = ajaxCalls.pop()
                     if (ajaxCalls.length === 0) {
                         this.isLoading = false
@@ -291,7 +302,7 @@ try {
                         }
 
                         // EM tab alert message
-                        this.setPortalLinkageAlertMessage("danger", "You must first link this REDCap project to the Research IT Portal.  Please click on the Research IT Portal tab to continue.", true)
+                        //this.setPortalLinkageAlertMessage("danger", "You must first link this REDCap project to the Research IT Portal.  Please click on the Research IT Portal tab to continue.", true)
                     }
                 },
                 getUserTickets: function () {
@@ -370,8 +381,10 @@ try {
                             this.showDismissibleAlert = true
                             this.ticket.project_portal_id_saved = "true"
                             this.ticket.project_portal_name = project.project_name
+                            this.ticket.project_portal_id = project.id
                             this.showNoneDismissibleAlert = false
                             this.alertMessage = response.data.message
+                            this.ticket.project_portal_url = response.data.portal_project.portal_project_url
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -438,6 +451,7 @@ try {
                             this.portalSignedAuth = response.data;
                             if (this.hasSignedAuthorization() === false) {
                                 this.setPortalLinkageAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
+                                this.setEMAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
 
                             } else if (this.portalSignedAuth.redcap != undefined) {
                                 this.setPortalLinkageAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
