@@ -1,4 +1,4 @@
-<b-container fluid>
+<b-container fluid class="mt-3">
     <b-row class="mt-2">
         <b-alert :variant="portalLinkageVariant"
                  dismissible

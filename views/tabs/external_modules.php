@@ -1,4 +1,4 @@
-<b-container fluid>
+<b-container fluid class="mt-3">
     <b-row>
         <b-alert :variant="EMVariant"
                  dismissible
@@ -46,12 +46,13 @@
         </template>
     </b-table>
     <b-row>
-        <b-col class="float-left" md="12">
-            Monthly Total: <strong>${{totalFees}}</strong>
-        </b-col>
+
     </b-row>
     <b-row class="mt-2">
-        <b-col offset="6" sm="6" md="6" class="my-1">
+        <b-col class="float-left" md="3">
+            Monthly Total: <strong>${{totalFees}}</strong>
+        </b-col>
+        <b-col offset="3" sm="6" md="6" class="my-1">
             <b-pagination
                     v-model="currentPage_em"
                     :total-rows="totalRows_em"
@@ -64,8 +65,9 @@
     </b-row>
 
     <b-row v-if="portalSignedAuth.project_id != undefined" class="mt-2">
-        <b-col md="12"><p>Signed Auth already created for this project. Click
-                <a target="_blank" :href="portalSignedAuth.link">here</a> to access the SOW</p>
+        <b-col md="12"><p>REDCap Maintenance Agreement created for this project. Click
+                <a target="_blank" :href="portalSignedAuth.link"><i
+                            class="fas fa-external-link-alt"></i> here</a> to access the SOW</p>
         </b-col>
 
     </b-row>

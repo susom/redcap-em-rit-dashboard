@@ -1,4 +1,4 @@
-<b-container fluid>
+<b-container fluid class="mt-3">
     <div class="row">
         <div class="float-right mb-3">
             <b-button size="sm" variant="success" v-b-modal.generic-modal>Add Ticket</b-button>

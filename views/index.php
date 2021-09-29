@@ -46,6 +46,18 @@ try {
         .height-100 {
             min-height: 100vh !important;
         }
+
+        .tab-content {
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            min-height: 30vh;
+        }
+
+        .nav-tabs {
+            margin-bottom: 0;
+        }
     </style>
 
 
@@ -77,7 +89,7 @@ try {
                 </b-alert>
                 <p v-html="header"></p>
                 <div class="mt-3">
-                    <b-tabs content-class="mt-3">
+                    <b-tabs content-class="">
                         <b-tab title="Research IT Portal" active>
                             <?php
                             require("tabs/portal_linkage.php");
