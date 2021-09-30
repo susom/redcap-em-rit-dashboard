@@ -43,14 +43,7 @@ try {
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
                             <div id="linked-project" data-project-id="<?php echo $module->getProjectId() ?>"><?php
-                                foreach ($module->getUser()->getProjectPortalList() as $project) {
-                                    if ($module->getPortal()->projectPortalSavedConfig['portal_project_id'] == $project['id']) {
-                                        echo 'This project is part of <a class="portal-setup" target="_blank" href="' . $module->getClient()->getPortalBaseURL() . 'detail/' . $project['id'] . '"> <span class="btn-xs btn-success">' . $project['project_name'] . '</span></a><br>';
-//                                        echo '<button id="detach-project" data-redcap-id="' . $module->getProjectId() . '" data-portal-project-id="' . $project['id'] . '">Detach from Portal Project</button>';
-                                        break;
-                                    }
-
-                                }
+                                echo 'This project is part of <a class="portal-setup" target="_blank" href="' . $module->getPortal()->projectPortalSavedConfig['portal_project_url'] . '"> <span class="btn-xs btn-success">' . $module->getPortal()->projectPortalSavedConfig['portal_project_name'] . '</span></a><br>';
                                 ?>
                             </div>
                             <?php
