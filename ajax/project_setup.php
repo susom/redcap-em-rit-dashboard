@@ -43,7 +43,8 @@ try {
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
                             <div id="linked-project" data-project-id="<?php echo $module->getProjectId() ?>"><?php
-                                echo 'This project is part of <a class="portal-setup" target="_blank" href="' . $module->getPortal()->projectPortalSavedConfig['portal_project_url'] . '"> <span class="btn-xs btn-success">' . $module->getPortal()->projectPortalSavedConfig['portal_project_name'] . '</span></a><br>';
+                                echo 'This project is part of <a class="portal-setup" target="_blank" href="' . $module->getPortal()->projectPortalSavedConfig['portal_project_url'] . '"><i
+                                class="fas fa-external-link-alt"></i> ' . $module->getPortal()->projectPortalSavedConfig['portal_project_name'] . '</a><br>';
                                 ?>
                             </div>
                             <?php
