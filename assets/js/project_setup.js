@@ -3,7 +3,7 @@ ProjectSetup = {
     projectPortalSectionURL: '',
     isLinked: false,
     init: function () {
-        ProjectSetup.getProjectPortalLinkageSection();
+        ProjectSetup.addProjectSetupLoad();
 
         jQuery(document).on("click", "#attach-redcap-project", function () {
             var projectPortalID = jQuery('#project-portal-list').find(":selected").val();
@@ -56,22 +56,26 @@ ProjectSetup = {
             }
         });
     },
+    addProjectSetupLoad: function () {
+        // setting a timeout
+        var data = '<div id="portal-linkage-container">        <div class="alert alert-secondary d-flex justify-content-center">\n' +
+            '  <div class="spinner-border" role="status">\n' +
+            '    <span class="sr-only">Loading...</span>\n' +
+            '  </div>\n' +
+            '</div></div>'
+
+        setTimeout(function () {
+            jQuery('#setupChklist-modify_project').before(data);
+        }, 10)
+
+        setTimeout(function () {
+            ProjectSetup.getProjectPortalLinkageSection()
+        }, 500)
+    },
     getProjectPortalLinkageSection: function () {
         jQuery.ajax({
             url: ProjectSetup.projectPortalSectionURL,
             type: 'POST',
-            beforeSend: function () {
-                // setting a timeout
-                var data = '<div id="portal-linkage-container">        <div class="alert alert-secondary d-flex justify-content-center">\n' +
-                    '  <div class="spinner-border" role="status">\n' +
-                    '    <span class="sr-only">Loading...</span>\n' +
-                    '  </div>\n' +
-                    '</div></div>'
-
-                setTimeout(function () {
-                    jQuery('#setupChklist-modify_project').before(data);
-                }, 10)
-            },
             success: function (data) {
                 if ($("#portal-linkage-container").length != 0) {
                     $("#portal-linkage-container").replaceWith(data)
