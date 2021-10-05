@@ -71,23 +71,43 @@ try {
         //Main.init()
     </script>
     <div id="app">
-        <b-overlay :show="isLoading" variant="secondary" opacity="0.80" rounded="sm">
-            <b-container fluid class="height-100">
 
-                <b-alert :variant="noneDismissibleVariant"
-                         fade
-                         :show="showNoneDismissibleAlert"
-                ><i class="fas fa-exclamation-circle"></i>
-                    {{noneDismissibleAlertMessage}}
-                </b-alert>
-                <b-alert :variant="variant"
-                         dismissible
-                         fade
-                         :show="showDismissibleAlert"
-                >
-                    {{alertMessage}}
-                </b-alert>
-                <p v-html="header"></p>
+        <b-container fluid class="height-100">
+
+            <b-alert :variant="noneDismissibleVariant"
+                     fade
+                     :show="showNoneDismissibleAlert"
+            >
+                <b-row>
+                    <b-col class="justify-content-center align-self-center" lg="1" style="font-size: 40px"><i
+                                class="fas fa-exclamation-circle"></i></b-col>
+                    <b-col class="justify-content-center align-self-center" lg="11"><p
+                                v-html="noneDismissibleAlertMessage"></p></b-col>
+
+                </b-row>
+            </b-alert>
+            <b-alert :variant="variant"
+                     dismissible
+                     fade
+                     :show="showDismissibleAlert"
+            >
+                {{alertMessage}}
+            </b-alert>
+            <h4>
+                Welcome to your REDCap R2P2 Dashboard!
+            </h4>
+            <h6>Please review the tabs below to help you effectively communicate
+                and collaborate with ResearchIT in support of your research endeavors.
+            </h6>
+            <h6>
+                Have Questions? Contact us with a Support Ticket below.
+            </h6>
+            <p>
+                <i>In advance, we appreciate your patience. This portal is new and we look forward to <a
+                            href="https://redcap.stanford.edu/surveys/?s=DNFNAKARFTELJ4WA" target="_blank">incorporating
+                        your feedback</a> to make it better! <a href=""></a></i>
+            </p>
+            <b-overlay :show="isLoading" variant="secondary" opacity="0.80" rounded="sm">
                 <div class="mt-3">
                     <b-tabs content-class="">
                         <b-tab title="Research IT Portal" active>
@@ -107,9 +127,9 @@ try {
                         </b-tab>
                     </b-tabs>
                 </div>
+            </b-overlay>
+        </b-container>
 
-            </b-container>
-        </b-overlay>
         <!--        <my-component-name></my-component-name>-->
         <?php
         require("modal.php");
@@ -312,6 +332,7 @@ try {
                             this.noneDismissibleAlertMessage += "This REDCap project uses External Modules that require a monthly maintenance subscription.  Please link this REDCap project to the Research IT Portal and complete the REDCap External Module Maintenance Approval process to maintain use of the External Modules."
                             this.noneDismissibleVariant = "danger"
                         }
+
 
                         // EM tab alert message
                         //this.setPortalLinkageAlertMessage("danger", "You must first link this REDCap project to the Research IT Portal.  Please click on the Research IT Portal tab to continue.", true)

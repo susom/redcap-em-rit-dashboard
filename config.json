@@ -30,12 +30,12 @@
     "project": [
       {
         "name": "Create Support Ticket",
-        "icon": "fas fa-columns",
+        "icon": "fas fa-ticket-alt",
         "url": "views/create_jira_ticket.php",
         "show-header-and-footer": true
       },
       {
-        "name": "My Research IT Dashboard",
+        "name": "REDCap R2P2 Dashboard",
         "icon": "fas fa-columns",
         "url": "views/index.php",
         "show-header-and-footer": true

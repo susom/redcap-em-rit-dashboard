@@ -6,11 +6,11 @@ namespace Stanford\ProjectPortal;
 
 try {
     ?>
-    <style>
-        a:hover {
-            text-decoration: none !important;
-        }
-    </style>
+    <!--    <style>-->
+    <!--        portal-setupx.a {-->
+    <!--            text-decoration: underline;-->
+    <!--        }-->
+    <!--    </style>-->
     <div id="portal-linkage-container">
         <div id="portal-errors" class="alert alert-danger hidden"></div>
         <div class="rounded alert alert-<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? 'success' : 'danger' ?>">
@@ -21,7 +21,7 @@ try {
                         <?php
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
-                            <i style="font-size: 50px; margin-left: 20%;" class="fas fa-check"></i>
+                            <i style="font-size: 20px; margin-left: 20%;" class="fas fa-check"></i>
                             <?php
                         } else {
                             ?>

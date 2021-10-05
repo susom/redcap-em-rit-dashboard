@@ -9,10 +9,10 @@
         </b-alert>
     </b-row>
     <b-row class="mt-2">
-        <span v-html="portal_linkage_header"></span>
+        <b-col><span v-html="portal_linkage_header"></span></b-col>
     </b-row>
     <div v-if="linked() == false">
-        <b-card sub-title="R2P2 (RIT Research Project Portal)" class="mt-3">
+        <b-card sub-title="This REDCap Project has not been linked to R2P2" class="mt-3">
             <b-row class="mt-3">
                 Your REDCap project has not been linked to a R2P2 (RIT Research Project Portal). Please register/link
                 this
@@ -32,6 +32,17 @@
                     </b-button>
                 </b-col>
             </b-row>
+            <b-row>
+                <b-col>-- OR --</b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    If you do not see your project in the list, click here to search for or create a new entry in R2P2
+                    for this research project
+                    <b-button size="sm" variant="success" href="https://rit-portal.med.stanford.edu/"><span
+                                class="btn-xs btn-success">Find or Create a R2P2 Project</span></b-button>
+                </b-col>
+            </b-row>
             <b-row class="mt-3">
                 <strong>Q: What is the Research IT Portal?</strong><br></b-row>
             <b-row class="mt-3">
@@ -42,13 +53,15 @@
             <b-row class="mt-3"><strong>Q: Why do I want to link mt REDCap project to the Portal?</strong><br></b-row>
             <b-row class="mt-3"><p>Linking your REDCap project to the portal has many benefits:</p></b-row>
             <b-row class="mt-3">
-                <ul>
-                    <li>Your support inquiries will be visible on the portal and can be shared with other team
-                        members.
-                    </li>
-                    <li>Professional services and maintenance contracts can be viewed and approved</li>
-                    <li>Consultations for project assistance can be requested and tracked</li>
-                </ul>
+                <b-col>
+                    <ul>
+                        <li>Your support inquiries will be visible on the portal and can be shared with other team
+                            members.
+                        </li>
+                        <li>Professional services and maintenance contracts can be viewed and approved</li>
+                        <li>Consultations for project assistance can be requested and tracked</li>
+                    </ul>
+                </b-col>
 
             </b-row>
         </b-card>
