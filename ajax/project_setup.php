@@ -14,7 +14,6 @@ try {
     <div id="portal-linkage-container">
         <div id="portal-errors" class="alert alert-danger hidden"></div>
         <div class="rounded alert alert-<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? 'success' : 'danger' ?>">
-
             <div class="row">
                 <div class="col-2">
                     <div class="row">
@@ -25,44 +24,52 @@ try {
                             <?php
                         } else {
                             ?>
-                            <i style="font-size: 55px; margin-left: 20%;" class="fas fa-times"></i>
+                            <i style="font-size: 30px; margin-left: 20%;" class="fas fa-times"></i>
                             <?php
                         }
                         ?>
                     </div>
 
                 </div>
-                <div class="col-10">
-                    <div class="row">
-                        <div class="chklisthdr">
-                            <span><i class="fas fa-wrench"></i> Link Your REDCap Project to RIT Research Project Portal</span>
-                        </div>
-                    </div>
+                <div class="col-8">
                     <div class="row">
                         <?php
+                        // If the PID is associated to a REDCap Project
                         if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                             ?>
-                            <div id="linked-project" data-project-id="<?php echo $module->getProjectId() ?>"><?php
-                                echo 'This project is part of <a class="portal-setup" target="_blank" href="' . $module->getPortal()->projectPortalSavedConfig['portal_project_url'] . '"><i
-                                class="fas fa-external-link-alt"></i> ' . $module->getPortal()->projectPortalSavedConfig['portal_project_name'] . '</a><br>';
-                                ?>
+                            <div class="row">
+                                <div class="">
+                                    <span><!--i class="fas fa-wrench"></i--> This REDCap project is part of the R2P2 Project
+                                        <br><a style="text-decoration: underline" class="portal-setupx" target="_blank"
+                                               href="<?php echo $module->getPortal()->projectPortalSavedConfig['portal_project_url'] ?>">
+
+                                            <i class="fas fa-external-link-alt"></i> <span><?php echo $module->getPortal()->projectPortalSavedConfig['portal_project_name'] ?></span>
+                                        </a>
+                                    </span>
+                                </div>
                             </div>
                             <?php
                         } else {
                             ?>
                             <div>
-                                This project is NOT linked to the Research IT Portal. <a id="what-is-this" href="#">What
-                                    is this?</a> <br>Link now with the <a class="portal-setup"
-                                                                          href="<?php echo $module->getUrl("views/index.php") ?>"><span
-                                            class="btn-xs btn-success">My
-                                    Research IT Dashboard</span></a>
+                                This REDCap project is NOT yet linked to an R2P2 project.
+                                <!--                                <a style="text-decoration: underline" id="what-is-this" href="#">What is this?</a>-->
+                                <br> Click the
+                                <a class="portal-setup" href="<?php echo $module->getUrl("views/index.php") ?>">
+                                    <i class="fas fa-column"></i> <span>REDCap R2P2 Dashboard</span>
+                                </a> link on the left sidebar to get started.
                             </div>
                             <?php
                         }
                         ?>
                     </div>
                 </div>
-
+                <div class="col-2">
+                    <div class="text-right" style="color:#555; font-size:11px;">
+                        <a id="what-is-this" href="#"><i class="fas fa-info-circle"></i> <span
+                                    style="text-decoration: underline">What is R2P2?</span></a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -71,11 +78,24 @@ try {
     echo "<div class='alert-danger'>" . $e->getMessage() . "</div>";
 }
 ?>
-<div id="what-is-this-dialog" style="top: 10% !important; display: none"
-     title="What is Research IT Project Portal">The Research IT Portal is a web platform that is responsible for
-    tracking, communicating, and supporting research projects affiliated with Stanford TDS.<a
-            href="https://rit-portal.med.stanford.edu" target="_blank">https://rit-portal.med.stanford.edu</a> and
-    create your research project.</d></div>
+<div id="what-is-this-dialog" style="top: 10% !important; display: none" title="What is R2P2?">
+    <div>
+        R2P2 (<u>R</u>esearch IT <u>R</u>esearch <u>P</u>roject <u>P</u>ortal) is a web platform that coordinates
+        applications, services, and support for researchers working with the Research IT team and Stanford Technology
+        and
+        Digital Solutions (TDS).
+    </div>
+    <div>
+        You can interact with R2P2 by clicking on the <a class="portal-setup"
+                                                         href="<?php echo $module->getUrl("views/index.php") ?>">
+            <i class="fas fa-column"></i> <span>My REDCap R2P2 Dashboard</span>
+        </a> link on the left sidebar.
+    </div>
+    <div>For more information, please check out the <a style="text-decoration:underline"
+                                                       href="https://rit-portal.med.stanford.edu/faq" target="_blank">
+            <i class="fas fa-external-link-alt"></i> <span>R2P2 FAQ</span></a>
+    </div>
+</div>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>

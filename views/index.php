@@ -55,6 +55,15 @@ try {
             min-height: 30vh;
         }
 
+        .nav-link {
+            font-weight: bold;
+        }
+
+        .nav-link .active {
+            color: blue;
+            font-weight: bold;
+        }
+
         .nav-tabs {
             margin-bottom: 0;
         }
@@ -110,7 +119,7 @@ try {
             <b-overlay :show="isLoading" variant="secondary" opacity="0.80" rounded="sm">
                 <div class="mt-3">
                     <b-tabs content-class="">
-                        <b-tab title="Research IT Portal" active>
+                        <b-tab title="R2P2" active>
                             <?php
                             require("tabs/portal_linkage.php");
                             ?>
@@ -120,7 +129,7 @@ try {
                             require("tabs/tickets.php");
                             ?>
                         </b-tab>
-                        <b-tab title="External Modules">
+                        <b-tab title="Enabled External Modules">
                             <?php
                             require("tabs/external_modules.php");
                             ?>
@@ -328,8 +337,16 @@ try {
                     } else {
                         // global alert message that is none dismissible
                         if (this.project_status == "0") {
+                            // Dev-mode redcap project
                             this.showNoneDismissibleAlert = true
-                            this.noneDismissibleAlertMessage += "This REDCap project uses External Modules that require a monthly maintenance subscription.  Please link this REDCap project to the Research IT Portal and complete the REDCap External Module Maintenance Approval process to maintain use of the External Modules."
+                            this.noneDismissibleAlertMessage += "This REDCap project will require a R2P2 REDCap Maintenance Agreement for Production use.<br>  " +
+                                "Please register and link your project in R2P2 before requesting the change to Production mode.<br>  See the R2P2 tab below for details."
+                            this.noneDismissibleVariant = "warning"
+                        } else if (this.project_status == "1") {
+                            // Production mode redcap project
+                            this.showNoneDismissibleAlert = true
+                            this.noneDismissibleAlertMessage += "This REDCap project REQUIRES a valid R2P2 REDCap Maintenance Agreement.  " +
+                                "Please register and link your project in R2P2 now.  See the R2P2 tab below for details."
                             this.noneDismissibleVariant = "danger"
                         }
 
@@ -508,6 +525,11 @@ try {
             mounted() {
                 this.prepareComponent();
             }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#subheaderDiv2').html('My REDCap R2P2 Dashboard'); //overwrite EM title
         });
     </script>
     <?php
