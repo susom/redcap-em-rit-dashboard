@@ -64,9 +64,9 @@
         </b-col>
     </b-row>
 
-    <b-row v-if="portalSignedAuth.project_id != undefined" class="mt-2">
+    <b-row v-if="determineREDCapStep() == 4" class="mt-2">
         <b-col md="12"><p>REDCap Maintenance Agreement created for this project. Click
-                <a target="_blank" :href="portalSignedAuth.link"><i
+                <a target="_blank" :href="portalREDCapMaintenanceAgreement.link"><i
                             class="fas fa-external-link-alt"></i> here</a> to access the SOW</p>
         </b-col>
 

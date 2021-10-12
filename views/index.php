@@ -67,6 +67,12 @@ try {
         .nav-tabs {
             margin-bottom: 0;
         }
+
+        .center-block {
+            display: table;  /* Instead of display:block */
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 
 
@@ -100,23 +106,26 @@ try {
                      fade
                      :show="showDismissibleAlert"
             >
-                {{alertMessage}}
+                <b>{{alertMessage}}</b>
             </b-alert>
             <h4>
                 Welcome to your REDCap R2P2 Dashboard!
             </h4>
-            <h6>Please review the tabs below to help you effectively communicate
-                and collaborate with ResearchIT in support of your research endeavors.
+            <h6>The tabs below will help you link this project to R2P2, manage your support tickets,
+                view maintenance costs, and more.
             </h6>
-            <h6>
-                Have Questions? Contact us with a Support Ticket below.
-            </h6>
+            <div class="p-2">
+<!--                <b-alert variant="secondary" show>-->
+                    <b><i class="fas fa-question-circle"></i> Have Questions? </b> <i>Contact us with a Support Ticket below.</i>
+<!--                </b-alert>-->
+            </div>
             <p>
-                <i>In advance, we appreciate your patience. This portal is new and we look forward to <a
-                            href="https://redcap.stanford.edu/surveys/?s=DNFNAKARFTELJ4WA" target="_blank">incorporating
-                        your feedback</a> to make it better! <a href=""></a></i>
+                <i>We appreciate your patience -- this portal is new and we look forward to
+                    <a href="https://redcap.stanford.edu/surveys/?s=DNFNAKARFTELJ4WA" target="_blank">
+                        incorporating your feedback
+                    </a> to make it better! <a href=""></a></i>
             </p>
-            <b-overlay :show="isLoading" variant="secondary" opacity="0.80" rounded="sm">
+            <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
                 <div class="mt-3">
                     <b-tabs content-class="">
                         <b-tab title="R2P2" active>
@@ -246,7 +255,7 @@ try {
                     tickets_header: '<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-ticket-tab-header')); ?>',
                     external_modules_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-external-modules-tab-header')); ?>",
                     hasManagePermission: "<?php echo $module->getUser()->isUserHasManagePermission(); ?>",
-                    portalSignedAuth: [],
+                    portalREDCapMaintenanceAgreement: [],
                     refCount: 0,
                     isLoading: true,
                     currentProjectTickets: 'Yes',
@@ -296,8 +305,8 @@ try {
                     this.showEMDismissibleAlert = show
                     this.EMVariant = variant
                 },
-                hasSignedAuthorization: function () {
-                    if (this.linked() == true && this.hasManagePermission == true && this.portalSignedAuth.project_id == undefined) {
+                hasREDCapMaintenanceAgreement: function () {
+                    if (this.linked() == true && this.hasManagePermission == true && this.portalREDCapMaintenanceAgreement.project_id == undefined) {
                         return false
                     }
                     return true;
@@ -378,7 +387,7 @@ try {
                                 }
                             }
                         }).then(() => {
-                        if (this.hasSignedAuthorization() === false) {
+                        if (this.hasREDCapMaintenanceAgreement() === false) {
                             // project in dev mode but has EM with monthly fees
                             if (this.totalFees > 0 && this.project_status == "0") {
                                 if (this.linked() === false) {
@@ -468,7 +477,7 @@ try {
                             this.showPortalLinkageDismissibleAlert = false
                             this.showEMDismissibleAlert = false
                             this.alertMessage = response.data.message
-                            this.portalSignedAuth = response.data;
+                            this.portalREDCapMaintenanceAgreement = response.data;
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -479,7 +488,7 @@ try {
                     axios.post(this.ajaxAppendSignedAuthURL, {
                         project_portal_id: this.ticket.project_portal_id,
                         redcap_project_id: this.ticket.redcap_project_id,
-                        portal_sow_id: this.portalSignedAuth.id,
+                        portal_sow_id: this.portalREDCapMaintenanceAgreement.id,
                         external_modules: this.items_em
                     })
                         .then(response => {
@@ -488,7 +497,7 @@ try {
                             this.showPortalLinkageDismissibleAlert = false
                             this.showEMDismissibleAlert = false
                             this.alertMessage = response.data.message
-                            this.portalSignedAuth = response.data;
+                            this.portalREDCapMaintenanceAgreement = response.data;
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -498,28 +507,48 @@ try {
                 getSignedAuth: function () {
                     axios.get(this.ajaxGetSignedAuthURL)
                         .then(response => {
-                            this.portalSignedAuth = response.data;
-                            if (this.hasSignedAuthorization() === false) {
+                            this.portalREDCapMaintenanceAgreement = response.data;
+                            if (this.determineREDCapStep() === 1) {
                                 this.setPortalLinkageAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
                                 this.setEMAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
 
-                            } else if (this.portalSignedAuth.redcap != undefined) {
+                            } else if (this.determineREDCapStep() === 2) {
                                 this.setPortalLinkageAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
+                                this.setEMAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
 
-                            } else if (this.portalSignedAuth.sow_status == "0") {
+                            } else if (this.determineREDCapStep() === 3) {
                                 this.setPortalLinkageAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
-
+                                this.setEMAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
                             }
                         });
                 },
                 getREDCapProjectsNames: function () {
                     var projects = ''
 
-                    for (var i = 0; i < this.portalSignedAuth.redcap.length; i++) {
-                        projects += this.portalSignedAuth.redcap[i]['redcap_project_name'] + ','
+                    for (var i = 0; i < this.portalREDCapMaintenanceAgreement.redcap.length; i++) {
+                        projects += this.portalREDCapMaintenanceAgreement.redcap[i]['redcap_project_name'] + ','
 
                     }
                     return projects.substring(0, projects.length - 1);
+                },
+                openWindow: function(url){
+                    window.open(url, '_blank')
+                },
+                determineREDCapStep: function () {
+                    if(this.hasREDCapMaintenanceAgreement() === false){
+                        return 1
+                    }else{
+                        if(this.portalREDCapMaintenanceAgreement.redcap !== undefined){
+                            return 2
+                        }
+                        if(this.portalREDCapMaintenanceAgreement.sow_status !== 2){
+                            return 3
+                        }
+                        if(this.portalREDCapMaintenanceAgreement.sow_status === 2){
+                            return 4
+                        }
+                        return 5
+                    }
                 }
             },
             mounted() {
