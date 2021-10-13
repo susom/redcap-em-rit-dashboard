@@ -510,15 +510,15 @@ try {
                             this.portalREDCapMaintenanceAgreement = response.data;
                             if (this.determineREDCapStep() === 1) {
                                 this.setPortalLinkageAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
-                                this.setEMAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
+                                //this.setEMAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
 
                             } else if (this.determineREDCapStep() === 2) {
                                 this.setPortalLinkageAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
-                                this.setEMAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
+                                //this.setEMAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
 
                             } else if (this.determineREDCapStep() === 3) {
                                 this.setPortalLinkageAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
-                                this.setEMAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
+                                //this.setEMAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
                             }
                         });
                 },
