@@ -243,8 +243,7 @@
 
                         <div class = "text-success justify-content-start align-self-center">
                             <h5 class="d-inline-block  p-1"><i class="fa fa-check-circle "></i></h5>
-                                                            Step 1: REDCap Maintenance Agreement Created
-
+                            Step 1: REDCap Maintenance Agreement Created
                         </div>
                     </b-col>
                 </b-row>
@@ -255,9 +254,7 @@
             <div v-if="determineREDCapStep() == 2">
                 <b-row class="mt-2">
                     <b-col md="6">
-
                         <b-button size="sm" variant="success"
-
                                   @click="appendSignedAuth()">
                             Step 2: Add this REDCap Project to the R2P2 REDCap Maintenance Agreement
                         </b-button>
@@ -276,8 +273,7 @@
 
                         <div class = "text-success justify-content-start align-self-center">
                             <h5 class="d-inline-block  p-1"><i class="fa fa-check-circle "></i></h5>
-                            Step 2: REDCap Maintenance Agreement Created and linked
-
+                            Step 2: REDCap project linked to R2P2 REDCap Maintenance Agreement
                         </div>
                     </b-col>
                 </b-row>
@@ -286,14 +282,22 @@
 
             <!-- STEP 3 -->
             <div v-if="determineREDCapStep() == 3"
-                 class="mt-2">
-                <b-row class="mt-2">
+                 class="">
+                <b-row class="">
                     <b-col md="12">
-                        Step 3: The linked R2P2 REDCap Maintenance Agreement is awaiting approval. Please have a project admin
-                        or
-                        finance user complete the agreement on the <a :href="portalREDCapMaintenanceAgreement.link" target="_blank"
-                                                                      class="ml-1"><i
-                                    class="fas fa-external-link-alt"></i> R2P2 portal </a>
+                        <div class = "text-danger justify-content-start align-self-center">
+                            <h5 class="d-inline-block  p-1"><i class="far fa-circle"></i></h5>
+                            Step 3: The linked R2P2 REDCap Maintenance Agreement is awaiting approval.
+                        </div>
+                        <b-button size="sm" variant="primary" class="pl-4"
+                                  @click="openWindow(portalREDCapMaintenanceAgreement.link)">
+                            Approve REDCap Maintenance Agreement in R2P2
+                        </b-button>
+                        <div>
+                            <i>
+                                Approval requires R2P2 admin or PI role
+                            </i>
+                        </div>
                     </b-col>
                 </b-row>
             </div>
@@ -302,7 +306,7 @@
                     <b-col>
                         <div class = "text-success justify-content-start align-self-center">
                             <h5 class="d-inline-block  p-1"><i class="fa fa-check-circle "></i></h5>
-                            Step 3: REDCap Maintenance Agreement Created and Linked and Approved.
+                            Step 3: REDCap Maintenance Agreement Approved.
                         </div>
                     </b-col>
                 </b-row>
