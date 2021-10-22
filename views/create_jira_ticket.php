@@ -9,10 +9,10 @@ namespace Stanford\ProjectPortal;
     <form id="jira-ticket">
 
         <div class="form-group">
-            <label for="exampleInputEmail1">Issue Summary</label>
+            <label for="exampleInputEmail1">Title</label>
             <!--            <input type="text" class="form-control" id="summary" name="summary" aria-describedby="emailHelp"-->
             <!--                   placeholder="Question Summary" required>-->
-            <b-form-input v-model="ticket.summary" placeholder="Question Summary" required></b-form-input>
+            <b-form-input v-model="ticket.summary" max="250" placeholder="Issue Summary" required></b-form-input>
         </div>
         <div class="form-group">
             <label for="portal-projects">RIT Portal Project</label>
