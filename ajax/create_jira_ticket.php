@@ -24,8 +24,10 @@ try {
     if (!isset($body['description'])) {
         throw new \Exception("description is required");
     }
-    $summary = filter_var($body['summary'], FILTER_SANITIZE_STRING);
-    $issueType = filter_var($body['type'], FILTER_SANITIZE_NUMBER_INT);
+    $summary = '[REDCap] ' . filter_var($body['summary'], FILTER_SANITIZE_STRING);
+//    $issueType = filter_var($body['type'], FILTER_SANITIZE_NUMBER_INT);
+    $types = $module->getSupport()->getJiraIssueTypes();
+    $issueType = array_key_first($types);
     $description = filter_var($body['description'], FILTER_SANITIZE_STRING);
 
     $data = $module->getSupport()->createJiraTicketViaPortal($redcapProjectId, $summary, $issueType, $description, $portalProjectId);

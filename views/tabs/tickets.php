@@ -26,9 +26,8 @@
                                      name="all-tickets"
                                      id="all-tickets"
                                      value="Yes"
-                                     unchecked-value="No" @change="filterTickets($event)">Display Tickets for current
-                        REDCap
-                        projects
+                                     unchecked-value="No" @change="filterTickets($event)">Only show tickets for this
+                        project
                     </b-form-checkbox>
 
                 </b-th>

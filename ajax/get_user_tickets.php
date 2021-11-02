@@ -12,12 +12,13 @@ try {
     $pointer = 0;
     foreach ($module->getUser()->getUserJiraTickets() as $jiraTicket) {
         $row = array(
-            'id' => "<a target='_blank' href='https://rit-portal.med.stanford.edu/support?id=" . $jiraTicket['id'] . "'>" . $jiraTicket['jira']['key'] . "</a>",
+            'id' => "<a target='_blank' href='" . $module->getClient()->getPortalBaseURL() . "support?id=" . $jiraTicket['id'] . "'>" . $jiraTicket['jira']['key'] . "</a>",
             'title' => $jiraTicket['jira']['fields']['summary'],
             'type' => $jiraTicket['jira']['fields']['issuetype']['name'],
             'status' => $jiraTicket['jira']['fields']['status']['name'],
             'created_at' => date('m/d/Y', strtotime($jiraTicket['created_at'])),
-            'for_current_pid' => $jiraTicket['redcap_pid'] == $module->getProjectId() ? 'Yes' : 'No'
+            'redcap_pid' => $jiraTicket['redcap_pid'],
+            'current_pid' => $jiraTicket['redcap_pid'] === (int)$module->getProjectId()
         );
         $pointer++;
         $result['data'][] = $row;

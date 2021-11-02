@@ -190,7 +190,8 @@ try {
                             sortable: true
                         },
                         {
-                            key: 'for_current_pid',
+                            key: 'redcap_pid',
+                            label: 'REDCap PIF',
                             sortable: true
                         }
                     ],
@@ -236,6 +237,7 @@ try {
                         project_portal_id_saved: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? "true" : "false" ?>",
                         project_portal_url: "<?php echo $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] ?>"
                     },
+                    base_portal_url: "<?php echo $module->getClient()->getPortalBaseURL() ?>",
                     project_status: "<?php echo $module->getProject()->project['status'] ?>",
                     portal_projects_list: <?php echo json_encode($module->getUser()->getProjectPortalList()) ?>,
                     ticket_types: <?php echo json_encode($module->getSupport()->getJiraIssueTypes()) ?>,
@@ -320,7 +322,7 @@ try {
                 filterTickets() {
                     if (this.currentProjectTickets === 'Yes') {
                         this.items = this.allItems.filter(function (n) {
-                            return n.for_current_pid === 'Yes';
+                            return n.current_pid === true;
                         });
                     } else {
                         this.items = this.allItems
