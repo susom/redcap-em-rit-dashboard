@@ -1,5 +1,5 @@
 <!-- Generic Modal -->
-<b-modal id="generic-modal" title="Create New Ticket">
+<b-modal size="lg" id="generic-modal" title="Create New Ticket">
 
 <?php
     require_once("create_jira_ticket.php");

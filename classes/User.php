@@ -201,7 +201,6 @@ class User
                 if ($response->getStatusCode() < 300) {
                     $data = json_decode($response->getBody());
                     $this->projectPortalList = json_decode(json_encode($data), true);
-                    $this->projectPortalList = array_merge(array('' => 'No R2P2 Project '), $this->projectPortalList);
                 }
             }
         } catch (\Exception $e) {

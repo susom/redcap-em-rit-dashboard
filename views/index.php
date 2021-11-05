@@ -69,7 +69,7 @@ try {
         }
 
         .center-block {
-            display: table;  /* Instead of display:block */
+            display: table; /* Instead of display:block */
             margin-left: auto;
             margin-right: auto;
         }
@@ -111,20 +111,16 @@ try {
             <h4>
                 Welcome to your REDCap R2P2 Dashboard!
             </h4>
-            <h6>The tabs below will help you link this project to R2P2, manage your support tickets,
-                view maintenance costs, and more.
+            <h6>Use the tabs below to organize your research projects and communicate with Research IT.
             </h6>
             <div class="p-2">
-<!--                <b-alert variant="secondary" show>-->
-                    <b><i class="fas fa-question-circle"></i> Have Questions? </b> <i>Contact us with a Support Ticket below.</i>
-<!--                </b-alert>-->
+                <!--                <b-alert variant="secondary" show>-->
+                <b><i class="fas fa-question-circle"></i> Have Questions? </b> <i><a target="_blank"
+                                                                                     href="https://medwiki.stanford.edu/x/uiK3Cg">What
+                        is R2P2?</a> Contact us with a Support Ticket below.</i>
+                <!--                </b-alert>-->
             </div>
-            <p>
-                <i>We appreciate your patience -- this portal is new and we look forward to
-                    <a href="https://redcap.stanford.edu/surveys/?s=DNFNAKARFTELJ4WA" target="_blank">
-                        incorporating your feedback
-                    </a> to make it better! <a href=""></a></i>
-            </p>
+
             <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
                 <div class="mt-3">
                     <b-tabs content-class="">
@@ -146,6 +142,12 @@ try {
                     </b-tabs>
                 </div>
             </b-overlay>
+            <p>
+                <i>We appreciate your patience -- R2P2 is new and we look forward to
+                    <a href="https://redcap.stanford.edu/surveys/?s=DNFNAKARFTELJ4WA" target="_blank">
+                        incorporating your feedback
+                    </a> to make it better! <a href=""></a></i>
+            </p>
         </b-container>
 
         <!--        <my-component-name></my-component-name>-->
@@ -177,10 +179,10 @@ try {
                             key: 'title',
                             sortable: true
                         },
-                        {
-                            key: 'type',
-                            sortable: true
-                        },
+                        // {
+                        //     key: 'type',
+                        //     sortable: true
+                        // },
                         {
                             key: 'status',
                             sortable: true
@@ -190,8 +192,12 @@ try {
                             sortable: true
                         },
                         {
+                            key: 'modified_at',
+                            sortable: true
+                        },
+                        {
                             key: 'redcap_pid',
-                            label: 'REDCap PIF',
+                            label: 'REDCap PID',
                             sortable: true
                         }
                     ],
@@ -244,12 +250,12 @@ try {
                     project_portal_id: "",
                     header: "<?php echo str_replace(array("\n", "\r", "\""), array("\\n", "\\r", ""), $module->getSystemSetting('rit-dashboard-main-header'));; ?>",
                     ajaxCreateJiraTicketURL: "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>",
-                    ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/get_user_tickets.php') ?>",
-                    ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/get_project_external_modules.php') ?>",
-                    ajaxGenerateSignedAuthURL: "<?php echo $module->getUrl('ajax/generate_signed_auth.php') ?>",
-                    ajaxAppendSignedAuthURL: "<?php echo $module->getUrl('ajax/append_approved_signed_auth.php') ?>",
-                    ajaxGetSignedAuthURL: "<?php echo $module->getUrl('ajax/get_signed_auth.php') ?>",
-                    ajaxPortalProjectsListURL: "<?php echo $module->getUrl('ajax/portal_project_list.php') ?>",
+                    ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/get_user_tickets.php', false, true) ?>",
+                    ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/get_project_external_modules.php', false, true) ?>",
+                    ajaxGenerateSignedAuthURL: "<?php echo $module->getUrl('ajax/generate_signed_auth.php', false, true) ?>",
+                    ajaxAppendSignedAuthURL: "<?php echo $module->getUrl('ajax/append_approved_signed_auth.php', false, true) ?>",
+                    ajaxGetSignedAuthURL: "<?php echo $module->getUrl('ajax/get_signed_auth.php', false, true) ?>",
+                    ajaxPortalProjectsListURL: "<?php echo $module->getUrl('ajax/portal_project_list.php', false, true) ?>",
                     attachREDCapURL: "<?php echo $module->getURL('ajax/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     detachREDCapURL: "<?php echo $module->getURL('ajax/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSectionURL: "<?php echo $module->getURL('ajax/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
@@ -342,29 +348,12 @@ try {
                 prepareComponent: function () {
                     this.getUserTickets()
                     this.getProjectEMs()
-                    // only try to get signed auth if project is linked
-                    if (this.linked()) {
-                        this.getSignedAuth()
-                    } else {
-                        // global alert message that is none dismissible
-                        if (this.project_status == "0") {
-                            // Dev-mode redcap project
-                            this.showNoneDismissibleAlert = true
-                            this.noneDismissibleAlertMessage += "This REDCap project will require a R2P2 REDCap Maintenance Agreement for Production use.<br>  " +
-                                "Please register and link your project in R2P2 before requesting the change to Production mode.<br>  See the R2P2 tab below for details."
-                            this.noneDismissibleVariant = "warning"
-                        } else if (this.project_status == "1") {
-                            // Production mode redcap project
-                            this.showNoneDismissibleAlert = true
-                            this.noneDismissibleAlertMessage += "This REDCap project REQUIRES a valid R2P2 REDCap Maintenance Agreement.  " +
-                                "Please register and link your project in R2P2 now.  See the R2P2 tab below for details."
-                            this.noneDismissibleVariant = "danger"
-                        }
-
-
-                        // EM tab alert message
-                        //this.setPortalLinkageAlertMessage("danger", "You must first link this REDCap project to the Research IT Portal.  Please click on the Research IT Portal tab to continue.", true)
-                    }
+                    this.manupilateProjectInfo()
+                },
+                manupilateProjectInfo: function () {
+                    var element = document.getElementById('subheaderDiv2')
+                    element.style.float = "right"
+                    element.className = ''
                 },
                 getUserTickets: function () {
                     this.emptyTicketsTable = 'No Tickets for this REDCap project'
@@ -389,16 +378,34 @@ try {
                                 }
                             }
                         }).then(() => {
+                        // only try to get signed auth if project is linked
+                        if (this.linked()) {
+                            this.getSignedAuth()
+                        }
+                    }).then(() => {
+                        if (this.linked() == false) {
+
+                            // global alert message that is none dismissible
+                            if (this.project_status == "0" && this.totalFees > 0) {
+                                // Dev-mode redcap project
+                                this.showNoneDismissibleAlert = true
+                                this.noneDismissibleAlertMessage += "This REDCap project will require a R2P2 REDCap Maintenance Agreement for Production use.<br>  " +
+                                    "Please register and link your project in R2P2 before requesting the change to Production mode.<br>  See the R2P2 tab below for details."
+                                this.noneDismissibleVariant = "warning"
+                            } else if (this.project_status == "1" && this.totalFees > 0) {
+                                // Production mode redcap project
+                                this.showNoneDismissibleAlert = true
+                                this.noneDismissibleAlertMessage += "This REDCap project REQUIRES a valid R2P2 REDCap Maintenance Agreement.  " +
+                                    "Please register and link your project in R2P2 now.  See the R2P2 tab below for details."
+                                this.noneDismissibleVariant = "danger"
+                            }
+                        }
                         if (this.hasREDCapMaintenanceAgreement() === false) {
                             // project in dev mode but has EM with monthly fees
                             if (this.totalFees > 0 && this.project_status == "0") {
                                 if (this.linked() === false) {
                                     this.setEMAlertMessage("warning", "Prior to moving this project to production mode, you will first need to associate it with a Resaerch IT Portal project and ensure you have an active REDCap External Module Maintenance agreement in place.  See the Portal tab for next steps.", true)
-                                } else {
-                                    this.setEMAlertMessage("warning", "Prior to moving this project to production mode, you will first need ensure you have an active REDCap External Module Maintenance agreement in place.  See the Portal tab for next steps.", true)
                                 }
-
-
                                 // project in prod mode but has EM with monthly fees
                             }
                             if (this.totalFees > 0 && this.project_status == "1") {
@@ -417,6 +424,9 @@ try {
                         .then(response => {
                             this.getUserTickets()
                             this.$refs['generic-modal'].hide()
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.alertMessage = response.data.message
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -533,20 +543,20 @@ try {
                     }
                     return projects.substring(0, projects.length - 1);
                 },
-                openWindow: function(url){
+                openWindow: function (url) {
                     window.open(url, '_blank')
                 },
                 determineREDCapStep: function () {
-                    if(this.hasREDCapMaintenanceAgreement() === false){
+                    if (this.hasREDCapMaintenanceAgreement() === false) {
                         return 1
-                    }else{
-                        if(this.portalREDCapMaintenanceAgreement.redcap !== undefined){
+                    } else {
+                        if (this.portalREDCapMaintenanceAgreement.redcap !== undefined) {
                             return 2
                         }
-                        if(this.portalREDCapMaintenanceAgreement.sow_status !== 2){
+                        if (this.portalREDCapMaintenanceAgreement.sow_status !== 2) {
                             return 3
                         }
-                        if(this.portalREDCapMaintenanceAgreement.sow_status === 2){
+                        if (this.portalREDCapMaintenanceAgreement.sow_status === 2) {
                             return 4
                         }
                         return 5
@@ -556,11 +566,6 @@ try {
             mounted() {
                 this.prepareComponent();
             }
-        });
-    </script>
-    <script>
-        $(document).ready(function () {
-            $('#subheaderDiv2').html('My REDCap R2P2 Dashboard'); //overwrite EM title
         });
     </script>
     <?php

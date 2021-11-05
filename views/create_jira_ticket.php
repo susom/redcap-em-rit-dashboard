@@ -9,18 +9,19 @@ namespace Stanford\ProjectPortal;
     <form id="jira-ticket">
 
         <div class="form-group">
-            <label for="exampleInputEmail1">Ticket Summary</label>
+            <label for="exampleInputEmail1"><strong>Title</strong></label>
             <!--            <input type="text" class="form-control" id="summary" name="summary" aria-describedby="emailHelp"-->
             <!--                   placeholder="Question Summary" required>-->
-            <b-form-input v-model="ticket.summary" max="250" placeholder="Summary" required></b-form-input>
+            <b-form-input v-model="ticket.summary" max="250" placeholder="Ticket Title" required></b-form-input>
         </div>
         <div class="form-group">
-            <label for="portal-projects">R2P2 Project</label>
+            <label for="portal-projects"><strong>R2P2 Project</strong> (<span>To create new R2P2 project click <a
+                            target="_blank" :href="base_portal_url">here</a></span>)</label>
             <b-form-select v-model="ticket.project_portal_id" :options="portal_projects_list" class="mb-3"
                            value-field="id"
                            text-field="project_name">
             </b-form-select>
-            <p>To create new R2P2 project click <a target="_blank" :href="base_portal_url">here</a></p>
+
         </div>
         <!--        <div class="form-group">-->
         <!--            <label for="issue-types">Issue Type</label>-->
@@ -29,13 +30,13 @@ namespace Stanford\ProjectPortal;
         <!--        </div>-->
 
         <div class="form-group">
-            <label for="description">Detailed Description</label>
+            <label for="description"><strong>Detailed Description</strong></label>
             <b-form-textarea
                     id="textarea"
                     v-model="ticket.description"
                     placeholder="Screenshots and/or Attachments can be added as comment after creating the ticket"
-                    rows="3"
-                    max-rows="6"
+                    rows="6"
+                    max-rows="10"
             ></b-form-textarea>
         </div>
     </form>

@@ -23,7 +23,7 @@
     </b-row>
     <div v-if="linked() == false">
         <b-card sub-title="R2P2 - REDCap Linkage" class="mt-3">
-            <b-alert variant="danger"
+            <b-alert v-if="totalFees > 0" variant="danger"
                      fade
                      show
             >
@@ -31,22 +31,34 @@
 
                     <b-col class="justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
                                     class="fas fa-exclamation-circle"></i></h5> This REDCap project is NOT yet linked to
-                        an R2P2 project.
+                        an R2P2 project.<br>
+
                     </b-col>
 
                 </b-row>
             </b-alert>
-            <b-row class="mt-3">
+            <b-alert v-if="totalFees == 0" variant="warning"
+                     fade
+                     show
+            >
+                <b-row>
+
+                    <b-col class="justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
+                                    class="fas fa-exclamation-circle"></i></h5> This REDCap project does not currently
+                        require REDCap Maintenance Agreement. Therefore, linking this REDCap project to R2P2 is
+                        optional.
+                    </b-col>
+
+                </b-row>
+            </b-alert>
+            <b-row class="mt-3 text-center">
                 <b-col>
-                    <h6>Please link this REDCap project to the correct R2P2 project.</h6>
+                    <h6>To link this REDCap project to R2P2, select from one of your existing R2P2 projects:</h6>
                 </b-col>
             </b-row>
             <b-row class="mt-3">
                 <b-col>
-                    <div class="d-flex justify-content-center">
-                        <p>If you are already part of the R2P2 project, you can select the correct entry from the list
-                            below:</p>
-                    </div>
+
                     <div class="d-flex justify-content-center pl-3 pr-3">
                         <b-input-group class="mt-3">
                             <b-form-select v-model="ticket.project_portal_id" :options="portal_projects_list"
@@ -71,7 +83,7 @@
             </b-row>
             <b-row class="text-center">
                 <b-col>
-                    If you do not see the project in the list above, find/create the research project in R2P2:
+                    <h6>If you do not see the project in the list above, find/create the research project in R2P2:</h6>
                     <b-button size="sm" variant="success" @click="openWindow('https://rit-portal.med.stanford.edu/')">
                         Find or Create a R2P2 Project
                     </b-button>
@@ -79,67 +91,12 @@
             </b-row>
 
         </b-card>
-        <b-row class="mt-3">
-            <b-col>
-                <strong>Q: What is a R2P2 project and how is it different than a REDCap project?</strong><br>
-            </b-col>
-        </b-row>
-        <b-row class="mt-3">
-            <b-col>
-                <p> Each R2P2 Project represents the overall research project. Typically, it will be associated with
-                    a protocol, an IRB number, a team of researchers, and one or more PTAs.
-                    In some cases, there may be just one REDCap project for a R2P2 project while in many larger
-                    research endeavors you end up with many different REDCap projects all
-                    supporting the same R2P2 research effort.
-                </p>
-            </b-col>
-        </b-row>
-        <b-row class="mt-3">
-            <b-col>
-                <strong>Q: Why don't I see my research project in the R2P2 project dropdown?</strong><br>
-            </b-col>
-        </b-row>
-        <b-row class="mt-3">
-            <b-col>
-                <p>
-                    Only those R2P2 projects where you are a member will appear in the dropdown. If your research
-                    project doesn't show up it could mean one of two things:
-                <ul>
-                    <li>The Research Project has not yet been registered on the R2P2 platform in which case you can
-                        create it
-                    </li>
-                    <li>Or, the project has been created but you were not added as a member. In this case you can
-                        find it on the R2P2 platform and request access
-                    </li>
-                </ul>
-                In either case, your next step is to visit the R2P2 platform and begin the New Project Wizard which
-                will help you find/create the entry.
-                </p>
-            </b-col>
-        </b-row>
-        <b-row class="mt-3">
-            <b-col>
-                <strong>Q: Why do I want to link mt REDCap project to the Portal?</strong><br>
-            </b-col>
-        </b-row>
-        <b-row class="mt-3">
-            <b-col>
-                <p>Linking your REDCap project to the portal has many benefits:
 
-                </p>
-            </b-col>
-        </b-row>
         <b-row class="mt-3">
             <b-col>
-                <ul>
-                    <li>Your support inquiries will be visible on the portal and can be shared with other team
-                        members.
-                    </li>
-                    <li>Professional services and maintenance contracts can be viewed and approved</li>
-                    <li>Consultations for project assistance can be requested and tracked</li>
-                </ul>
+                For more information please visit <a target="_blank" href="https://medwiki.stanford.edu/x/uiK3Cg">the
+                    R2P2 Wiki</a>
             </b-col>
-
         </b-row>
     </div>
     <div v-else>
