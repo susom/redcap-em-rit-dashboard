@@ -342,7 +342,7 @@ try {
                             return n.status !== 'Done';
                         });
                     } else {
-                        this.items = this.allItems
+                        this.filterTickets()
                     }
 
                 },
