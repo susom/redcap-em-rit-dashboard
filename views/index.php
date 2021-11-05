@@ -267,6 +267,7 @@ try {
                     refCount: 0,
                     isLoading: true,
                     currentProjectTickets: 'Yes',
+                    openTickets: 'Yes',
                     emptyTicketsTable: "No Tickets Found",
                     emptyFilteredTicketsTable: "No tickets attached to this REDCap Project. To See full list uncheck 'Display Tickets for current REDCap projects' checkbox"
                 }
@@ -329,6 +330,16 @@ try {
                     if (this.currentProjectTickets === 'Yes') {
                         this.items = this.allItems.filter(function (n) {
                             return n.current_pid === true;
+                        });
+                    } else {
+                        this.items = this.allItems
+                    }
+
+                },
+                filterOpenTickets() {
+                    if (this.openTickets === 'Yes') {
+                        this.items = this.allItems.filter(function (n) {
+                            return n.status !== 'Done';
                         });
                     } else {
                         this.items = this.allItems

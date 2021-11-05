@@ -29,6 +29,13 @@
                                      unchecked-value="No" @change="filterTickets($event)">Only show tickets for this
                         project
                     </b-form-checkbox>
+                    <br>
+                    <b-form-checkbox v-model="openTickets"
+                                     name="open-tickets"
+                                     id="open-tickets"
+                                     value="Yes"
+                                     unchecked-value="No" @change="filterOpenTickets($event)">Only show open tickets
+                    </b-form-checkbox>
 
                 </b-th>
                 <b-th colspan="4">
