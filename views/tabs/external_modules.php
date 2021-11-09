@@ -63,13 +63,26 @@
             ></b-pagination>
         </b-col>
     </b-row>
+    <b-alert class="d-flex d-inline-block"
+             variant="success"
+             fade
+             show
+    >
+        <b-row v-if="determineREDCapStep() == 4" class="mt-2">
 
-    <b-row v-if="determineREDCapStep() == 4" class="mt-2">
-        <b-col md="12"><p>REDCap Maintenance Agreement created for this project. Click
-                <a target="_blank" :href="portalREDCapMaintenanceAgreement.link"><i
-                            class="fas fa-external-link-alt"></i> here</a> to access the SOW</p>
-        </b-col>
+            <b-col class="justify-content-center align-self-center" lg="12"><h5
+                        class="d-inline-block  p-1"><i
+                            class="fa fa-check-circle"></i></h5> This project is properly configured with an approved
+                REDCap
+                Maintenance Agreement. Click <a target="_blank" :href="portalREDCapMaintenanceAgreement.link"><i
+                            class="fas fa-external-link-alt"></i> here</a> to access the SOW
+            </b-col>
+        </b-row>
+    </b-alert>
 
+    <b-row>
+        <b-col>The data for this table is refreshed daily. Recent changes may not be reflected in the table for 24
+            hours. Refresh your project <a href="#">Feature in development.</a></b-col>
     </b-row>
 
 </b-container>

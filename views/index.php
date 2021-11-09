@@ -106,7 +106,7 @@ try {
                      fade
                      :show="showDismissibleAlert"
             >
-                <b>{{alertMessage}}</b>
+                <b v-html="alertMessage"></b>
             </b-alert>
             <h4>
                 Welcome to your REDCap R2P2 Dashboard!
@@ -202,6 +202,7 @@ try {
                         }
                     ],
                     filter: null,
+                    isDisabled: false,
                     currentPage: 1,
                     totalRows: 0,
                     perPage: 10,
@@ -279,7 +280,7 @@ try {
                     if (this.isLoading != undefined) {
                         this.isLoading = true
                     }
-
+                    this.isDisabled = true
                     return config;
                 }, (error) => {
                     // trigger 'loading=false' event here
@@ -294,6 +295,7 @@ try {
                     if (ajaxCalls.length === 0) {
                         this.isLoading = false
                     }
+                    this.isDisabled = false
                     return response;
                 }, (error) => {
                     // trigger 'loading=false' event here
@@ -430,7 +432,6 @@ try {
                     });
                 },
                 submitTicket: function () {
-                    console.log(this.ticket)
                     axios.post(this.ajaxCreateJiraTicketURL, this.ticket)
                         .then(response => {
                             this.getUserTickets()
