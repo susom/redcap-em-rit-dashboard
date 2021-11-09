@@ -30,6 +30,7 @@ try {
     }
 
     $data = $module->getPortal()->appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSowId, $external_modules, USERID);
+    $data['sow_status'] = $data['status'];
     echo json_encode(array_merge($data, array('status' => 'success', 'message' => 'A Signed authorization was appended for this REDCap project in the portal.', 'link' => $module->getClient()->getPortalBaseURL() . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
