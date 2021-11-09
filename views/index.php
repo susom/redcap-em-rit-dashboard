@@ -150,19 +150,19 @@ try {
             </p>
         </b-container>
 
-        <!--        <my-component-name></my-component-name>-->
+        <!--        <Navigation></Navigation>-->
         <?php
         require("modal.php");
         ?>
     </div>
-
+    <!--    <script src="--><?php //echo $module->getUrl('views/tabs/Test.vue.js', false, false) ?><!--"></script>-->
     <script type="module">
         var ajaxCalls = []
-        //import MyComponent from "<?php echo $module->getUrl('views/tabs/Test.vue', false, true) ?>"
 
-        //Vue.component('my-component-name', MyComponent)
+        // Vue.component('Navigation', Navigation)
         new Vue({
             el: "#app",
+
             data() {
                 return {
                     variant: "danger",
