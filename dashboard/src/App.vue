@@ -1,29 +1,29 @@
 <template>
-  <div id="app">
-    <h1>Project id is: {{this.pid}}</h1>
-    <Test :redcap="redcapPid"></Test>
+  <div id="app" class="container">
+    <h1>{{ this.pid }}</h1>
+    <test :pid="this.pid"></test>
   </div>
 </template>
 
 <script>
+import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap"
 import Test from './components/Test'
+
 export default {
   name: 'App',
-  components:{
-    'Test' : Test
+  components: {
+    'test': Test
   },
-  props: ['pid'],
-  data(){
-    return {
-      'redcapPid': '123'
-    }
+  props: {
+    pid: String
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

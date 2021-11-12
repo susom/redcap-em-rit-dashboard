@@ -1,13 +1,14 @@
 <template>
-<div>
-  Hello From Test {{this.redcap}}
-</div>
+  <div>
+    Test component
+    <div class="alert alert-dark">{{ this.pid }}</div>
+  </div>
 </template>
 
 <script>
 export default {
   name: "Test",
-  props: ['redcap']
+  props: ['pid']
 }
 </script>
 
