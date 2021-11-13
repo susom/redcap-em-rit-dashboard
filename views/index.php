@@ -422,7 +422,7 @@ try {
                                 // project in prod mode but has EM with monthly fees
                             }
                             if (this.totalFees > 0 && this.project_status == "1") {
-                                this.setEMAlertMessage("danger", "This project uses External Modules that require a REDCap External Module Maintenance agreement.  Please complete the required steps on the Portal Tab or the external modules may be deactivated.", true)
+                                this.setEMAlertMessage("danger", "This project uses External Modules that require a REDCap Maintenance agreement(RMA).  Please complete the required steps on the R2P2 Tab or the external modules may be deactivated.", true)
                                 // project in analysis mode but has EM with monthly fees
                             }
                             if (this.totalFees > 0 && this.project_status == "2") {
