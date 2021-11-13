@@ -417,7 +417,7 @@ try {
                             // project in dev mode but has EM with monthly fees
                             if (this.totalFees > 0 && this.project_status == "0") {
                                 if (this.linked() === false) {
-                                    this.setEMAlertMessage("warning", "Prior to moving this project to production mode, you will first need to associate it with a Resaerch IT Portal project and ensure you have an active REDCap External Module Maintenance agreement in place.  See the Portal tab for next steps.", true)
+                                    this.setEMAlertMessage("warning", "Prior to moving this project to production mode, you will first need to associate it with a R2P2 and ensure you have an active REDCap Maintenance agreement(RMA) in place.  See the Portal tab for next steps.", true)
                                 }
                                 // project in prod mode but has EM with monthly fees
                             }
@@ -537,8 +537,8 @@ try {
                                 //this.setEMAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
 
                             } else if (this.determineREDCapStep() === 2) {
-                                this.setPortalLinkageAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
-                                //this.setEMAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
+                                this.setPortalLinkageAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap Maintenance Agreement (RMA).  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
+                                //this.setEMAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap Maintenance Agreement (RMA).  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
 
                             } else if (this.determineREDCapStep() === 3) {
                                 this.setPortalLinkageAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
