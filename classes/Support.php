@@ -37,7 +37,7 @@ class Support
     {
 
         $jwt = $this->getClient()->getJwtToken();
-        if (is_null($portalProjectId)) {
+        if (is_null($portalProjectId) || $portalProjectId == '') {
             $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/issues/add-issue/', [
                 'debug' => false,
                 'headers' => [
