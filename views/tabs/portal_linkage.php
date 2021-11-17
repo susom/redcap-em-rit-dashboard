@@ -161,9 +161,8 @@
                         <b-row>
                             <b-col class="justify-content-center align-self-center" lg="12"><h5
                                         class="d-inline-block  p-1"><i
-                                            class="fas fa-exclamation-circle"></i></h5> This REDCap Project has not yet
-                                been
-                                linked to an approved REDCap Maintenance Agreement.
+                                            class="fas fa-exclamation-circle"></i></h5>
+                                {{notifications.r2p2_tab_rma_card_danger_message}}
                             </b-col>
                         </b-row>
                     </b-alert>

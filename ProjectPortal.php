@@ -35,6 +35,7 @@ use Stanford\ProjectPortal\User;
  * @property array $projectPortalList
  * @property array $jiraIssueTypes
  * @property array $userJiraTickets
+ * @property array $notifications
  */
 class ProjectPortal extends AbstractExternalModule
 {
@@ -79,6 +80,8 @@ class ProjectPortal extends AbstractExternalModule
     private $jiraIssueTypes;
 
     private $userJiraTickets;
+
+    private $notifications;
 
     /**
      * ProjectPortal constructor.
@@ -583,5 +586,24 @@ class ProjectPortal extends AbstractExternalModule
         $this->entity = $entity;
     }
 
+    /**
+     * @return array
+     */
+    public function getNotifications(): array
+    {
+        if (!$this->notifications) {
+            $this->setNotifications();
+        }
+        return $this->notifications;
+    }
 
+    /**
+     * @param array $notifications
+     */
+    public function setNotifications(): void
+    {
+        $path = dirname(__DIR__) . '/' . $this->PREFIX . '_' . $this->VERSION . "/language/Notifications.ini";
+        $data = file_get_contents($path);
+        $this->notifications = parse_ini_file($path);;
+    }
 }

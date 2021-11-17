@@ -165,6 +165,7 @@ try {
 
             data() {
                 return {
+                    notifications: <?php echo json_encode($module->getNotifications()) ?>,
                     variant: "danger",
                     noneDismissibleVariant: "danger",
                     portalLinkageVariant: "danger",
@@ -402,14 +403,12 @@ try {
                             if (this.project_status == "0" && this.totalFees > 0) {
                                 // Dev-mode redcap project
                                 this.showNoneDismissibleAlert = true
-                                this.noneDismissibleAlertMessage += "This REDCap project will require a R2P2 REDCap Maintenance Agreement for Production use.<br>  " +
-                                    "Please register and link your project in R2P2 before requesting the change to Production mode.<br>  See the R2P2 tab below for details."
+                                this.noneDismissibleAlertMessage += this.notifications.get_project_ems_dev
                                 this.noneDismissibleVariant = "warning"
                             } else if (this.project_status == "1" && this.totalFees > 0) {
                                 // Production mode redcap project
                                 this.showNoneDismissibleAlert = true
-                                this.noneDismissibleAlertMessage += "This REDCap project REQUIRES a valid R2P2 REDCap Maintenance Agreement.  " +
-                                    "Please register and link your project in R2P2 now.  See the R2P2 tab below for details."
+                                this.noneDismissibleAlertMessage += this.notifications.get_project_ems_prod
                                 this.noneDismissibleVariant = "danger"
                             }
                         }
@@ -417,16 +416,16 @@ try {
                             // project in dev mode but has EM with monthly fees
                             if (this.totalFees > 0 && this.project_status == "0") {
                                 if (this.linked() === false) {
-                                    this.setEMAlertMessage("warning", "Prior to moving this project to production mode, you will first need to associate it with a R2P2 and ensure you have an active REDCap Maintenance agreement(RMA) in place.  See the Portal tab for next steps.", true)
+                                    this.setEMAlertMessage("warning", this.notifications.get_project_ems_dev_2, true)
                                 }
                                 // project in prod mode but has EM with monthly fees
                             }
                             if (this.totalFees > 0 && this.project_status == "1") {
-                                this.setEMAlertMessage("danger", "This project uses External Modules that require a REDCap Maintenance agreement(RMA).  Please complete the required steps on the R2P2 Tab or the external modules may be deactivated.", true)
+                                this.setEMAlertMessage("danger", this.notifications.get_project_ems_prod_2, true)
                                 // project in analysis mode but has EM with monthly fees
                             }
                             if (this.totalFees > 0 && this.project_status == "2") {
-                                this.setEMAlertMessage("info", "The external module maintenance costs only apply while a project is in Production mode.  The current fees are on-hold will not be charged while the project is in analysis/archival mode.", true)
+                                this.setEMAlertMessage("info", this.notifications.get_project_ems_analysis, true)
                             }
                         }
                     });
@@ -533,16 +532,12 @@ try {
                         .then(response => {
                             this.portalREDCapMaintenanceAgreement = response.data;
                             if (this.determineREDCapStep() === 1) {
-                                this.setPortalLinkageAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
-                                //this.setEMAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
-
+                                this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_1, true)
                             } else if (this.determineREDCapStep() === 2) {
-                                this.setPortalLinkageAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap Maintenance Agreement (RMA).  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
-                                //this.setEMAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap Maintenance Agreement (RMA).  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
+                                this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_2, true)
 
                             } else if (this.determineREDCapStep() === 3) {
-                                this.setPortalLinkageAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
-                                //this.setEMAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
+                                this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_3, true)
                             }
                         });
                 },
