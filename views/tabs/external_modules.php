@@ -44,6 +44,10 @@
                 </b-th>
             </b-tr>
         </template>
+        <!-- render html for this column -->
+        <template #cell(maintenance_monthly_cost)="data">
+            <span v-html="data.value"></span>
+        </template>
     </b-table>
     <b-row>
 
@@ -63,12 +67,12 @@
             ></b-pagination>
         </b-col>
     </b-row>
-    <b-alert class="d-flex d-inline-block"
+    <b-alert v-if="determineREDCapStep() == 4" class="d-flex d-inline-block"
              variant="success"
              fade
              show
     >
-        <b-row v-if="determineREDCapStep() == 4" class="mt-2">
+        <b-row class="mt-2">
 
             <b-col class="justify-content-center align-self-center" lg="12"><h5
                         class="d-inline-block  p-1"><i
