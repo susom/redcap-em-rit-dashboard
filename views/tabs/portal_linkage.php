@@ -30,8 +30,8 @@
                 <b-row>
 
                     <b-col class="justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
-                                    class="fas fa-exclamation-circle"></i></h5> This REDCap project is NOT yet linked to
-                        an R2P2 project.<br>
+                                    class="fas fa-exclamation-circle"></i></h5>
+                        {{notifications.r2p2_tab_rma_card_not_linked_danger_message}}.<br>
 
                     </b-col>
 
@@ -44,9 +44,8 @@
                 <b-row>
 
                     <b-col class="justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
-                                    class="fas fa-exclamation-circle"></i></h5> This REDCap project does not currently
-                        require REDCap Maintenance Agreement. Therefore, linking this REDCap project to R2P2 is
-                        optional.
+                                    class="fas fa-exclamation-circle"></i></h5>
+                        {{notifications.r2p2_tab_rma_card_no_fees_warning_message}}
                     </b-col>
 
                 </b-row>
@@ -108,7 +107,8 @@
                 <b-row>
 
                     <b-col class="justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
-                                    class="fas fa-check-circle"></i></h5> This REDCap project is linked to R2P2 project
+                                    class="fas fa-check-circle"></i></h5>
+                        {{notifications.r2p2_tab_rma_card_linked_success_message}}
                         <a :href="ticket.project_portal_url" target="_blank" class="ml-1"><i
                                     class="fas fa-external-link-alt"></i>
                             <span>{{ticket.project_portal_name}}</span></a>
