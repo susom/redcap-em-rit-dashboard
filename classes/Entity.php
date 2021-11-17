@@ -39,11 +39,19 @@ class Entity
         $pointer = 0;
         foreach ($this->getProjectEmUsageRecords($projectID) as $entity) {
             $data = $entity->getData();
+
+            if ($data['maintenance_fees'] != '' && $data['is_em_enabled'] && $data['maintenance_fees']) {
+                $maintenance_monthly_cost = '$' . $data['maintenance_fees'];
+            } elseif (is_null($data['maintenance_fees'])) {
+                $maintenance_monthly_cost = 'TBD';
+            } else {
+                $maintenance_monthly_cost = 'No Monthly Charge';
+            }
             $row = array(
                 'prefix' => $data['module_prefix'],
 //            'is_enabled' => $data['is_em_enabled'] == true ? 'Yes' : 'No',
                 'maintenance_fees' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? $data['maintenance_fees'] : 0,
-                'maintenance_monthly_cost' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? '$' . $data['maintenance_fees'] : 'No Monthly Charge',
+                'maintenance_monthly_cost' => $maintenance_monthly_cost,
             );
             $pointer++;
             $result[] = $row;
