@@ -29,12 +29,6 @@
   "links": {
     "project": [
       {
-        "name": "Create Support Ticket",
-        "icon": "fas fa-ticket-alt",
-        "url": "views/create_jira_ticket.php",
-        "show-header-and-footer": true
-      },
-      {
         "name": "REDCap R2P2 Dashboard",
         "icon": "fas fa-columns",
         "url": "views/index.php",
