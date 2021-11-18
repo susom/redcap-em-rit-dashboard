@@ -65,6 +65,7 @@ ProjectSetup = {
             '</div></div>'
 
         setTimeout(function () {
+            jQuery("div.clearfix.mb-3:contains('The tables below provide general dashboard')").before(data);
             jQuery('#setupChklist-modify_project').before(data);
         }, 10)
 

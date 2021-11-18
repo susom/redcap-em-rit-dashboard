@@ -146,9 +146,9 @@ class ProjectPortal extends AbstractExternalModule
     public function redcap_every_page_top()
     {
         // in case we are loading record homepage load its the record children if existed
-        if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
+        preg_match('/redcap_v[\d\.].*\/index\.php/m', $_SERVER['SCRIPT_NAME'], $matches, PREG_OFFSET_CAPTURE);
+        if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false || !empty($matches)) {
             $this->includeFile("views/project_setup.php");
-
         }
 //        elseif (strpos($_GET['page'], 'create_jira_ticket') !== false) {
 //            $this->prepareProjectPortalList();
