@@ -104,13 +104,15 @@ class ProjectPortal extends AbstractExternalModule
 
         }
 
+
+        $this->setEntity(new Entity());
+
         // set these fields as we might need them later for linkage process.
 
-        $this->setUser(new User($this->getClient(), $this->getProjectId()));
+        $this->setUser(new User($this->getClient(), $this->getEntity(), $this->getProjectId()));
 
         $this->setSupport(new Support($this->getClient()));
 
-        $this->setEntity(new Entity());
 
     }
 
@@ -603,7 +605,6 @@ class ProjectPortal extends AbstractExternalModule
     public function setNotifications(): void
     {
         $path = dirname(__DIR__) . '/' . $this->PREFIX . '_' . $this->VERSION . "/language/Notifications.ini";
-        $data = file_get_contents($path);
         $this->notifications = parse_ini_file($path);;
     }
 }

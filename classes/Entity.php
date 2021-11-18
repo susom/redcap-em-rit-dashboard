@@ -33,6 +33,16 @@ class Entity
         return $entities;
     }
 
+    public function getProjectTotalMaintenanceFees($projectId)
+    {
+        $total = 0;
+        foreach ($this->getProjectEmUsageRecords($projectId) as $entity) {
+            $data = $entity->getData();
+            $total += $data['maintenance_fees'];
+        }
+        return $total;
+    }
+
     public function generateProjectEMUsageArray($projectID): array
     {
         $result = array();

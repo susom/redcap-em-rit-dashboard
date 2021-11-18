@@ -4,10 +4,12 @@
 namespace Stanford\ProjectPortal;
 
 use REDCap;
+
 /**
  * Class User
  * @package Stanford\ProjectPortal
  * @property \Stanford\ProjectPortal\Client $client
+ * @property \Stanford\ProjectPortal\Entity $entity
  * @property array $userJiraTickets
  * @property array $projectPortalList
  * @property int $projectId
@@ -22,15 +24,21 @@ class User
 
     private $projectPortalList;
 
+    private $entity;
+
+
     /**
-     * User constructor.
-     * @param \Stanford\ProjectPortal\Client $client
+     * @param $client
+     * @param null $projectId
+     * @param null $entity
      */
-    public function __construct($client, $projectId = null)
+    public function __construct($client, $entity, $projectId = null)
     {
         $this->setClient($client);
 
         $this->setProjectId($projectId);
+
+        $this->setEntity($entity);
     }
 
 
@@ -49,24 +57,27 @@ class User
                     $projectId = $row['project_id'];
                     $sql = "SELECT ri.username, ri.user_email, ri.user_firstname, ri.user_lastname FROM redcap_user_rights rr RIGHT JOIN redcap_user_information ri ON rr.username = ri.username WHERE rr.project_id = '$projectId' AND rr.username != '$user'";
                     $records = db_query($sql);
-                    if (db_num_rows($records) > 0) {
-                        // init project object to get basic information about the project
-                        $project = new \Project($projectId);
+//                    if (db_num_rows($records) > 0) {
+                    // init project object to get basic information about the project
+                    $project = new \Project($projectId);
 
-                        $temp = array(
-                            'project_name' => $project->project['app_title'],
-                            'project_id' => $project->project_id,
-                            'project_status' => $project->project['status'] ? 'Production' : 'Development',
-                            'last_logged_event' => $project->project['last_logged_event'],
-                            'record_count' => \Records::getRecordCount($project->project_id),
-                        );
-                        // get project users other the main one we sent via API
+                    $temp = array(
+                        'project_name' => $project->project['app_title'],
+                        'project_id' => $project->project_id,
+                        'project_status' => $project->project['status'] ? 'Production' : 'Development',
+                        'last_logged_event' => $project->project['last_logged_event'],
+                        'record_count' => \Records::getRecordCount($project->project_id),
+                        'maintenance_fees' => $this->getEntity()->getProjectTotalMaintenanceFees($project->project_id),
+                    );
+                    // get project users other the main one we sent via API
+                    if (db_num_rows($records) > 0) {
                         while ($record = db_fetch_assoc($records)) {
                             $temp['users'][] = $record;
                         }
-                        $result[$user][] = $temp;
-                        unset($temp);
                     }
+                    $result[$user][] = $temp;
+                    unset($temp);
+//                    }
                 }
             }
 
@@ -228,4 +239,22 @@ class User
 
         return false;
     }
+
+    /**
+     * @return Entity
+     */
+    public function getEntity(): Entity
+    {
+        return $this->entity;
+    }
+
+    /**
+     * @param Entity $entity
+     */
+    public function setEntity(Entity $entity): void
+    {
+        $this->entity = $entity;
+    }
+
+
 }
