@@ -33,6 +33,8 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mdbvue/lib/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <script src="https://unpkg.com/vue-select@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
 
     <style>
         #user-tickets_processing {
@@ -72,6 +74,18 @@ try {
             display: table; /* Instead of display:block */
             margin-left: auto;
             margin-right: auto;
+        }
+
+        .nopadding {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .center-list {
+            width: 90%;
+            /* display: block !important; */
+            margin-left: auto;
+            margin-right: 0;
         }
     </style>
 
@@ -158,13 +172,14 @@ try {
     <!--    <script src="--><?php //echo $module->getUrl('views/tabs/Test.vue.js', false, false) ?><!--"></script>-->
     <script type="module">
         var ajaxCalls = []
-
+        Vue.component('v-select', VueSelect.VueSelect);
         // Vue.component('Navigation', Navigation)
         new Vue({
             el: "#app",
 
             data() {
                 return {
+                    options: [{value: 'CA', label: 'Canada'}],
                     notifications: <?php echo json_encode($module->getNotifications()) ?>,
                     variant: "danger",
                     noneDismissibleVariant: "danger",
@@ -447,12 +462,9 @@ try {
                 },
                 attachRedCapProject: function () {
                     var project = []
-                    for (var i = 0; i < this.portal_projects_list.length; i++) {
-                        if (this.portal_projects_list[i].id == this.ticket.project_portal_id) {
-                            project = this.portal_projects_list[i]
-                        }
-                    }
-                    console.log(project)
+
+                    project = this.ticket.project_portal_id
+
                     axios.post(this.attachREDCapURL, {
                         project_portal_id: project.id,
                         project_portal_name: project.project_name,
@@ -574,6 +586,8 @@ try {
                 this.prepareComponent();
             }
         });
+
+
     </script>
     <?php
 } catch (\Exception $e) {

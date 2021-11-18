@@ -58,12 +58,13 @@
             <b-row class="mt-3">
                 <b-col>
 
-                    <div class="d-flex justify-content-center pl-3 pr-3">
+                    <div class="d-flex justify-content-center center-list pl-3 pr-3">
                         <b-input-group class="mt-3">
-                            <b-form-select v-model="ticket.project_portal_id" :options="portal_projects_list"
-                                           value-field="id"
-                                           text-field="project_name">
-                            </b-form-select>
+                            <v-select class="col-8 nopadding" v-model="ticket.project_portal_id"
+                                      :options="portal_projects_list"
+                                      value="id"
+                                      label="project_name">
+                            </v-select>
                             <b-input-group-append>
                                 <b-button size="sm" @click="attachRedCapProject()" variant="success">Attach Selected
                                     Project
