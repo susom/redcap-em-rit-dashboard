@@ -154,7 +154,7 @@ class User
             }
 
         } catch (\Exception $e) {
-            throw new \LogicException($e->getMessage());
+            $this->userJiraTickets = [];
         }
     }
 
@@ -225,7 +225,7 @@ class User
                 }
             }
         } catch (\Exception $e) {
-            echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
+            $this->projectPortalList = [];
         }
 
     }
