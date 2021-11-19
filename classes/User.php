@@ -46,8 +46,17 @@ class User
     {
         $result = array();
         foreach ($users as $user) {
-            $sql = "SELECT project_id FROM redcap_user_information ri JOIN redcap_user_rights rr ON ri.username = rr.username WHERE ri.username = '$user' OR ri.user_email LIKE '%$user%' OR ri.user_firstname LIKE '%$user%' OR ri.user_lastname LIKE '%$user%'";
+            $sql = "SELECT rr.project_id as project_id, rrc.record_count, rp.app_title as project_name, rp.status, rp.last_logged_event, rp.project_note as description FROM redcap_user_information ri JOIN redcap_user_rights rr ON ri.username = rr.username INNER JOIN redcap_projects rp on rr.project_id = rp.project_id INNER JOIN redcap_record_counts rrc on rp.project_id = rrc.project_id WHERE ri.username = '$user' OR ri.user_email LIKE '%$user%' OR ri.user_firstname LIKE '%$user%' OR ri.user_lastname LIKE '%$user%'";
             $q = db_query($sql);
+
+            $sql_em = "SELECT project_id, SUM(maintenance_fees) as total from redcap_entity_project_external_modules_usage GROUP BY project_id";
+            $q_em = db_query($sql_em);
+            $ems = [];
+            if (db_num_rows($q_em) > 0) {
+                while ($row_em = db_fetch_assoc($q_em)) {
+                    $ems[$row_em['project_id']] = $row_em['total'];
+                }
+            }
             if (db_num_rows($q) > 0) {
                 while ($row = db_fetch_assoc($q)) {
                     // exclude redcap projects that are linked to different research project different from the one making this call
@@ -59,15 +68,16 @@ class User
                     $records = db_query($sql);
 //                    if (db_num_rows($records) > 0) {
                     // init project object to get basic information about the project
-                    $project = new \Project($projectId);
+
 
                     $temp = array(
-                        'project_name' => $project->project['app_title'],
-                        'project_id' => $project->project_id,
-                        'project_status' => $project->project['status'] ? 'Production' : 'Development',
-                        'last_logged_event' => $project->project['last_logged_event'],
-                        'record_count' => \Records::getRecordCount($project->project_id),
-                        'maintenance_fees' => $this->getEntity()->getProjectTotalMaintenanceFees($project->project_id),
+                        'project_name' => $row['project_name'],
+                        'project_id' => $row['project_id'],
+                        'project_status' => $row['status'] ? 'Production' : 'Development',
+                        'last_logged_event' => $row['last_logged_event'],
+                        'record_count' => $row['record_count'],
+                        //'maintenance_fees' => $this->getEntity()->getProjectTotalMaintenanceFees($row['project_id']),
+                        'maintenance_fees' => $ems[$row['project_id']],
                     );
                     // get project users other the main one we sent via API
                     if (db_num_rows($records) > 0) {
