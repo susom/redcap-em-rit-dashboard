@@ -195,6 +195,9 @@ class Portal
         try {
             //$this->getProjectPortalJWTToken();
 
+            if (is_null($portalProjectId) || $portalProjectId == '') {
+                throw new \Exception('R2P2 project cant be empty please select a project from the dropdown or create new one.');
+            }
             $client = $this->getClient()->getGuzzleClient();
             $jwt = $this->getClient()->getJwtToken();
             $response = $client->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/attach-redcap/', [
