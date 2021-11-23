@@ -245,6 +245,7 @@ try {
                     totalRows_em: 0,
                     perPage_em: 10,
                     items_em: [],
+                    allEms: [],
                     totalFees: 0,
                     showDismissibleAlert: false,
                     showNoneDismissibleAlert: false,
@@ -284,6 +285,7 @@ try {
                     refCount: 0,
                     isLoading: true,
                     currentProjectTickets: 'Yes',
+                    currentProjectEms: 'Yes',
                     openTickets: 'Yes',
                     emptyTicketsTable: "No Tickets Found",
                     emptyFilteredTicketsTable: "No tickets attached to this REDCap Project. To See full list uncheck 'Display Tickets for current REDCap projects' checkbox"
@@ -354,6 +356,16 @@ try {
                     }
 
                 },
+                filterEms() {
+                    if (this.currentProjectEms === 'Yes') {
+                        this.items_em = this.allEms.filter(function (n) {
+                            return n.maintenance_fees > 0;
+                        });
+                    } else {
+                        this.items_em = this.allEms
+                    }
+
+                },
                 filterOpenTickets() {
                     if (this.openTickets === 'Yes') {
                         this.items = this.allItems.filter(function (n) {
@@ -400,11 +412,12 @@ try {
                     axios.post(this.ajaxProjectEMstURL)
                         .then(response => {
                             if (response.data.data != undefined) {
-                                this.items_em = response.data.data;
+                                this.items_em = this.allEms = response.data.data;
                                 this.totalRows_em = this.items_em.length;
                                 for (var i = 0; i < this.items_em.length; i++) {
                                     this.totalFees += parseFloat(this.items_em[i].maintenance_fees)
                                 }
+                                this.filterEms()
                             }
                         }).then(() => {
                         // only try to get signed auth if project is linked

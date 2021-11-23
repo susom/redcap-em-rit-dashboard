@@ -21,7 +21,20 @@
 
         <template #thead-top="data">
             <b-tr style="background-color: #D7D7D7">
-                <b-th></b-th>
+                <b-th>
+                    <b-row>
+                        <b-col lg="12">
+                            <b-form-checkbox v-model="currentProjectEms"
+                                             name="all-ems"
+                                             id="all-ems"
+                                             value="Yes"
+                                             unchecked-value="No" @change="filterEms($event)">Show only External Modules
+                                with Fees
+                            </b-form-checkbox>
+
+                        </b-col>
+                    </b-row>
+                </b-th>
                 <b-th>
                     <b-form-group
                             label-for="filter-input"

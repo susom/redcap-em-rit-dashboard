@@ -380,31 +380,6 @@ class ProjectPortal extends AbstractExternalModule
     }
 
     /**
-     * Return array of projects with all project metadata where biocatalyst is enabled
-     * regardless of user permissions
-     *
-     * @return array
-     */
-    private function getEnabledProjects()
-    {
-        $projects = array();
-        $sql = "select rp.project_id, rp.app_title
-          from redcap_external_modules rem
-          left join redcap_external_module_settings rems on rem.external_module_id = rems.external_module_id
-          left join redcap_projects rp on rems.project_id = rp.project_id
-          where rem.directory_prefix = 'biocatalyst_link'
-          and rems.key = 'biocatalyst-enabled'
-          and rems.value = 'true'";
-        $q = $this->query($sql);
-        while ($row = db_fetch_assoc($q)) {
-            $projects[] = $row;
-        }
-
-        return $projects;
-    }
-
-
-    /**
      * Utility function to verify IP is from valid range if specified
      *
      * e.g. 192.168.123.1 = 192.168.123.1/30
