@@ -581,7 +581,7 @@ try {
                         if (this.portalREDCapMaintenanceAgreement.sow_status !== 2) {
                             return 3
                         }
-                        if (this.portalREDCapMaintenanceAgreement.sow_status === 2) {
+                        if (this.portalREDCapMaintenanceAgreement.sow_status === 2 || this.portalREDCapMaintenanceAgreement.sow_status === 6 || this.portalREDCapMaintenanceAgreement.sow_status === 7) {
                             return 4
                         }
                         return 5
