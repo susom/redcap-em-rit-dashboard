@@ -575,13 +575,20 @@ try {
                     if (this.hasREDCapMaintenanceAgreement() === false) {
                         return 1
                     } else {
+                        /**
+                         APPROVED_PENDING_DEVELOPMENT = 2
+                         APPROVED_ACTIVE_DEVELOPMENT = 6
+                         APPROVED_MAINTENANCE = 7
+                         * @type {number[]}
+                         */
+                        var statsus = [2, 6, 7]
                         if (this.portalREDCapMaintenanceAgreement.redcap !== undefined) {
                             return 2
                         }
-                        if (this.portalREDCapMaintenanceAgreement.sow_status !== 2) {
+                        if (!statsus.includes(this.portalREDCapMaintenanceAgreement.sow_status)) {
                             return 3
                         }
-                        if (this.portalREDCapMaintenanceAgreement.sow_status === 2 || this.portalREDCapMaintenanceAgreement.sow_status === 6 || this.portalREDCapMaintenanceAgreement.sow_status === 7) {
+                        if (statsus.includes(this.portalREDCapMaintenanceAgreement.sow_status)) {
                             return 4
                         }
                         return 5
