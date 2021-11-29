@@ -329,7 +329,7 @@ try {
                 },
                 hasREDCapMaintenanceAgreement: function () {
                     //if (this.linked() == true && this.hasManagePermission == true && this.portalREDCapMaintenanceAgreement.project_id == undefined) {
-                    if (this.linked() == true && this.portalREDCapMaintenanceAgreement.project_id == undefined) {
+                    if (this.portalREDCapMaintenanceAgreement.project_id == undefined) {
                         return false
                     }
                     return true;
@@ -416,11 +416,11 @@ try {
                         }).then(() => {
                         // only try to get signed auth if project is linked
                         if (this.linked()) {
-                            this.getSignedAuth()
-                        }
-                    }).then(() => {
-                        if (this.linked() == false) {
-
+                            return this.getSignedAuth()
+                        } else {
+                            if (this.hasREDCapMaintenanceAgreement() === false) {
+                                this.emTabAlerts()
+                            }
                             // global alert message that is none dismissible
                             if (this.project_status == "0" && this.totalFees > 0) {
                                 // Dev-mode redcap project
@@ -432,22 +432,6 @@ try {
                                 this.showNoneDismissibleAlert = true
                                 this.noneDismissibleAlertMessage += this.notifications.get_project_ems_prod
                                 this.noneDismissibleVariant = "danger"
-                            }
-                        }
-                        if (this.hasREDCapMaintenanceAgreement() === false) {
-                            // project in dev mode but has EM with monthly fees
-                            if (this.totalFees > 0 && this.project_status == "0") {
-                                if (this.linked() === false) {
-                                    this.setEMAlertMessage("warning", this.notifications.get_project_ems_dev_2, true)
-                                }
-                                // project in prod mode but has EM with monthly fees
-                            }
-                            if (this.totalFees > 0 && this.project_status == "1") {
-                                this.setEMAlertMessage("danger", this.notifications.get_project_ems_prod_2, true)
-                                // project in analysis mode but has EM with monthly fees
-                            }
-                            if (this.totalFees > 0 && this.project_status == "2") {
-                                this.setEMAlertMessage("info", this.notifications.get_project_ems_analysis, true)
                             }
                         }
                     });
@@ -520,6 +504,7 @@ try {
                             this.showEMDismissibleAlert = false
                             this.alertMessage = response.data.message
                             this.portalREDCapMaintenanceAgreement = response.data;
+                            this.setEMAlertMessage("success", response.data.message, true)
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -540,6 +525,7 @@ try {
                             this.showEMDismissibleAlert = false
                             this.alertMessage = response.data.message
                             this.portalREDCapMaintenanceAgreement = response.data;
+                            this.setEMAlertMessage("success", response.data.message, true)
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -558,6 +544,9 @@ try {
                             } else if (this.determineREDCapStep() === 3) {
                                 this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_3, true)
                             }
+                            if (this.hasREDCapMaintenanceAgreement() === false) {
+                                this.emTabAlerts()
+                            }
                         });
                 },
                 getREDCapProjectsNames: function () {
@@ -571,6 +560,20 @@ try {
                 },
                 openWindow: function (url) {
                     window.open(url, '_blank')
+                },
+                emTabAlerts: function () {
+                    // project in dev mode but has EM with monthly fees
+                    if (this.totalFees > 0 && this.project_status === "0") {
+                        this.setEMAlertMessage("warning", this.notifications.get_project_ems_dev_2, true)
+                        // project in prod mode but has EM with monthly fees
+                    }
+                    if (this.totalFees > 0 && this.project_status === "1") {
+                        this.setEMAlertMessage("danger", this.notifications.get_project_ems_prod_2, true)
+                        // project in analysis mode but has EM with monthly fees
+                    }
+                    if (this.totalFees > 0 && this.project_status === "2") {
+                        this.setEMAlertMessage("info", this.notifications.get_project_ems_analysis, true)
+                    }
                 },
                 determineREDCapStep: function () {
                     if (this.hasREDCapMaintenanceAgreement() === false) {
