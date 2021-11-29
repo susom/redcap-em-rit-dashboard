@@ -328,7 +328,8 @@ try {
                     this.EMVariant = variant
                 },
                 hasREDCapMaintenanceAgreement: function () {
-                    if (this.linked() == true && this.hasManagePermission == true && this.portalREDCapMaintenanceAgreement.project_id == undefined) {
+                    //if (this.linked() == true && this.hasManagePermission == true && this.portalREDCapMaintenanceAgreement.project_id == undefined) {
+                    if (this.linked() == true && this.portalREDCapMaintenanceAgreement.project_id == undefined) {
                         return false
                     }
                     return true;
