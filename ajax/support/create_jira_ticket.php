@@ -30,7 +30,7 @@ try {
     $issueType = array_key_first($types);
     $description = filter_var($body['description'], FILTER_SANITIZE_STRING);
 
-    $data = $module->getSupport()->createJiraTicketViaPortal($redcapProjectId, $summary, $issueType, $description, $portalProjectId);
+    $data = $module->getSupport()->createJiraTicketViaPortal($redcapProjectId, $summary, $issueType, $description, $portalProjectId, $module->getProject()->project['app_title']);
     echo json_encode(array_merge($data, array('status' => 'success', 'message' => "<a target='_blank' href='" . $module->getClient()->getPortalBaseURL() . "support?id=" . $data['id'] . "'>" . $data['jira']['key'] . "</a> been created")));
 } catch (\LogicException $e) {
     header("Content-type: application/json");

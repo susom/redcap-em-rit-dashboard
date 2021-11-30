@@ -33,7 +33,7 @@ class Support
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function createJiraTicketViaPortal($redcapProjectId, $summary, $issueTypeId, $description, $portalProjectId = null)
+    public function createJiraTicketViaPortal($redcapProjectId, $summary, $issueTypeId, $description, $portalProjectId = null, $redcapProjectName = null)
     {
 
         $jwt = $this->getClient()->getJwtToken();
@@ -45,6 +45,7 @@ class Support
                 ],
                 'form_params' => [
                     'redcap' => $redcapProjectId,
+                    'redcap_name' => $redcapProjectName,
                     'summary' => $summary,
                     'request_type' => $issueTypeId,
                     'description' => $description,
