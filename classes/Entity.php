@@ -63,14 +63,16 @@ class Entity
 
     public function checkOverduePayments($projectId, $monthlyPayment)
     {
-        $month = date('m', time());
-        // check if overdue payment record exists for current month
-        $query = "select * from redcap_entity_projects_overdue_payments where project_id = " . intval($projectId) . " and month = " . intval($month);
-        $q = db_query($query);
-        $row = db_fetch_assoc($q);
-        if (empty($row)) {
-            $sql = "insert into redcap_entity_projects_overdue_payments (`project_id`, monthly_payments, month, created, updated, instance) values ('$projectId' , '{$monthlyPayment}', '{$month}','" . time() . "','" . time() . "','0')";
-            db_query($sql);
+        if ($monthlyPayment > 0) {
+            $month = date('m', time());
+            // check if overdue payment record exists for current month
+            $query = "select * from redcap_entity_projects_overdue_payments where project_id = " . intval($projectId) . " and month = " . intval($month);
+            $q = db_query($query);
+            $row = db_fetch_assoc($q);
+            if (empty($row)) {
+                $sql = "insert into redcap_entity_projects_overdue_payments (`project_id`, monthly_payments, month, created, updated, instance) values ('$projectId' , '{$monthlyPayment}', '{$month}','" . time() . "','" . time() . "','0')";
+                db_query($sql);
+            }
         }
     }
 
@@ -81,6 +83,16 @@ class Entity
             $data = $entity->getData();
             $total += $data['maintenance_fees'];
         }
+        return $total;
+    }
+
+    public function getTotalMonthlyPayment($projectId)
+    {
+        $total = 0;
+        foreach ($this->getProjectEmUsageRecords($projectId) as $data) {
+            $total += $data['maintenance_fees'];
+        }
+
         return $total;
     }
 

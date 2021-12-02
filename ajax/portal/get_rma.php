@@ -13,7 +13,6 @@ try {
         $data['sow_status'] = $data['status'];
         echo json_encode(array_merge($data, array('status' => 'success', 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
     } else {
-        $module->getEntity()->checkOverduePayments($module->getProjectId(), filter_var($_GET['monthly_payment'], FILTER_SANITIZE_NUMBER_FLOAT));
         echo json_encode(array('status' => 'success'));
     }
 } catch (\LogicException $e) {

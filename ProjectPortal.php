@@ -91,8 +91,10 @@ class ProjectPortal extends AbstractExternalModule
         parent::__construct();
 
 
-
         $this->setClient(new Client($this->getSystemSetting('project-portal-api-token'), $this->getSystemSetting('portal-username'), $this->getSystemSetting('portal-password'), $this->getSystemSetting('portal-base-url')));
+
+
+        $this->setEntity(new Entity());
 
         if ($_GET && ($_GET['projectid'] != null || $_GET['pid'] != null)) {
 
@@ -102,10 +104,13 @@ class ProjectPortal extends AbstractExternalModule
 
             $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title']));
 
+            // check if no RMA in place even if no redcap is linked to r2p2 then add overdue payment
+            if (!isset($this->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
+                $this->getEntity()->checkOverduePayments($this->getProjectId(), $this->getEntity()->getTotalMonthlyPayment($this->getProjectId()));
+            }
         }
 
 
-        $this->setEntity(new Entity());
 
         // set these fields as we might need them later for linkage process.
 
