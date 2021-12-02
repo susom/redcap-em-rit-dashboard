@@ -22,11 +22,30 @@ try {
         throw new \Exception("portal project id is required");
     }
 
+    $ems = $body['external_modules'];
+    // before generating RMA check if overdue payment exists
+    $overdue = $module->getEntity()->getOverduePayments($module->getProjectId());
+    if (!empty($overdue)) {
+        $month = date('m', time());
+        foreach ($overdue as $item) {
+            // no need to add current month overdue payment.
+            if ($month == $item['month']) {
+                continue;
+            }
+            $ems[] = array(
+                'prefix' => 'Overdue payment for month of ' . date("F", strtotime('00-' . $month . '-01')),
+                'maintenance_fees' => $item['monthly_payments']
+            );
+        }
+    }
 
-    $external_modules = json_encode($body['external_modules']);
+    $external_modules = json_encode($ems);
 
     $data = $module->getPortal()->generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, USERID);
     $data['sow_status'] = $data['status'];
+    if ($overdue) {
+        $module->getEntity()->deleteOverduePayments($module->getProjectId());
+    }
     echo json_encode(array_merge($data, array('status' => 'success', 'message' => $module->getNotifications()['generate_rma_success_message'], 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
 } catch (\LogicException $e) {
     header("Content-type: application/json");

@@ -533,7 +533,7 @@ try {
                     });
                 },
                 getSignedAuth: function () {
-                    axios.get(this.ajaxGetSignedAuthURL)
+                    axios.get(this.ajaxGetSignedAuthURL + '&monthly_payment=' + this.totalFees)
                         .then(response => {
                             this.portalREDCapMaintenanceAgreement = response.data;
                             if (this.determineREDCapStep() === 1) {
