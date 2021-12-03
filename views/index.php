@@ -113,7 +113,7 @@ try {
                      fade
                      :show="showDismissibleAlert"
             >
-                <b v-html="alertMessage"></b>
+                <b class="row" v-html="alertMessage"></b>
             </b-alert>
             <h4>
                 Welcome to your REDCap R2P2 Dashboard!
@@ -281,6 +281,7 @@ try {
                     currentProjectEms: 'Yes',
                     openTickets: 'Yes',
                     emptyTicketsTable: "No Tickets Found",
+                    bodyMessage: '',
                     emptyFilteredTicketsTable: "No tickets attached to this REDCap Project. To See full list uncheck 'Display Tickets for current REDCap projects' checkbox"
                 }
             },
@@ -441,9 +442,11 @@ try {
                         .then(response => {
                             this.getUserTickets()
                             this.$refs['generic-modal'].hide()
+                            this.$refs['ticket-modal'].show()
                             this.variant = 'success'
                             this.showDismissibleAlert = true
                             this.alertMessage = response.data.message
+                            this.bodyMessage = response.data.message
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true

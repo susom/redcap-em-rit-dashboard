@@ -31,7 +31,7 @@ try {
     $description = filter_var($body['description'], FILTER_SANITIZE_STRING);
 
     $data = $module->getSupport()->createJiraTicketViaPortal($redcapProjectId, $summary, $issueType, $description, $portalProjectId, $module->getProject()->project['app_title']);
-    echo json_encode(array_merge($data, array('status' => 'success', 'message' => "<a target='_blank' href='" . $module->getClient()->getPortalBaseURL() . "support?id=" . $data['id'] . "'>" . $data['jira']['key'] . "</a> been created")));
+    echo json_encode(array_merge($data, array('status' => 'success', 'message' => "<a target='_blank' href='" . $module->getClient()->getPortalBaseURL() . "support?id=" . $data['id'] . "'><h3>" . $data['jira']['key'] . "</h3></a>&nbsp;<h3>been created</h3>")));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);
