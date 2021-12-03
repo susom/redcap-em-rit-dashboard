@@ -65,12 +65,13 @@ class Entity
     {
         if ($monthlyPayment > 0) {
             $month = date('m', time());
+            $year = date('Y', time());
             // check if overdue payment record exists for current month
-            $query = "select * from redcap_entity_projects_overdue_payments where project_id = " . intval($projectId) . " and month = " . intval($month);
+            $query = "select * from redcap_entity_projects_overdue_payments where project_id = " . intval($projectId) . " and `year` = " . intval($year) . " and `month` = " . intval($month);
             $q = db_query($query);
             $row = db_fetch_assoc($q);
             if (empty($row)) {
-                $sql = "insert into redcap_entity_projects_overdue_payments (`project_id`, monthly_payments, month, created, updated, instance) values ('$projectId' , '{$monthlyPayment}', '{$month}','" . time() . "','" . time() . "','1')";
+                $sql = "insert into redcap_entity_projects_overdue_payments (`project_id`, monthly_payments, created, updated, instance) values ('$projectId' , '{$monthlyPayment}','" . time() . "','" . time() . "','1')";
                 db_query($sql);
             }
         }
