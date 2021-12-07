@@ -77,8 +77,8 @@ try {
     <?php
     if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
         $data = $module->getPortal()->getREDCapSignedAuthInPortal($module->getPortal()->projectPortalSavedConfig['portal_project_id'], $module->getProjectId());
-
-        if (empty($data)) {
+        $statuses = [2, 6, 7];
+        if (empty($data) && in_array($data['status'], $statuses)) {
             ?>
             <div class="rounded alert alert-<?php echo($module->getProject()->project['status'] == '1' ? 'danger' : 'warning') ?>">
                 <div class="row">
@@ -100,7 +100,7 @@ try {
                                         <?php
                                     }
                                     ?>
-                                    <br> Click the
+                                    <br>If RMA in place please make sure its approved. otherwise Click the
                                     <a class="portal-setup" href="<?php echo $module->getUrl("views/index.php") ?>">
                                         <i class="fas fa-external-link-alt"></i> <span>REDCap R2P2 Dashboard</span>
                                     </a> link on the left sidebar to generate RMA.
