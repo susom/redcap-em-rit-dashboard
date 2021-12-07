@@ -113,7 +113,7 @@ try {
             <?php
         } else {
             ?>
-            <div class="rounded alert alert-success">
+            <div data-status="<?php echo $data['status'] ?>" class="rounded alert alert-success">
                 <div class="row">
                     <div class="col-2">
                         <div class="row"><i style="font-size: 20px; margin-left: 20%;" class="fas fa-check"></i></div>
