@@ -11,34 +11,35 @@ try {
     <!--            text-decoration: underline;-->
     <!--        }-->
     <!--    </style>-->
-    <div id="portal-linkage-container">
-        <div id="portal-errors" class="alert alert-danger hidden"></div>
-        <div class="rounded alert alert-<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? 'success' : 'danger' ?>">
-            <div class="row">
-                <div class="col-2">
-                    <div class="row">
-                        <?php
-                        if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-                            ?>
-                            <i style="font-size: 20px; margin-left: 20%;" class="fas fa-check"></i>
-                            <?php
-                        } else {
-                            ?>
-                            <i style="font-size: 30px; margin-left: 20%;" class="fas fa-times"></i>
-                            <?php
-                        }
+    <div id="portal-linkage-container" class="mb-2"
+         data-is-linked="<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? 'true' : 'false' ?>"">
+    <div id="portal-errors" class="alert alert-danger hidden"></div>
+    <div class="rounded alert alert-<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? 'success' : 'danger' ?>">
+        <div class="row">
+            <div class="col-2">
+                <div class="row">
+                    <?php
+                    if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
                         ?>
-                    </div>
-
-                </div>
-                <div class="col-8">
-                    <div class="row">
+                        <i style="font-size: 20px; margin-left: 20%;" class="fas fa-check"></i>
                         <?php
-                        // If the PID is associated to a REDCap Project
-                        if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-                            ?>
-                            <div class="row">
-                                <div class="">
+                    } else {
+                        ?>
+                        <i style="font-size: 30px; margin-left: 20%;" class="fas fa-times"></i>
+                        <?php
+                    }
+                    ?>
+                </div>
+
+            </div>
+            <div class="col-8">
+                <div class="row">
+                    <?php
+                    // If the PID is associated to a REDCap Project
+                    if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
+                        ?>
+                        <div class="row">
+                            <div class="">
                                     <span><!--i class="fas fa-wrench"></i--> This REDCap project is part of the R2P2 Project
                                         <br><a style="text-decoration: underline" class="portal-setupx" target="_blank"
                                                href="<?php echo $module->getPortal()->projectPortalSavedConfig['portal_project_url'] ?>">
@@ -46,32 +47,98 @@ try {
                                             <i class="fas fa-external-link-alt"></i> <span><?php echo $module->getPortal()->projectPortalSavedConfig['portal_project_name'] ?></span>
                                         </a>
                                     </span>
-                                </div>
                             </div>
-                            <?php
-                        } else {
-                            ?>
-                            <div>
-                                This REDCap project is NOT yet linked to an R2P2 project.
-                                <!--                                <a style="text-decoration: underline" id="what-is-this" href="#">What is this?</a>-->
-                                <br> Click the
-                                <a class="portal-setup" href="<?php echo $module->getUrl("views/index.php") ?>">
-                                    <i class="fas fa-column"></i> <span>REDCap R2P2 Dashboard</span>
-                                </a> link on the left sidebar to get started.
-                            </div>
-                            <?php
-                        }
+                        </div>
+                        <?php
+                    } else {
                         ?>
-                    </div>
+                        <div>
+                            This REDCap project is NOT yet linked to an R2P2 project.
+                            <!--                                <a style="text-decoration: underline" id="what-is-this" href="#">What is this?</a>-->
+                            <br> Click the
+                            <a class="portal-setup" href="<?php echo $module->getUrl("views/index.php") ?>">
+                                <i class="fas fa-column"></i> <span>REDCap R2P2 Dashboard</span>
+                            </a> link on the left sidebar to get started.
+                        </div>
+                        <?php
+                    }
+                    ?>
                 </div>
-                <div class="col-2">
-                    <div class="text-right" style="color:#555; font-size:11px;">
-                        <a id="what-is-this" href="#"><i class="fas fa-info-circle"></i> <span
-                                    style="text-decoration: underline">What is R2P2?</span></a>
-                    </div>
+            </div>
+            <div class="col-2">
+                <div class="text-right" style="color:#555; font-size:11px;">
+                    <a id="what-is-this" href="#"><i class="fas fa-info-circle"></i> <span
+                                style="text-decoration: underline">What is R2P2?</span></a>
                 </div>
             </div>
         </div>
+    </div>
+
+    <?php
+    if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
+        $data = $module->getPortal()->getREDCapSignedAuthInPortal($module->getPortal()->projectPortalSavedConfig['portal_project_id'], $module->getProjectId());
+
+        if (empty($data)) {
+            ?>
+            <div class="rounded alert alert-<?php echo($module->getProject()->project['status'] == '1' ? 'danger' : 'warning') ?>">
+                <div class="row">
+                    <div class="col-2">
+                        <div class="row"><i style="font-size: 30px; margin-left: 20%;" class="fas fa-times"></i></div>
+                    </div>
+                    <div class="col-8">
+                        <div class="row">
+                            <div class="row">
+                                <div class="">
+                                    <?php
+                                    if ($module->getProject()->project['status'] == '1') {
+                                        ?>
+                                        <span><?php echo $module->getNotifications()['get_project_ems_prod'] ?></span>
+                                        <?php
+                                    } else {
+                                        ?>
+                                        <span><?php echo $module->getNotifications()['get_project_ems_dev'] ?></span>
+                                        <?php
+                                    }
+                                    ?>
+                                    <br> Click the
+                                    <a class="portal-setup" href="<?php echo $module->getUrl("views/index.php") ?>">
+                                        <i class="fas fa-external-link-alt"></i> <span>REDCap R2P2 Dashboard</span>
+                                    </a> link on the left sidebar to generate RMA.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php
+        } else {
+            ?>
+            <div class="rounded alert alert-success>">
+                <div class="row">
+                    <div class="col-2">
+                        <div class="row"><i style="font-size: 30px; margin-left: 20%;" class="fas fa-times"></i></div>
+                    </div>
+                    <div class="col-8">
+                        <div class="row">
+                            <div class="row">
+                                <div class="">
+                                    <h5
+                                            class="d-inline-block  p-1"><i
+                                                class="fas fa-check-circle"></i></h5> This REDCap Project is linked to
+                                    an
+                                    approved
+                                    REDCap Maintenance Agreement.
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+    }
+    ?>
     </div>
     <?php
 } catch (\LogicException $e) {
