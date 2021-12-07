@@ -113,18 +113,17 @@ try {
             <?php
         } else {
             ?>
-            <div class="rounded alert alert-success>">
+            <div class="rounded alert alert-success">
                 <div class="row">
                     <div class="col-2">
-                        <div class="row"><i style="font-size: 30px; margin-left: 20%;" class="fas fa-times"></i></div>
+                        <div class="row"><i style="font-size: 20px; margin-left: 20%;" class="fas fa-check"></i></div>
                     </div>
                     <div class="col-8">
                         <div class="row">
                             <div class="row">
                                 <div class="">
                                     <h5
-                                            class="d-inline-block  p-1"><i
-                                                class="fas fa-check-circle"></i></h5> This REDCap Project is linked to
+                                            class="d-inline-block  p-1"></h5>This REDCap Project is linked to
                                     an
                                     approved
                                     REDCap Maintenance Agreement.
