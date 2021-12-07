@@ -111,7 +111,6 @@ class ProjectPortal extends AbstractExternalModule
         }
 
 
-
         // set these fields as we might need them later for linkage process.
 
         $this->setUser(new User($this->getClient(), $this->getEntity(), $this->getProjectId()));
@@ -119,6 +118,28 @@ class ProjectPortal extends AbstractExternalModule
         $this->setSupport(new Support($this->getClient()));
 
 
+    }
+
+    // override code function to allow any logged in user to access the dashboard.
+    public function redcap_module_link_check_display($project_id, $link)
+    {
+        if (ExternalModules::isNoAuth()) {
+            // Anyone can view NOAUTH pages.
+            // Remember, redcap_module_link_check_display() is currently only called for pages defined in config.json.
+            return $link;
+        }
+
+        if (ExternalModules::isSuperUser()) {
+            // Super users can see all pages
+            return $link;
+        }
+
+        $username = ExternalModules::getUsername();
+        if (!empty($project_id) && $username) {
+            return $link;
+        }
+
+        return null;
     }
 
     /**
