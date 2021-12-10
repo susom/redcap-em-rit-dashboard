@@ -10,10 +10,24 @@ namespace Stanford\ProjectPortal;
  */
 class Entity
 {
+    use emLoggerTrait;
+
     private $record;
+
+    public $PREFIX;
+
+    /**
+     * @param $PREFIX
+     */
+    public function __construct($PREFIX)
+    {
+        $this->PREFIX = $PREFIX;
+    }
+
 
     public function getREDCapRecordViaID($projectId, $eventId, $recordId)
     {
+
         $param = array(
             'project_id' => $projectId,
             'return_format' => 'array',
@@ -26,11 +40,13 @@ class Entity
 
     public function getProjectEmUsageRecords($projectId)
     {
-//        $factory = new \REDCapEntity\EntityFactory();
-//        $entities = $factory->query('project_external_modules_usage')->condition('project_id', $projectId)
-//            ->execute();;
-//
-//        return $entities;
+        $this->emError("Before Entity");
+        $factory = new \REDCapEntity\EntityFactory();
+        $entities = $factory->query('project_external_modules_usage')->condition('project_id', $projectId)
+            ->execute();
+        $this->emError("After Entity");
+
+        return $entities;
         $query = "select * from redcap_entity_project_external_modules_usage where project_id = " . intval($projectId);
         $q = db_query($query);
         $result = [];
@@ -101,8 +117,8 @@ class Entity
     {
         $result = array();
         $pointer = 0;
-        foreach ($this->getProjectEmUsageRecords($projectID) as $data) {
-            //$data = $entity->getData();
+        foreach ($this->getProjectEmUsageRecords($projectID) as $entity) {
+            $data = $entity->getData();
 
 
             if ($data['maintenance_fees'] != '' && $data['is_em_enabled'] && $data['maintenance_fees']) {
