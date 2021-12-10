@@ -94,7 +94,7 @@ class ProjectPortal extends AbstractExternalModule
         $this->setClient(new Client($this->getSystemSetting('project-portal-api-token'), $this->getSystemSetting('portal-username'), $this->getSystemSetting('portal-password'), $this->getSystemSetting('portal-base-url')));
 
 
-        $this->setEntity(new Entity($this->PREFIX));
+        $this->setEntity(new Entity());
 
         if ($_GET && ($_GET['projectid'] != null || $_GET['pid'] != null)) {
 
