@@ -25,23 +25,27 @@ try {
     $ems = $body['external_modules'];
     // before generating RMA check if overdue payment exists
     $overdue = $module->getEntity()->getOverduePayments($module->getProjectId());
+    $overdueArray = [];
     if (!empty($overdue)) {
         $month = date('m', time());
+
         foreach ($overdue as $item) {
             // no need to add current month overdue payment.
             if ($month == $item['month']) {
                 continue;
             }
-            $ems[] = array(
-                'prefix' => 'Overdue payment for month of ' . date("F", strtotime('00-' . $month . '-01')),
-                'maintenance_fees' => $item['monthly_payments']
+            $overdueArray[] = array(
+                'content' => 'Overdue payment for month of ' . date("F", strtotime('00-' . $month . '-01')),
+                'monthly_payments' => $item['monthly_payments']
             );
         }
+        $overdue = json_encode($overdueArray);
     }
 
     $external_modules = json_encode($ems);
 
-    $data = $module->getPortal()->generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, USERID);
+
+    $data = $module->getPortal()->generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, USERID, $overdue);
     $data['sow_status'] = $data['status'];
     if ($overdue) {
         $module->getEntity()->deleteOverduePayments($module->getProjectId());

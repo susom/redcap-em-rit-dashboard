@@ -100,7 +100,7 @@ class Portal
     }
 
 
-    public function generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, $username)
+    public function generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, $username, $overdue = '')
     {
         try {
             $jwt = $this->getClient()->getJwtToken();
@@ -109,6 +109,7 @@ class Portal
                 'form_params' => [
                     'redcap_project_id' => $redcapProjectId,
                     'external_modules' => $external_modules,
+                    'overdue_payment' => $overdue,
                     'username' => $username,
                 ],
                 'headers' => [
@@ -125,7 +126,7 @@ class Portal
         }
     }
 
-    public function appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSOWID, $external_modules, $username)
+    public function appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSOWID, $external_modules, $username, $overdue = '')
     {
         try {
             $jwt = $this->getClient()->getJwtToken();
@@ -136,6 +137,7 @@ class Portal
                     'portal_sow_id' => $portalSOWID,
                     'username' => $username,
                     'external_modules' => $external_modules,
+                    'overdue_payment' => $overdue,
                 ],
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",
