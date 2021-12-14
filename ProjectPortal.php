@@ -105,9 +105,9 @@ class ProjectPortal extends AbstractExternalModule
             $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title']));
 
             // check if no RMA in place even if no redcap is linked to r2p2 then add overdue payment
-            if (!isset($this->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-                $this->getEntity()->checkOverduePayments($this->getProjectId(), $this->getEntity()->getTotalMonthlyPayment($this->getProjectId()));
-            }
+//            if (!isset($this->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
+//                $this->getEntity()->checkOverduePayments($this->getProjectId(), $this->getEntity()->getTotalMonthlyPayment($this->getProjectId()));
+//            }
         }
 
 
@@ -576,7 +576,7 @@ class ProjectPortal extends AbstractExternalModule
     /**
      * @return Entity
      */
-    public function getEntity(): Entity
+    public function getEntity()
     {
         return $this->entity;
     }
@@ -584,7 +584,7 @@ class ProjectPortal extends AbstractExternalModule
     /**
      * @param Entity $entity
      */
-    public function setEntity(Entity $entity): void
+    public function setEntity(Entity $entity)
     {
         $this->entity = $entity;
     }
