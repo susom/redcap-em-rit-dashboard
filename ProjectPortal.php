@@ -120,6 +120,18 @@ class ProjectPortal extends AbstractExternalModule
 
     }
 
+    public function checkProjectsRMACron()
+    {
+        $projects = self::query("select project_id, app_title from redcap_projects where status = 1", []);
+
+        while ($project = $projects->fetch_assoc()) {
+            $id = $project['project_id'];
+            $url = $this->getUrl("ajax/entity/cron.php", true) . '&pid=' . $id;
+            $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+            $this->emDebug("running cron for $url on project " . $project['app_title']);
+        }
+    }
+
     // override code function to allow any logged in user to access the dashboard.
     public function redcap_module_link_check_display($project_id, $link)
     {
