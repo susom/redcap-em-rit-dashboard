@@ -11,7 +11,7 @@ try {
     $portalProjectDescription = filter_var($body['project_portal_description'], FILTER_SANITIZE_STRING);
     $inputs = $module->getPortal()->attachToProjectPortal($portalProjectId, $portalProjectName, $portalProjectDescription);
     //$module->savePortalProjectInfoInREDCap($inputs);
-    echo json_encode(array('status' => 'success', 'message' => 'This REDCap project is now attached to ' . $portalProjectName, 'portal_project' => $inputs));
+    echo json_encode(array('status' => 'success', 'message' => $module->getNotifications()['attach_redcap_to_r2p2_success_message'] . $portalProjectName, 'portal_project' => $inputs));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);

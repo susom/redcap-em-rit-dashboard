@@ -24,16 +24,11 @@
     "redcap_every_page_top"
   ],
   "no-auth-pages": [
-    "services"
+    "services",
+    "ajax/entity/cron"
   ],
   "links": {
     "project": [
-      {
-        "name": "Create Support Ticket",
-        "icon": "fas fa-ticket-alt",
-        "url": "views/create_jira_ticket.php",
-        "show-header-and-footer": true
-      },
       {
         "name": "REDCap R2P2 Dashboard",
         "icon": "fas fa-columns",
@@ -128,5 +123,14 @@
     }
   ],
   "project-settings": [
+  ],
+  "crons": [
+    {
+      "cron_name": "project_rma_check",
+      "cron_description": "Check projects in Prod status if RMA in place or not. monthly ",
+      "method": "checkProjectsRMACron",
+      "cron_frequency": "2592000",
+      "cron_max_run_time": "3600"
+    }
   ]
 }

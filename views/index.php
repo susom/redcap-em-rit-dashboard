@@ -33,6 +33,8 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mdbvue/lib/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <script src="https://unpkg.com/vue-select@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
 
     <style>
         #user-tickets_processing {
@@ -73,18 +75,23 @@ try {
             margin-left: auto;
             margin-right: auto;
         }
+
+        .nopadding {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .center-list {
+            width: 90%;
+            /* display: block !important; */
+            margin-left: auto;
+            margin-right: 0;
+        }
     </style>
 
 
     <script src="<?php echo $module->getUrl('assets/js/index.js') ?>"></script>
     <script src="<?php echo $module->getUrl('assets/js/project_setup.js') ?>"></script>
-    <script>
-        //Main.ajaxCreateJiraTicketURL = "<?php //echo $module->getUrl('ajax/create_jira_ticket.php') ?>//"
-        //Main.ajaxUserTicketURL = "<?php //echo $module->getUrl('ajax/get_user_tickets.php') ?>//"
-        //Main.ajaxProjectEMstURL = "<?php //echo $module->getUrl('ajax/get_project_external_modules.php') ?>//"
-        //Main.ajaxPortalProjectsListURL = "<?php //echo $module->getUrl('ajax/portal_project_list.php') ?>//"
-        //Main.init()
-    </script>
     <div id="app">
 
         <b-container fluid class="height-100">
@@ -106,7 +113,7 @@ try {
                      fade
                      :show="showDismissibleAlert"
             >
-                <b v-html="alertMessage"></b>
+                <b class="row" v-html="alertMessage"></b>
             </b-alert>
             <h4>
                 Welcome to your REDCap R2P2 Dashboard!
@@ -158,13 +165,15 @@ try {
     <!--    <script src="--><?php //echo $module->getUrl('views/tabs/Test.vue.js', false, false) ?><!--"></script>-->
     <script type="module">
         var ajaxCalls = []
-
+        Vue.component('v-select', VueSelect.VueSelect);
         // Vue.component('Navigation', Navigation)
         new Vue({
             el: "#app",
 
             data() {
                 return {
+                    options: [{value: 'CA', label: 'Canada'}],
+                    notifications: <?php echo json_encode($module->getNotifications()) ?>,
                     variant: "danger",
                     noneDismissibleVariant: "danger",
                     portalLinkageVariant: "danger",
@@ -205,7 +214,7 @@ try {
                     isDisabled: false,
                     currentPage: 1,
                     totalRows: 0,
-                    perPage: 10,
+                    perPage: 100,
                     items: [],
                     allItems: [],
                     alertMessage: '',
@@ -227,8 +236,9 @@ try {
                     filter_em: null,
                     currentPage_em: 1,
                     totalRows_em: 0,
-                    perPage_em: 10,
+                    perPage_em: 100,
                     items_em: [],
+                    allEms: [],
                     totalFees: 0,
                     showDismissibleAlert: false,
                     showNoneDismissibleAlert: false,
@@ -250,16 +260,16 @@ try {
                     ticket_types: <?php echo json_encode($module->getSupport()->getJiraIssueTypes()) ?>,
                     project_portal_id: "",
                     header: "<?php echo str_replace(array("\n", "\r", "\""), array("\\n", "\\r", ""), $module->getSystemSetting('rit-dashboard-main-header'));; ?>",
-                    ajaxCreateJiraTicketURL: "<?php echo $module->getUrl('ajax/create_jira_ticket.php') ?>",
-                    ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/get_user_tickets.php', false, true) ?>",
-                    ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/get_project_external_modules.php', false, true) ?>",
-                    ajaxGenerateSignedAuthURL: "<?php echo $module->getUrl('ajax/generate_signed_auth.php', false, true) ?>",
-                    ajaxAppendSignedAuthURL: "<?php echo $module->getUrl('ajax/append_approved_signed_auth.php', false, true) ?>",
-                    ajaxGetSignedAuthURL: "<?php echo $module->getUrl('ajax/get_signed_auth.php', false, true) ?>",
-                    ajaxPortalProjectsListURL: "<?php echo $module->getUrl('ajax/portal_project_list.php', false, true) ?>",
-                    attachREDCapURL: "<?php echo $module->getURL('ajax/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    detachREDCapURL: "<?php echo $module->getURL('ajax/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    projectPortalSectionURL: "<?php echo $module->getURL('ajax/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    ajaxCreateJiraTicketURL: "<?php echo $module->getUrl('ajax/support/create_jira_ticket.php') ?>",
+                    ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/user/get_user_tickets.php', false, true) ?>",
+                    ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/entity/get_project_external_modules.php', false, true) ?>",
+                    ajaxGenerateSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/generate_rma.php', false, true) ?>",
+                    ajaxAppendSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/append_to_existing_ema.php', false, true) ?>",
+                    ajaxGetSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/get_rma.php', false, true) ?>",
+                    ajaxPortalProjectsListURL: "<?php echo $module->getUrl('ajax/user/get_user_r2p2_project_list.php', false, true) ?>",
+                    attachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    detachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalSectionURL: "<?php echo $module->getURL('ajax/portal/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     portal_linkage_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header')); ?>",
                     tickets_header: '<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-ticket-tab-header')); ?>',
                     external_modules_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-external-modules-tab-header')); ?>",
@@ -268,8 +278,10 @@ try {
                     refCount: 0,
                     isLoading: true,
                     currentProjectTickets: 'Yes',
+                    currentProjectEms: 'Yes',
                     openTickets: 'Yes',
                     emptyTicketsTable: "No Tickets Found",
+                    bodyMessage: '',
                     emptyFilteredTicketsTable: "No tickets attached to this REDCap Project. To See full list uncheck 'Display Tickets for current REDCap projects' checkbox"
                 }
             },
@@ -317,7 +329,8 @@ try {
                     this.EMVariant = variant
                 },
                 hasREDCapMaintenanceAgreement: function () {
-                    if (this.linked() == true && this.hasManagePermission == true && this.portalREDCapMaintenanceAgreement.project_id == undefined) {
+                    //if (this.linked() == true && this.hasManagePermission == true && this.portalREDCapMaintenanceAgreement.project_id == undefined) {
+                    if (this.portalREDCapMaintenanceAgreement.project_id == undefined) {
                         return false
                     }
                     return true;
@@ -335,6 +348,16 @@ try {
                         });
                     } else {
                         this.items = this.allItems
+                    }
+
+                },
+                filterEms() {
+                    if (this.currentProjectEms === 'Yes') {
+                        this.items_em = this.allEms.filter(function (n) {
+                            return n.maintenance_fees > 0;
+                        });
+                    } else {
+                        this.items_em = this.allEms
                     }
 
                 },
@@ -384,49 +407,32 @@ try {
                     axios.post(this.ajaxProjectEMstURL)
                         .then(response => {
                             if (response.data.data != undefined) {
-                                this.items_em = response.data.data;
+                                this.items_em = this.allEms = response.data.data;
                                 this.totalRows_em = this.items_em.length;
                                 for (var i = 0; i < this.items_em.length; i++) {
                                     this.totalFees += parseFloat(this.items_em[i].maintenance_fees)
                                 }
+                                this.filterEms()
                             }
                         }).then(() => {
                         // only try to get signed auth if project is linked
                         if (this.linked()) {
-                            this.getSignedAuth()
-                        }
-                    }).then(() => {
-                        if (this.linked() == false) {
-
+                            return this.getSignedAuth()
+                        } else {
+                            if (this.hasREDCapMaintenanceAgreement() === false) {
+                                this.emTabAlerts()
+                            }
                             // global alert message that is none dismissible
                             if (this.project_status == "0" && this.totalFees > 0) {
                                 // Dev-mode redcap project
                                 this.showNoneDismissibleAlert = true
-                                this.noneDismissibleAlertMessage += "This REDCap project will require a R2P2 REDCap Maintenance Agreement for Production use.<br>  " +
-                                    "Please register and link your project in R2P2 before requesting the change to Production mode.<br>  See the R2P2 tab below for details."
+                                this.noneDismissibleAlertMessage += this.notifications.get_project_ems_dev
                                 this.noneDismissibleVariant = "warning"
                             } else if (this.project_status == "1" && this.totalFees > 0) {
                                 // Production mode redcap project
                                 this.showNoneDismissibleAlert = true
-                                this.noneDismissibleAlertMessage += "This REDCap project REQUIRES a valid R2P2 REDCap Maintenance Agreement.  " +
-                                    "Please register and link your project in R2P2 now.  See the R2P2 tab below for details."
+                                this.noneDismissibleAlertMessage += this.notifications.get_project_ems_prod
                                 this.noneDismissibleVariant = "danger"
-                            }
-                        }
-                        if (this.hasREDCapMaintenanceAgreement() === false) {
-                            // project in dev mode but has EM with monthly fees
-                            if (this.totalFees > 0 && this.project_status == "0") {
-                                if (this.linked() === false) {
-                                    this.setEMAlertMessage("warning", "Prior to moving this project to production mode, you will first need to associate it with a Resaerch IT Portal project and ensure you have an active REDCap External Module Maintenance agreement in place.  See the Portal tab for next steps.", true)
-                                }
-                                // project in prod mode but has EM with monthly fees
-                            }
-                            if (this.totalFees > 0 && this.project_status == "1") {
-                                this.setEMAlertMessage("danger", "This project uses External Modules that require a REDCap External Module Maintenance agreement.  Please complete the required steps on the Portal Tab or the external modules may be deactivated.", true)
-                                // project in analysis mode but has EM with monthly fees
-                            }
-                            if (this.totalFees > 0 && this.project_status == "2") {
-                                this.setEMAlertMessage("info", "The external module maintenance costs only apply while a project is in Production mode.  The current fees are on-hold will not be charged while the project is in analysis/archival mode.", true)
                             }
                         }
                     });
@@ -436,9 +442,11 @@ try {
                         .then(response => {
                             this.getUserTickets()
                             this.$refs['generic-modal'].hide()
+                            this.$refs['ticket-modal'].show()
                             this.variant = 'success'
                             this.showDismissibleAlert = true
                             this.alertMessage = response.data.message
+                            this.bodyMessage = response.data.message
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -448,12 +456,9 @@ try {
                 },
                 attachRedCapProject: function () {
                     var project = []
-                    for (var i = 0; i < this.portal_projects_list.length; i++) {
-                        if (this.portal_projects_list[i].id == this.ticket.project_portal_id) {
-                            project = this.portal_projects_list[i]
-                        }
-                    }
-                    console.log(project)
+
+                    project = this.ticket.project_portal_id
+
                     axios.post(this.attachREDCapURL, {
                         project_portal_id: project.id,
                         project_portal_name: project.project_name,
@@ -502,6 +507,7 @@ try {
                             this.showEMDismissibleAlert = false
                             this.alertMessage = response.data.message
                             this.portalREDCapMaintenanceAgreement = response.data;
+                            this.setEMAlertMessage("success", response.data.message, true)
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -522,6 +528,7 @@ try {
                             this.showEMDismissibleAlert = false
                             this.alertMessage = response.data.message
                             this.portalREDCapMaintenanceAgreement = response.data;
+                            this.setEMAlertMessage("success", response.data.message, true)
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -529,20 +536,19 @@ try {
                     });
                 },
                 getSignedAuth: function () {
-                    axios.get(this.ajaxGetSignedAuthURL)
+                    axios.get(this.ajaxGetSignedAuthURL + '&monthly_payment=' + this.totalFees)
                         .then(response => {
                             this.portalREDCapMaintenanceAgreement = response.data;
                             if (this.determineREDCapStep() === 1) {
-                                this.setPortalLinkageAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
-                                //this.setEMAlertMessage("warning", "In order to use certain External Modules in this REDCap project, authorize the monthly maintenance for the Research IT Portal Project ", true)
-
+                                this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_1, true)
                             } else if (this.determineREDCapStep() === 2) {
-                                this.setPortalLinkageAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
-                                //this.setEMAlertMessage("warning", "This REDCap project has not yet been linked to an approved REDCap External Module Maintenance Agreement.  Please click here to authorize this REDCap project to use the approved maintenance agreement.  The project owner(s) will be notified by email.", true)
+                                this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_2, true)
 
                             } else if (this.determineREDCapStep() === 3) {
-                                this.setPortalLinkageAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
-                                //this.setEMAlertMessage("warning", "Your REDCap Maintenance Agreement is pending approval.  Please have someone with a valid PTA complete the agreement and authorize this project for External Module maintenance.  You can add additional users (such as a finance administrator) to the Research IT Portal if you are unable to authorize the agreement yourself.", true)
+                                this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_3, true)
+                            }
+                            if (this.hasREDCapMaintenanceAgreement() === false) {
+                                this.emTabAlerts()
                             }
                         });
                 },
@@ -558,17 +564,38 @@ try {
                 openWindow: function (url) {
                     window.open(url, '_blank')
                 },
+                emTabAlerts: function () {
+                    // project in dev mode but has EM with monthly fees
+                    if (this.totalFees > 0 && this.project_status === "0") {
+                        this.setEMAlertMessage("warning", this.notifications.get_project_ems_dev_2, true)
+                        // project in prod mode but has EM with monthly fees
+                    }
+                    if (this.totalFees > 0 && this.project_status === "1") {
+                        this.setEMAlertMessage("danger", this.notifications.get_project_ems_prod_2, true)
+                        // project in analysis mode but has EM with monthly fees
+                    }
+                    if (this.totalFees > 0 && this.project_status === "2") {
+                        this.setEMAlertMessage("info", this.notifications.get_project_ems_analysis, true)
+                    }
+                },
                 determineREDCapStep: function () {
                     if (this.hasREDCapMaintenanceAgreement() === false) {
                         return 1
                     } else {
+                        /**
+                         APPROVED_PENDING_DEVELOPMENT = 2
+                         APPROVED_ACTIVE_DEVELOPMENT = 6
+                         APPROVED_MAINTENANCE = 7
+                         * @type {number[]}
+                         */
+                        var statsus = [2, 6, 7]
                         if (this.portalREDCapMaintenanceAgreement.redcap !== undefined) {
                             return 2
                         }
-                        if (this.portalREDCapMaintenanceAgreement.sow_status !== 2) {
+                        if (!statsus.includes(this.portalREDCapMaintenanceAgreement.sow_status)) {
                             return 3
                         }
-                        if (this.portalREDCapMaintenanceAgreement.sow_status === 2) {
+                        if (statsus.includes(this.portalREDCapMaintenanceAgreement.sow_status)) {
                             return 4
                         }
                         return 5
@@ -579,6 +606,8 @@ try {
                 this.prepareComponent();
             }
         });
+
+
     </script>
     <?php
 } catch (\Exception $e) {

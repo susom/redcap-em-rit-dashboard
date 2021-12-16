@@ -21,7 +21,20 @@
 
         <template #thead-top="data">
             <b-tr style="background-color: #D7D7D7">
-                <b-th></b-th>
+                <b-th>
+                    <b-row>
+                        <b-col lg="12">
+                            <b-form-checkbox v-model="currentProjectEms"
+                                             name="all-ems"
+                                             id="all-ems"
+                                             value="Yes"
+                                             unchecked-value="No" @change="filterEms($event)">Show only External Modules
+                                with Fees
+                            </b-form-checkbox>
+
+                        </b-col>
+                    </b-row>
+                </b-th>
                 <b-th>
                     <b-form-group
                             label-for="filter-input"
@@ -44,6 +57,10 @@
                 </b-th>
             </b-tr>
         </template>
+        <!-- render html for this column -->
+        <template #cell(maintenance_monthly_cost)="data">
+            <span v-html="data.value"></span>
+        </template>
     </b-table>
     <b-row>
 
@@ -63,12 +80,12 @@
             ></b-pagination>
         </b-col>
     </b-row>
-    <b-alert class="d-flex d-inline-block"
+    <b-alert v-if="determineREDCapStep() == 4" class="d-flex d-inline-block"
              variant="success"
              fade
              show
     >
-        <b-row v-if="determineREDCapStep() == 4" class="mt-2">
+        <b-row class="mt-2">
 
             <b-col class="justify-content-center align-self-center" lg="12"><h5
                         class="d-inline-block  p-1"><i

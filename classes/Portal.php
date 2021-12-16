@@ -62,6 +62,8 @@ class Portal
             }
             if (!empty($projects)) {
                 //$projects = json_decode($projects, true);
+                // temp fix for now
+                $projects = $projects[0];
                 $this->projectPortalSavedConfig['portal_project_id'] = $projects['project_id'];
                 $this->projectPortalSavedConfig['portal_project_name'] = $projects['portal_project_name'];
                 $this->projectPortalSavedConfig['portal_project_description'] = $projects['portal_project_description'];
@@ -74,7 +76,14 @@ class Portal
 
     }
 
-    public function getREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId)
+    /**
+     * @param int $portalProjectId
+     * @param int $redcapProjectId
+     * @param int $redcapStatus
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $redcapStatus = 0)
     {
         try {
             $jwt = $this->getClient()->getJwtToken();
@@ -82,6 +91,7 @@ class Portal
                 'debug' => false,
                 'form_params' => [
                     'redcap_project_id' => $redcapProjectId,
+                    'redcap_project_status' => $redcapStatus,
                 ],
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",
@@ -98,7 +108,7 @@ class Portal
     }
 
 
-    public function generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, $username)
+    public function generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, $username, $overdue = '')
     {
         try {
             $jwt = $this->getClient()->getJwtToken();
@@ -107,6 +117,7 @@ class Portal
                 'form_params' => [
                     'redcap_project_id' => $redcapProjectId,
                     'external_modules' => $external_modules,
+                    'overdue_payment' => $overdue,
                     'username' => $username,
                 ],
                 'headers' => [
@@ -123,7 +134,7 @@ class Portal
         }
     }
 
-    public function appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSOWID, $external_modules, $username)
+    public function appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSOWID, $external_modules, $username, $overdue = '')
     {
         try {
             $jwt = $this->getClient()->getJwtToken();
@@ -134,6 +145,7 @@ class Portal
                     'portal_sow_id' => $portalSOWID,
                     'username' => $username,
                     'external_modules' => $external_modules,
+                    'overdue_payment' => $overdue,
                 ],
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",
@@ -195,6 +207,9 @@ class Portal
         try {
             //$this->getProjectPortalJWTToken();
 
+            if (is_null($portalProjectId) || $portalProjectId == '') {
+                throw new \Exception('R2P2 project cant be empty please select a project from the dropdown or create new one.');
+            }
             $client = $this->getClient()->getGuzzleClient();
             $jwt = $this->getClient()->getJwtToken();
             $response = $client->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/attach-redcap/', [

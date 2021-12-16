@@ -35,6 +35,7 @@ use Stanford\ProjectPortal\User;
  * @property array $projectPortalList
  * @property array $jiraIssueTypes
  * @property array $userJiraTickets
+ * @property array $notifications
  */
 class ProjectPortal extends AbstractExternalModule
 {
@@ -80,6 +81,8 @@ class ProjectPortal extends AbstractExternalModule
 
     private $userJiraTickets;
 
+    private $notifications;
+
     /**
      * ProjectPortal constructor.
      */
@@ -88,8 +91,10 @@ class ProjectPortal extends AbstractExternalModule
         parent::__construct();
 
 
-
         $this->setClient(new Client($this->getSystemSetting('project-portal-api-token'), $this->getSystemSetting('portal-username'), $this->getSystemSetting('portal-password'), $this->getSystemSetting('portal-base-url')));
+
+
+        $this->setEntity(new Entity());
 
         if ($_GET && ($_GET['projectid'] != null || $_GET['pid'] != null)) {
 
@@ -99,16 +104,54 @@ class ProjectPortal extends AbstractExternalModule
 
             $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title']));
 
+            // check if no RMA in place even if no redcap is linked to r2p2 then add overdue payment
+//            if (!isset($this->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
+//                $this->getEntity()->checkOverduePayments($this->getProjectId(), $this->getEntity()->getTotalMonthlyPayment($this->getProjectId()));
+//            }
         }
+
 
         // set these fields as we might need them later for linkage process.
 
-        $this->setUser(new User($this->getClient(), $this->getProjectId()));
+        $this->setUser(new User($this->getClient(), $this->getEntity(), $this->getProjectId()));
 
         $this->setSupport(new Support($this->getClient()));
 
-        $this->setEntity(new Entity());
 
+    }
+
+    public function checkProjectsRMACron()
+    {
+        $projects = self::query("select project_id, app_title from redcap_projects where status = 1", []);
+
+        while ($project = $projects->fetch_assoc()) {
+            $id = $project['project_id'];
+            $url = $this->getUrl("ajax/entity/cron.php", true) . '&pid=' . $id;
+            $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+            $this->emDebug("running cron for $url on project " . $project['app_title']);
+        }
+    }
+
+    // override code function to allow any logged in user to access the dashboard.
+    public function redcap_module_link_check_display($project_id, $link)
+    {
+        if (ExternalModules::isNoAuth()) {
+            // Anyone can view NOAUTH pages.
+            // Remember, redcap_module_link_check_display() is currently only called for pages defined in config.json.
+            return $link;
+        }
+
+        if (ExternalModules::isSuperUser()) {
+            // Super users can see all pages
+            return $link;
+        }
+
+        $username = ExternalModules::getUsername();
+        if (!empty($project_id) && $username) {
+            return $link;
+        }
+
+        return null;
     }
 
     /**
@@ -143,9 +186,9 @@ class ProjectPortal extends AbstractExternalModule
     public function redcap_every_page_top()
     {
         // in case we are loading record homepage load its the record children if existed
-        if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false) {
+        preg_match('/redcap_v[\d\.].*\/index\.php/m', $_SERVER['SCRIPT_NAME'], $matches, PREG_OFFSET_CAPTURE);
+        if (strpos($_SERVER['SCRIPT_NAME'], 'ProjectSetup') !== false || !empty($matches)) {
             $this->includeFile("views/project_setup.php");
-
         }
 //        elseif (strpos($_GET['page'], 'create_jira_ticket') !== false) {
 //            $this->prepareProjectPortalList();
@@ -375,31 +418,6 @@ class ProjectPortal extends AbstractExternalModule
     }
 
     /**
-     * Return array of projects with all project metadata where biocatalyst is enabled
-     * regardless of user permissions
-     *
-     * @return array
-     */
-    private function getEnabledProjects()
-    {
-        $projects = array();
-        $sql = "select rp.project_id, rp.app_title
-          from redcap_external_modules rem
-          left join redcap_external_module_settings rems on rem.external_module_id = rems.external_module_id
-          left join redcap_projects rp on rems.project_id = rp.project_id
-          where rem.directory_prefix = 'biocatalyst_link'
-          and rems.key = 'biocatalyst-enabled'
-          and rems.value = 'true'";
-        $q = $this->query($sql);
-        while ($row = db_fetch_assoc($q)) {
-            $projects[] = $row;
-        }
-
-        return $projects;
-    }
-
-
-    /**
      * Utility function to verify IP is from valid range if specified
      *
      * e.g. 192.168.123.1 = 192.168.123.1/30
@@ -570,7 +588,7 @@ class ProjectPortal extends AbstractExternalModule
     /**
      * @return Entity
      */
-    public function getEntity(): Entity
+    public function getEntity()
     {
         return $this->entity;
     }
@@ -578,10 +596,28 @@ class ProjectPortal extends AbstractExternalModule
     /**
      * @param Entity $entity
      */
-    public function setEntity(Entity $entity): void
+    public function setEntity(Entity $entity)
     {
         $this->entity = $entity;
     }
 
+    /**
+     * @return array
+     */
+    public function getNotifications(): array
+    {
+        if (!$this->notifications) {
+            $this->setNotifications();
+        }
+        return $this->notifications;
+    }
 
+    /**
+     * @param array $notifications
+     */
+    public function setNotifications(): void
+    {
+        $path = dirname(__DIR__) . '/' . $this->PREFIX . '_' . $this->VERSION . "/language/Notifications.ini";
+        $this->notifications = parse_ini_file($path);;
+    }
 }

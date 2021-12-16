@@ -22,12 +22,35 @@ try {
         throw new \Exception("portal project id is required");
     }
 
+    $ems = $body['external_modules'];
+    // before generating RMA check if overdue payment exists
+    $overdue = $module->getEntity()->getOverduePayments($module->getProjectId());
+    $overdueArray = [];
+    if (!empty($overdue)) {
+        $month = date('m', time());
 
-    $external_modules = json_encode($body['external_modules']);
+        foreach ($overdue as $item) {
+            // no need to add current month overdue payment.
+            if ($month == $item['month']) {
+                continue;
+            }
+            $overdueArray[] = array(
+                'content' => 'Overdue payment for month of ' . date("F", strtotime('00-' . $month . '-01')),
+                'monthly_payments' => $item['monthly_payments']
+            );
+        }
+        $overdue = json_encode($overdueArray);
+    }
 
-    $data = $module->getPortal()->generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, USERID);
+    $external_modules = json_encode($ems);
+
+
+    $data = $module->getPortal()->generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, USERID, $overdue);
     $data['sow_status'] = $data['status'];
-    echo json_encode(array_merge($data, array('status' => 'success', 'message' => 'A Signed authorization was generated for this REDCap project in the portal.', 'link' => $module->getClient()->getPortalBaseURL() . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
+    if ($overdue) {
+        $module->getEntity()->deleteOverduePayments($module->getProjectId());
+    }
+    echo json_encode(array_merge($data, array('status' => 'success', 'message' => $module->getNotifications()['generate_rma_success_message'], 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);

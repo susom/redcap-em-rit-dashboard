@@ -15,4 +15,14 @@
         </b-button>
     </template>
 </b-modal>
+<b-modal ref="ticket-modal" size="lg" id="ticket-modal" title="Support Ticket">
+    <div class="d-block text-center">
+        <span class="row ml-2" v-html="bodyMessage"></span>
+    </div>
+    <template #modal-footer="{ ok, cancel, hide }">
+        <b-button :disabled='isDisabled' variant="secondary" @click="cancel()">
+            Close
+        </b-button>
+    </template>
+</b-modal>
 <!-- END Time Slots Modal -->
