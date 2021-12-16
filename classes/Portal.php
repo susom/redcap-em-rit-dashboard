@@ -76,7 +76,14 @@ class Portal
 
     }
 
-    public function getREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId)
+    /**
+     * @param int $portalProjectId
+     * @param int $redcapProjectId
+     * @param int $redcapStatus
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $redcapStatus = 0)
     {
         try {
             $jwt = $this->getClient()->getJwtToken();
@@ -84,6 +91,7 @@ class Portal
                 'debug' => false,
                 'form_params' => [
                     'redcap_project_id' => $redcapProjectId,
+                    'redcap_project_status' => $redcapStatus,
                 ],
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",

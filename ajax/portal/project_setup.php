@@ -76,7 +76,7 @@ try {
 
     <?php
     if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-        $data = $module->getPortal()->getREDCapSignedAuthInPortal($module->getPortal()->projectPortalSavedConfig['portal_project_id'], $module->getProjectId());
+        $data = $module->getPortal()->getREDCapSignedAuthInPortal($module->getPortal()->projectPortalSavedConfig['portal_project_id'], $module->getProjectId(), $module->getProject()->project['status']);
         $statuses = [2, 6, 7];
         if (empty($data) || !in_array($data['status'], $statuses)) {
             ?>
