@@ -1,7 +1,7 @@
 <template>
   <div>
     Test component
-    <div class="alert alert-dark">{{ this.pid }}</div>
+    <div class="alert alert-success">{{ this.pid }}</div>
   </div>
 </template>
 

@@ -39,6 +39,12 @@
         "icon": "fas fa-columns",
         "url": "views/index.php",
         "show-header-and-footer": true
+      },
+      {
+        "name": "REDCap R2P2 Dashboard New",
+        "icon": "fas fa-columns",
+        "url": "views/index_new.php",
+        "show-header-and-footer": true
       }
     ],
     "control-center": [
