@@ -11,5 +11,13 @@ module.exports = {
             filename: '[name].js',
             chunkFilename: '[name].js',
         }
-    }
+    },
+    chainWebpack: config => {
+        config.module
+            .rule('raw')
+            .test(/\.ini$/)
+            .use('raw-loader')
+            .loader('raw-loader')
+            .end()
+    },
 };
