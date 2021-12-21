@@ -15,10 +15,11 @@ use GuzzleHttp\Exception\GuzzleException;
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>Test Page</title>
+
     <link href="<?php echo $module->getUrl('dashboard/dist/app.css') . '?t=' . time();; ?>" rel="preload" as="style">
     <link href="<?php echo $module->getUrl('dashboard/dist/app.js') . '?t=' . time();; ?>" rel="preload" as="script">
-    <link href="<?php echo $module->getUrl('dashboard/dist/chunk-vendors.css') . '?t=' . time();; ?>" rel="preload"
-          as="style">
+    <!-- MAKE SURE css-loader is installed  -->
+    <link href="<?php echo $module->getUrl('dashboard/dist/chunk-vendors.css') . '?t=' . time();; ?>" rel="stylesheet">
     <link href="<?php echo $module->getUrl('dashboard/dist/chunk-vendors.js') . '?t=' . time();; ?>" rel="preload"
           as="script">
     <link href="<?php echo $module->getUrl('dashboard/dist/app.css') . '?t=' . time();; ?>" rel="stylesheet">
@@ -31,6 +32,7 @@ use GuzzleHttp\Exception\GuzzleException;
 <app
         pid="<?php echo $module->getProjectId() ?>"
         portal_projects_list='<?php echo json_encode($module->getUser()->getProjectPortalList()) ?>'
+        saved_portal_project_object='<?php echo !empty($module->getPortal()->projectPortalSavedConfig) ? json_encode($module->getPortal()->projectPortalSavedConfig) : '{}' ?>'
         ajaxCreateJiraTicketURL="<?php echo $module->getUrl('ajax/support/create_jira_ticket.php') ?>" ,
         ajaxUserTicketURL="<?php echo $module->getUrl('ajax/user/get_user_tickets.php', false, true) ?>"
         ajaxProjectEMstURL="<?php echo $module->getUrl('ajax/entity/get_project_external_modules.php', false, true) ?>"

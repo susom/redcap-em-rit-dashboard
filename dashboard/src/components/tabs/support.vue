@@ -1,7 +1,6 @@
 <template>
   <div>
-    <h1>Support</h1>
-    <b-container fluid class="mt-3">
+    <b-container fluid>
       <div class="row">
         <div class="float-right mb-3">
           <b-button size="sm" variant="success" v-b-modal.generic-modal>Add Ticket</b-button>
@@ -153,8 +152,6 @@
 <script>
 import axios from "axios";
 import vSelect from 'vue-select'
-
-import 'vue-select/dist/vue-select.css';
 
 export default {
   name: "support",

@@ -25,6 +25,7 @@ new Vue({
                 tickets_header: this.$el.attributes.tickets_header.value,
                 external_modules_header: this.$el.attributes.external_modules_header.value,
                 portal_projects_list: JSON.parse(this.$el.attributes.portal_projects_list.value),
+                saved_portal_project_object: JSON.parse(this.$el.attributes.saved_portal_project_object.value),
             }
         })
     }
