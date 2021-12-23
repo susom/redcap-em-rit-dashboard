@@ -67,7 +67,8 @@ class Client
 
 
     /**
-     * @param string $jwtToken
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function setJwtToken()
     {
@@ -75,8 +76,6 @@ class Client
             if (isset($_SESSION['project_portal_jwt_token']) && $this->isJWTTokenStillValid()) {
                 $this->jwtToken = $_SESSION['project_portal_jwt_token'];
             } else {
-                $client = $this->getGuzzleClient();
-
                 $response = $this->getGuzzleClient()->post($this->getPortalBaseURL() . 'api/users/token/', [
                     'debug' => false,
                     'form_params' => [
@@ -89,8 +88,15 @@ class Client
                 ]);
                 if ($response->getStatusCode() < 300) {
                     $data = json_decode($response->getBody());
-                    $this->jwtToken = $data->token;
-                    $this->setJWTTokenIntoSession($data->token);
+                    if (property_exists($data, 'token')) {
+                        $this->jwtToken = $data->token;
+                        $this->setJWTTokenIntoSession($data->token);
+                    } elseif (property_exists($data, 'access')) {
+                        $this->jwtToken = $data->access;
+                        $this->setJWTTokenIntoSession($data->access);
+                    } else {
+                        throw new \Exception("Could not find JWT token property.");
+                    }
                 }
             }
         } catch (\Exception $e) {
