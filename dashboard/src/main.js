@@ -3,6 +3,19 @@ import App from './App.vue'
 
 Vue.config.productionTip = false
 Vue.config.devtools = true
+
+const globalMethods = {
+    install(Vue, options) {
+        Vue.prototype.replaceNotificationsVariables = (notification, variables) => {
+            for (var key in variables) {
+                notification = notification.replace("[" + key + "]", variables[key])
+            }
+            return notification
+        }
+    },
+}
+Vue.use(globalMethods)
+
 new Vue({
     el: 'app',
     render(h) {

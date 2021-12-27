@@ -209,7 +209,9 @@ export default {
             // this.showNoneDismissibleAlert = true
             // this.noneDismissibleAlertMessage += this.notifications.get_project_ems_prod
             // this.noneDismissibleVariant = "danger"
-            this.$emit('noneDismissibleGlobalMessage', 'danger', this.notifications.get_project_ems_prod, true)
+            var notification = this.replaceNotificationsVariables(this.notifications.get_project_ems_prod, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
+
+            this.$emit('noneDismissibleGlobalMessage', 'danger', notification, true)
 
           }
         }
@@ -222,7 +224,9 @@ export default {
         // project in prod mode but has EM with monthly fees
       }
       if (this.totalFees > 0 && this.project_status === "1") {
-        this.setEMAlertMessage("danger", this.notifications.get_project_ems_prod_2, true)
+        var notification = this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_2, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
+
+        this.setEMAlertMessage("danger", notification, true)
         // project in analysis mode but has EM with monthly fees
       }
       if (this.totalFees > 0 && this.project_status === "2") {

@@ -272,7 +272,8 @@ export default {
           if (section) {
             value[section][match[1]] = match[2];
           } else {
-            value[match[1]] = match[2];
+            var v = match[2]
+            value[match[1]] = v.slice(1, -1);
           }
         } else if (regex.section.test(line)) {
           match = line.match(regex.section);
