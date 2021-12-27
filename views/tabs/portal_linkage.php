@@ -31,7 +31,7 @@
 
                     <b-col class="justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
                                     class="fas fa-exclamation-circle"></i></h5>
-                        {{notifications.r2p2_tab_rma_card_not_linked_danger_message}}.<br>
+                        {{notifications.r2p2_tab_rma_card_not_linked_danger_message}}<br>
 
                     </b-col>
 

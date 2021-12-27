@@ -1,12 +1,14 @@
 <b-container fluid class="mt-3">
     <b-row>
-        <b-alert :variant="EMVariant"
-                 dismissible
-                 fade
-                 :show="showEMDismissibleAlert"
-        ><i class="fas fa-exclamation-circle"></i>
-            {{EMAlertMessage}}
-        </b-alert>
+        <b-col lg="12">
+            <b-alert :variant="EMVariant"
+                     dismissible
+                     fade
+                     :show="showEMDismissibleAlert"
+            ><i class="fas fa-exclamation-circle"></i>
+                <span v-html="EMAlertMessage"></span>
+            </b-alert>
+        </b-col>
     </b-row>
     <div class="row">
         <span v-html="external_modules_header"></span>

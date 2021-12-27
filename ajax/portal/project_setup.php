@@ -40,25 +40,39 @@ try {
                         ?>
                         <div class="row">
                             <div class="">
-                                    <span><!--i class="fas fa-wrench"></i--> This REDCap project is part of the R2P2 Project
-                                        <br><a style="text-decoration: underline" class="portal-setupx" target="_blank"
-                                               href="<?php echo $module->getPortal()->projectPortalSavedConfig['portal_project_url'] ?>">
-
-                                            <i class="fas fa-external-link-alt"></i> <span><?php echo $module->getPortal()->projectPortalSavedConfig['portal_project_name'] ?></span>
-                                        </a>
-                                    </span>
+                                <?php
+                                $notification = $module->getNotifications()['project_setup_linked_r2p2'];
+                                $notification = $module::replaceNotificationsVariables($notification, array('a' => $module->getPortal()->projectPortalSavedConfig['portal_project_url'], 'name' => $module->getPortal()->projectPortalSavedConfig['portal_project_name']));
+                                echo $notification;
+                                ?>
+                                <!--                                    <span>i class="fas fa-wrench"></i-->
+                                <!-- This REDCap project is part of the R2P2 Project-->
+                                <!--                                        <br><a style="text-decoration: underline" class="portal-setupx" target="_blank"-->
+                                <!--                                               href="-->
+                                <?php //echo $module->getPortal()->projectPortalSavedConfig['portal_project_url'] ?><!--">-->
+                                <!---->
+                                <!--                                            <i class="fas fa-external-link-alt"></i> <span>-->
+                                <?php //echo $module->getPortal()->projectPortalSavedConfig['portal_project_name'] ?><!--</span>-->
+                                <!--                                        </a>-->
+                                <!--                                    </span>-->
                             </div>
                         </div>
                         <?php
                     } else {
                         ?>
                         <div>
-                            This REDCap project is NOT yet linked to an R2P2 project.
-                            <!--                                <a style="text-decoration: underline" id="what-is-this" href="#">What is this?</a>-->
-                            <br> Click the
-                            <a class="portal-setup" href="<?php echo $module->getUrl("views/index.php") ?>">
-                                <i class="fas fa-column"></i> <span>REDCap R2P2 Dashboard</span>
-                            </a> link on the left sidebar to get started.
+                            <?php
+                            $notification = $module->getNotifications()['project_setup_no_linked_r2p2'];
+                            $url = $module->getUrl("views/index.php");
+                            $notification = $module::replaceNotificationsVariables($notification, array('a' => $url, 'wiki' => 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'));
+                            echo $notification;
+                            ?>
+                            <!--                            This REDCap project is NOT yet linked to an R2P2 project.-->
+                            <!--                            <br> Click the-->
+                            <!--                            <a class="portal-setup" href="-->
+                            <?php //echo $module->getUrl("views/index.php") ?><!--">-->
+                            <!--                                <i class="fas fa-column"></i> <span>REDCap R2P2 Dashboard</span>-->
+                            <!--                            </a> link on the left sidebar to get started.-->
                         </div>
                         <?php
                     }
@@ -67,7 +81,8 @@ try {
             </div>
             <div class="col-2">
                 <div class="text-right" style="color:#555; font-size:11px;">
-                    <a id="what-is-this" href="#"><i class="fas fa-info-circle"></i> <span
+                    <a target="_blank" href="https://medwiki.stanford.edu/x/uiK3Cg"><i class="fas fa-info-circle"></i>
+                        <span
                                 style="text-decoration: underline">What is R2P2?</span></a>
                 </div>
             </div>
@@ -91,8 +106,10 @@ try {
                                 <div class="">
                                     <?php
                                     if ($module->getProject()->project['status'] == '1') {
+                                        $notification = $module->getNotifications()['get_project_ems_prod'];
+                                        $notification = $module::replaceNotificationsVariables($notification, array('wiki' => 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'));
                                         ?>
-                                        <span><?php echo $module->getNotifications()['get_project_ems_prod'] ?></span>
+                                        <span><?php echo $notification ?></span>
                                         <?php
                                     } else {
                                         ?>
