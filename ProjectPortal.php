@@ -620,4 +620,18 @@ class ProjectPortal extends AbstractExternalModule
         $path = dirname(__DIR__) . '/' . $this->PREFIX . '_' . $this->VERSION . "/language/Notifications.ini";
         $this->notifications = parse_ini_file($path);;
     }
+
+    /**
+     * @param string $notification
+     * @param array $variables
+     * @return string
+     */
+    public static function replaceNotificationsVariables(string $notification, array $variables)
+    {
+        foreach ($variables as $key => $value) {
+            $notification = str_replace("[" . $key . "]", $value, $notification);
+        }
+
+        return $notification;
+    }
 }

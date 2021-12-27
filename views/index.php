@@ -431,11 +431,17 @@ try {
                             } else if (this.project_status == "1" && this.totalFees > 0) {
                                 // Production mode redcap project
                                 this.showNoneDismissibleAlert = true
-                                this.noneDismissibleAlertMessage += this.notifications.get_project_ems_prod
+                                this.noneDismissibleAlertMessage += this.replaceNotificationsVariables(this.notifications.get_project_ems_prod, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
                                 this.noneDismissibleVariant = "danger"
                             }
                         }
                     });
+                },
+                replaceNotificationsVariables: function (notification, variables) {
+                    for (var key in variables) {
+                        notification = notification.replace("[" + key + "]", variables[key])
+                    }
+                    return notification
                 },
                 submitTicket: function () {
                     axios.post(this.ajaxCreateJiraTicketURL, this.ticket)
@@ -571,7 +577,8 @@ try {
                         // project in prod mode but has EM with monthly fees
                     }
                     if (this.totalFees > 0 && this.project_status === "1") {
-                        this.setEMAlertMessage("danger", this.notifications.get_project_ems_prod_2, true)
+                        var notification = this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_2, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
+                        this.setEMAlertMessage("danger", notification, true)
                         // project in analysis mode but has EM with monthly fees
                     }
                     if (this.totalFees > 0 && this.project_status === "2") {
