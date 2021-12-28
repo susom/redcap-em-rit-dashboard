@@ -91,7 +91,7 @@ class ProjectPortal extends AbstractExternalModule
         parent::__construct();
 
 
-        $this->setClient(new Client($this->getSystemSetting('project-portal-api-token'), $this->getSystemSetting('portal-username'), $this->getSystemSetting('portal-password'), $this->getSystemSetting('portal-base-url')));
+        $this->setClient(new Client($this->PREFIX));
 
 
         $this->setEntity(new Entity());

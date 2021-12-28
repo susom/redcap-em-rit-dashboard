@@ -3,6 +3,8 @@
 
 namespace Stanford\ProjectPortal;
 
+use ExternalModules\ExternalModules;
+
 /**
  * Class Client
  * @package Stanford\ProjectPortal
@@ -21,17 +23,38 @@ class Client
 
     private $guzzleClient;
 
-    public function __construct($token, $portalUsername, $portalPassword, $portalBaseURL)
+    private $accessToken;
+
+    private $refreshToken;
+
+    private $expiryTimestamp;
+
+    private $refreshExpiryTimestamp;
+
+    private $prefix;
+
+    public function __construct($prefix)
     {
-        $this->setToken($token);
 
-        $this->setPortalUsername($portalUsername);
-
-        $this->setPortalPassword($portalPassword);
-
-        $this->setPortalBaseURL($portalBaseURL);
+        $this->setPrefix($prefix);
 
         $this->setGuzzleClient(new \GuzzleHttp\Client());
+
+        $this->setToken(ExternalModules::getSystemSetting($this->getPrefix(), 'project-portal-api-token'));
+
+        $this->setPortalUsername(ExternalModules::getSystemSetting($this->getPrefix(), 'portal-username'));
+
+        $this->setPortalPassword(ExternalModules::getSystemSetting($this->getPrefix(), 'portal-password'));
+
+        $this->setPortalBaseURL(ExternalModules::getSystemSetting($this->getPrefix(), 'portal-base-url'));
+
+        $this->setAccessToken(ExternalModules::getSystemSetting($this->getPrefix(), 'access-token'));
+
+        $this->setRefreshToken(ExternalModules::getSystemSetting($this->getPrefix(), 'refresh-token'));
+
+        $this->setExpiryTimestamp(ExternalModules::getSystemSetting($this->getPrefix(), 'expiry-timestamp'));
+
+        $this->setRefreshExpiryTimestamp(ExternalModules::getSystemSetting($this->getPrefix(), 'refresh-expiry-timestamp'));
     }
 
 
@@ -66,21 +89,49 @@ class Client
     }
 
 
-    /**
-     * @return void
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function setJwtToken()
+    private function getNewAccessToken()
     {
         try {
-            if (isset($_SESSION['project_portal_jwt_token']) && $this->isJWTTokenStillValid()) {
-                $this->jwtToken = $_SESSION['project_portal_jwt_token'];
-            } else {
-                $response = $this->getGuzzleClient()->post($this->getPortalBaseURL() . 'api/users/token/', [
+            $response = $this->getGuzzleClient()->post($this->getPortalBaseURL() . 'api/users/token/', [
+                'debug' => false,
+                'form_params' => [
+                    'username' => $this->getPortalUsername(),
+                    'password' => $this->getPortalPassword(),
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                $data = json_decode($response->getBody());
+                if (property_exists($data, 'token')) {
+                    $this->jwtToken = $data->token;
+                    $this->setJWTTokenIntoSession($data->token);
+                } elseif (property_exists($data, 'access')) {
+                    $this->jwtToken = $data->access;
+                    $this->setAccessToken($data->access);
+                    $this->setRefreshToken($data->refresh);
+                    $this->setExpiryTimestamp((string)(time() + 60 * 60 * 24 * 2));
+                    $this->setRefreshExpiryTimestamp((string)(time() + 60 * 60 * 24 * 7));
+                    $this->setJWTTokenIntoSession($data->access);
+                } else {
+                    throw new \Exception("Could not find JWT token property.");
+                }
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    private function refreshExisingAccessToken()
+    {
+        try {
+            // refresh token will expire after one week. if expired generate a new access/refresh tokens
+            if ((int)$this->getRefreshExpiryTimestamp() > time()) {
+                $response = $this->getGuzzleClient()->post($this->getPortalBaseURL() . 'api/users/refresh/', [
                     'debug' => false,
                     'form_params' => [
-                        'username' => $this->getPortalUsername(),
-                        'password' => $this->getPortalPassword(),
+                        'refresh' => $this->getRefreshToken(),
                     ],
                     'headers' => [
                         'Content-Type' => 'application/x-www-form-urlencoded',
@@ -88,15 +139,44 @@ class Client
                 ]);
                 if ($response->getStatusCode() < 300) {
                     $data = json_decode($response->getBody());
-                    if (property_exists($data, 'token')) {
-                        $this->jwtToken = $data->token;
-                        $this->setJWTTokenIntoSession($data->token);
-                    } elseif (property_exists($data, 'access')) {
+                    if (property_exists($data, 'access')) {
                         $this->jwtToken = $data->access;
+                        $this->setAccessToken((string)$data->access);
                         $this->setJWTTokenIntoSession($data->access);
+                        $this->setExpiryTimestamp(time() + 60 * 60 * 24 * 2);
                     } else {
                         throw new \Exception("Could not find JWT token property.");
                     }
+                }
+            } else {
+                $this->getNewAccessToken();
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function setJwtToken()
+    {
+        try {
+            if ($this->isJWTTokenStillValid()) {
+                $this->jwtToken = $_SESSION['project_portal_jwt_token'];
+            } else {
+                // if any of the tokens are expty or timestamp then generate a new one.
+                // also this is useful for old jwt package installed in r2p2
+                if (empty($this->getAccessToken()) || empty($this->getRefreshToken()) || empty($this->getExpiryTimestamp())) {
+                    $this->getNewAccessToken();
+                    // if token is not expired then use access token by setting EM setting to jwtToken param
+                } elseif ((int)$this->getExpiryTimestamp() > time()) {
+                    $this->jwtToken = $this->getAccessToken();
+                    $this->setJWTTokenIntoSession($this->getAccessToken());
+                    // this we need to refresh our access token
+                } else {
+                    $this->refreshExisingAccessToken();
                 }
             }
         } catch (\Exception $e) {
@@ -183,4 +263,90 @@ class Client
     {
         $this->guzzleClient = $guzzleClient;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+    /**
+     * @param mixed $accessToken
+     */
+    public function setAccessToken($accessToken): void
+    {
+        $this->accessToken = $accessToken;
+        ExternalModules::setSystemSetting($this->getPrefix(), 'access-token', $accessToken);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRefreshToken()
+    {
+        return $this->refreshToken;
+    }
+
+    /**
+     * @param mixed $refreshToken
+     */
+    public function setRefreshToken($refreshToken): void
+    {
+        $this->refreshToken = $refreshToken;
+        ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-token', $refreshToken);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExpiryTimestamp()
+    {
+        return $this->expiryTimestamp;
+    }
+
+    /**
+     * @param mixed $expiryTimestamp
+     */
+    public function setExpiryTimestamp($expiryTimestamp): void
+    {
+        $this->expiryTimestamp = $expiryTimestamp;
+        ExternalModules::setSystemSetting($this->getPrefix(), 'expiry-timestamp', $expiryTimestamp);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
+    }
+
+    /**
+     * @param mixed $prefix
+     */
+    public function setPrefix($prefix): void
+    {
+        $this->prefix = $prefix;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRefreshExpiryTimestamp()
+    {
+        return $this->refreshExpiryTimestamp;
+    }
+
+    /**
+     * @param mixed $refreshExpiryTimestamp
+     */
+    public function setRefreshExpiryTimestamp($refreshExpiryTimestamp): void
+    {
+        $this->refreshExpiryTimestamp = $refreshExpiryTimestamp;
+        ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-expiry-timestamp', $refreshExpiryTimestamp);
+    }
+
+
 }

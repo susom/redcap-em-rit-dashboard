@@ -29,8 +29,8 @@ class User
 
     /**
      * @param $client
-     * @param null $projectId
-     * @param null $entity
+     * @param \Stanford\ProjectPortal\Entity $entity
+     * @param int|null $projectId
      */
     public function __construct($client, $entity, $projectId = null)
     {
