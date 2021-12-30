@@ -38,13 +38,30 @@ class Portal
         $this->setProjectTitle($projectTitle);
 
 
-        //TODO call this when needed only.
-        if (!is_null($this->getProjectId())) {
-            $this->setProjectPortalSavedConfig($this->getProjectId());
+    }
+
+    /**
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function prepareR2P2SavedProject()
+    {
+        try {
+            if (!is_null($this->getProjectId())) {
+                $this->setProjectPortalSavedConfig($this->getProjectId());
+            }
+        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+            echo $e->getMessage();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
     }
 
-
+    /**
+     * @param $redcapProjectId
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function setProjectPortalSavedConfig($redcapProjectId)
     {
         try {

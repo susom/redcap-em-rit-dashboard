@@ -104,10 +104,12 @@ class ProjectPortal extends AbstractExternalModule
 
             $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title']));
 
-            // check if no RMA in place even if no redcap is linked to r2p2 then add overdue payment
-//            if (!isset($this->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-//                $this->getEntity()->checkOverduePayments($this->getProjectId(), $this->getEntity()->getTotalMonthlyPayment($this->getProjectId()));
-//            }
+            // only make connection if and only if the called page within this EM
+            preg_match('/prefix=rit_dashboard.*page=.*/m', $_SERVER['REQUEST_URI'], $matches, PREG_OFFSET_CAPTURE);
+            if (!empty($matches)) {
+                $this->getPortal()->prepareR2P2SavedProject();
+            }
+
         }
 
 

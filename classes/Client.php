@@ -152,7 +152,7 @@ class Client
                 $this->getNewAccessToken();
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            return $this->getNewAccessToken();
         }
     }
 
@@ -160,7 +160,7 @@ class Client
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function setJwtToken()
+    private function setJwtToken()
     {
         try {
             if ($this->isJWTTokenStillValid()) {
@@ -187,7 +187,7 @@ class Client
     /**
      * @return string
      */
-    public function getPortalUsername()
+    private function getPortalUsername()
     {
         return $this->portalUsername;
     }
@@ -195,7 +195,7 @@ class Client
     /**
      * @param string $redcapUsername
      */
-    public function setPortalUsername($redcapUsername)
+    private function setPortalUsername($redcapUsername)
     {
         $this->portalUsername = $redcapUsername;
     }
@@ -203,7 +203,7 @@ class Client
     /**
      * @return string
      */
-    public function getPortalPassword()
+    private function getPortalPassword()
     {
         return $this->portalPassword;
     }
@@ -211,7 +211,7 @@ class Client
     /**
      * @param string $redcapPassword
      */
-    public function setPortalPassword($redcapPassword)
+    private function setPortalPassword($redcapPassword)
     {
         $this->portalPassword = $redcapPassword;
     }
@@ -267,7 +267,7 @@ class Client
     /**
      * @return mixed
      */
-    public function getAccessToken()
+    private function getAccessToken()
     {
         return $this->accessToken;
     }
@@ -275,7 +275,7 @@ class Client
     /**
      * @param mixed $accessToken
      */
-    public function setAccessToken($accessToken): void
+    private function setAccessToken($accessToken): void
     {
         $this->accessToken = $accessToken;
         ExternalModules::setSystemSetting($this->getPrefix(), 'access-token', $accessToken);
@@ -284,7 +284,7 @@ class Client
     /**
      * @return mixed
      */
-    public function getRefreshToken()
+    private function getRefreshToken()
     {
         return $this->refreshToken;
     }
@@ -292,7 +292,7 @@ class Client
     /**
      * @param mixed $refreshToken
      */
-    public function setRefreshToken($refreshToken): void
+    private function setRefreshToken($refreshToken): void
     {
         $this->refreshToken = $refreshToken;
         ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-token', $refreshToken);
@@ -301,7 +301,7 @@ class Client
     /**
      * @return mixed
      */
-    public function getExpiryTimestamp()
+    private function getExpiryTimestamp()
     {
         return $this->expiryTimestamp;
     }
@@ -309,7 +309,7 @@ class Client
     /**
      * @param mixed $expiryTimestamp
      */
-    public function setExpiryTimestamp($expiryTimestamp): void
+    private function setExpiryTimestamp($expiryTimestamp): void
     {
         $this->expiryTimestamp = $expiryTimestamp;
         ExternalModules::setSystemSetting($this->getPrefix(), 'expiry-timestamp', $expiryTimestamp);
@@ -334,7 +334,7 @@ class Client
     /**
      * @return mixed
      */
-    public function getRefreshExpiryTimestamp()
+    private function getRefreshExpiryTimestamp()
     {
         return $this->refreshExpiryTimestamp;
     }
@@ -342,7 +342,7 @@ class Client
     /**
      * @param mixed $refreshExpiryTimestamp
      */
-    public function setRefreshExpiryTimestamp($refreshExpiryTimestamp): void
+    private function setRefreshExpiryTimestamp($refreshExpiryTimestamp): void
     {
         $this->refreshExpiryTimestamp = $refreshExpiryTimestamp;
         ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-expiry-timestamp', $refreshExpiryTimestamp);
