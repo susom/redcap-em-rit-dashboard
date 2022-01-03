@@ -64,6 +64,7 @@ class Client
      */
     private function isJWTTokenStillValid()
     {
+        return false;
         if (isset($_SESSION['project_portal_jwt_token_created_at']) && (time() - $_SESSION['project_portal_jwt_token_created_at'] < 60 * 60 * 24 * 2)) {
             return true;
         } else {
