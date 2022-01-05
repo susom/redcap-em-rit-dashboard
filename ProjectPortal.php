@@ -329,12 +329,35 @@ class ProjectPortal extends AbstractExternalModule
     }
 
 
+    public function processOverduePayments()
+    {
+        $overdue = $this->getEntity()->getOverduePayments($this->getProjectId());
+        $overdueArray = [];
+        if (!empty($overdue)) {
+            $month = date('m', time());
+
+            foreach ($overdue as $item) {
+                // no need to add current month overdue payment.
+                if ($month == $item['month']) {
+                    continue;
+                }
+                $overdueArray[] = array(
+                    'content' => 'Overdue payment for month of  ' . date("F", strtotime('00-' . $item['month'] . '-01') . '-' . $item['year']),
+                    'monthly_payments' => $item['monthly_payments']
+                );
+            }
+            $overdue = json_encode($overdueArray);
+        }
+        return $overdue;
+    }
+
     /**
      * @param $instrument
      * @param $field
      * @return bool
      */
-    private function isFieldInInstrument($instrument, $field){
+    private function isFieldInInstrument($instrument, $field)
+    {
         $fields = $this->getProject()->forms[$instrument]['fields'];
         return array_key_exists($field, $fields);
     }
