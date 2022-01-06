@@ -130,6 +130,12 @@
       "type": "rich-text"
     },
     {
+      "key": "rit-dashboard-line-items-tab-header",
+      "name": "External Modules Tab Header",
+      "required": false,
+      "type": "rich-text"
+    },
+    {
       "key": "enable-system-debug-logging",
       "name": "<b>Enable Debug Logging (system-wide)</b>",
       "required": false,

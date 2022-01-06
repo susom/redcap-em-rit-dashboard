@@ -145,6 +145,11 @@ try {
                             <?php
                             require("tabs/external_modules.php");
                             ?>
+                            <!--                        </b-tab>-->
+                            <!--                        <b-tab title="Invoice Line Items">-->
+                            <!--                            --><?php
+                            //                            require("tabs/line_items.php");
+                            //                            ?>
                         </b-tab>
                     </b-tabs>
                 </div>
@@ -178,6 +183,7 @@ try {
                     noneDismissibleVariant: "danger",
                     portalLinkageVariant: "danger",
                     EMVariant: "danger",
+                    line_items_variant: "danger",
                     // fields: ['id', 'title', 'type', 'status', 'created_at', 'for_current_pid'],
                     fields: [
                         {
@@ -220,6 +226,7 @@ try {
                     alertMessage: '',
                     portalLinkageAlertMessage: '',
                     EMAlertMessage: '',
+                    line_items_alert_message: '',
                     noneDismissibleAlertMessage: '',
                     fields_em: [
                         {
@@ -233,17 +240,54 @@ try {
                             sortable: true
                         }
                     ],
+                    fields_line_items: [
+                        {
+                            key: 'id',
+                            label: 'ID',
+                            sortable: true
+                        },
+                        {
+                            key: 'sow_title',
+                            label: 'RMA Title',
+                            sortable: true
+                        }, {
+                            key: 'monthly_payment',
+                            label: 'Monthly Payment',
+                            sortable: true
+                        }, {
+                            key: 'number_of_months',
+                            label: 'Number of Months',
+                            sortable: true
+                        },
+                        {
+                            key: 'total_amount',
+                            label: 'Total Amount',
+                            sortable: true
+                        },
+                        {
+                            key: 'is_recurring',
+                            label: 'Is recurring?',
+                            sortable: true
+                        }
+                    ],
                     filter_em: null,
+                    filter_line_items: null,
                     currentPage_em: 1,
+                    current_page_line_items: 1,
                     totalRows_em: 0,
+                    total_rows_line_items: 0,
                     perPage_em: 100,
+                    per_page_line_items: 100,
                     items_em: [],
+                    items_line_items: [],
+                    all_items_line_items: [],
                     allEms: [],
                     totalFees: 0,
                     showDismissibleAlert: false,
                     showNoneDismissibleAlert: false,
                     showPortalLinkageDismissibleAlert: false,
                     showEMDismissibleAlert: false,
+                    show_line_items_dismissibleAlert: false,
                     ticket: {
                         redcap_project_id: "<?php echo $module->getProjectId() ?>",
                         summary: "",
@@ -270,15 +314,18 @@ try {
                     attachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     detachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSectionURL: "<?php echo $module->getURL('ajax/portal/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalRMALineItems: "<?php echo $module->getURL('ajax/portal/get_line_items.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     portal_linkage_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header')); ?>",
                     tickets_header: '<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-ticket-tab-header')); ?>',
                     external_modules_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-external-modules-tab-header')); ?>",
+                    line_items_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-line-items-tab-header')); ?>",
                     hasManagePermission: "<?php echo $module->getUser()->isUserHasManagePermission(); ?>",
                     portalREDCapMaintenanceAgreement: [],
                     refCount: 0,
                     isLoading: true,
                     currentProjectTickets: 'Yes',
                     currentProjectEms: 'Yes',
+                    current_project_line_items: 'Yes',
                     openTickets: 'Yes',
                     emptyTicketsTable: "No Tickets Found",
                     bodyMessage: '',
@@ -377,6 +424,11 @@ try {
                     this.currentPage = 1
                 },
                 onFilteredEM(filteredItems) {
+                    // Trigger pagination to update the number of buttons/pages due to filtering
+                    this.totalRows_em = filteredItems.length
+                    this.currentPage_em = 1
+                },
+                onFilteredLineItems(filteredItems) {
                     // Trigger pagination to update the number of buttons/pages due to filtering
                     this.totalRows_em = filteredItems.length
                     this.currentPage_em = 1
@@ -556,7 +608,28 @@ try {
                             if (this.hasREDCapMaintenanceAgreement() === false) {
                                 this.emTabAlerts()
                             }
-                        });
+                        }).then(response => {
+                        // when RMA is loaded then load line items for it.
+                        // this.getRMALineItems()
+                    }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
+                },
+                getRMALineItems: function () {
+                    axios.get(this.projectPortalRMALineItems + '&rma_id=' + this.portalREDCapMaintenanceAgreement.id)
+                        .then(response => {
+                            if (response.data.data != undefined) {
+                                console.log(response.data.data)
+                                this.items_line_items = this.all_items_line_items = response.data.data;
+                                this.total_rows_line_items = this.all_items_line_items.length;
+                            }
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
                 },
                 getREDCapProjectsNames: function () {
                     var projects = ''
