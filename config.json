@@ -63,12 +63,32 @@
     },
     {
       "key": "portal-password",
-      "name": "<b>Enter the portal username that will be used to authenticate the integration between portal and redcap.</b>",
+      "name": "<b>Enter the portal username password that will be used to authenticate the integration between portal and redcap.</b>",
       "type": "text"
     },
     {
       "key": "portal-base-url",
       "name": "<b>Enter the portal base url to make the integration.</b>",
+      "type": "text"
+    },
+    {
+      "key": "access-token",
+      "name": "<b>Current Access JWT token to R2P2</b>",
+      "type": "text"
+    },
+    {
+      "key": "refresh-token",
+      "name": "<b>Current Refresh JWT token to R2P2</b>",
+      "type": "text"
+    },
+    {
+      "key": "expiry-timestamp",
+      "name": "<b>Expiration Unix timestamp for current access token</b>",
+      "type": "text"
+    },
+    {
+      "key": "refresh-expiry-timestamp",
+      "name": "<b>Expiration Unix timestamp for current Refresh token</b>",
       "type": "text"
     },
     {
@@ -111,6 +131,12 @@
     },
     {
       "key": "rit-dashboard-external-modules-tab-header",
+      "name": "External Modules Tab Header",
+      "required": false,
+      "type": "rich-text"
+    },
+    {
+      "key": "rit-dashboard-line-items-tab-header",
       "name": "External Modules Tab Header",
       "required": false,
       "type": "rich-text"

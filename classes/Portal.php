@@ -38,13 +38,30 @@ class Portal
         $this->setProjectTitle($projectTitle);
 
 
-        //TODO call this when needed only.
-        if (!is_null($this->getProjectId())) {
-            $this->setProjectPortalSavedConfig($this->getProjectId());
+    }
+
+    /**
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function prepareR2P2SavedProject()
+    {
+        try {
+            if (!is_null($this->getProjectId())) {
+                $this->setProjectPortalSavedConfig($this->getProjectId());
+            }
+        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+            echo $e->getMessage();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
     }
 
-
+    /**
+     * @param $redcapProjectId
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function setProjectPortalSavedConfig($redcapProjectId)
     {
         try {
@@ -92,6 +109,38 @@ class Portal
                 'form_params' => [
                     'redcap_project_id' => $redcapProjectId,
                     'redcap_project_status' => $redcapStatus,
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+
+    /**
+     * @param int $portalProjectId
+     * @param int $redcapProjectId
+     * @param int $redcapStatus
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getRMALineItems($portalProjectId, $rmaID, $userId)
+    {
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $url = $this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/sow/' . $rmaID . '/work-items/';
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/sow/' . $rmaID . '/work-items/', [
+                'debug' => false,
+                'form_params' => [
+                    'user' => $userId,
                 ],
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",
