@@ -145,12 +145,12 @@ try {
                             <?php
                             require("tabs/external_modules.php");
                             ?>
-                            <!--                        </b-tab>-->
-                            <!--                        <b-tab title="Invoice Line Items">-->
-                            <!--                            --><?php
-                            //                            require("tabs/line_items.php");
-                            //                            ?>
                         </b-tab>
+                        <!--                        <b-tab title="Invoice Line Items">-->
+                        <!--                            --><?php
+                        //                            require("tabs/line_items.php");
+                        //                            ?>
+                        <!--                        </b-tab>-->
                     </b-tabs>
                 </div>
             </b-overlay>
@@ -250,11 +250,13 @@ try {
                             key: 'sow_title',
                             label: 'RMA Title',
                             sortable: true
-                        }, {
+                        },
+                        {
                             key: 'monthly_payment',
                             label: 'Monthly Payment',
                             sortable: true
-                        }, {
+                        },
+                        {
                             key: 'number_of_months',
                             label: 'Number of Months',
                             sortable: true
@@ -262,6 +264,15 @@ try {
                         {
                             key: 'total_amount',
                             label: 'Total Amount',
+                            sortable: true
+                        },
+                        {
+                            key: 'status',
+                            label: 'Payment Status',
+                            sortable: true
+                        }, {
+                            key: 'line_item_month_year',
+                            label: 'Payment Date',
                             sortable: true
                         },
                         {
@@ -610,7 +621,7 @@ try {
                             }
                         }).then(response => {
                         // when RMA is loaded then load line items for it.
-                        // this.getRMALineItems()
+                        //this.getRMALineItems()
                     }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -620,16 +631,36 @@ try {
                 getRMALineItems: function () {
                     axios.get(this.projectPortalRMALineItems + '&rma_id=' + this.portalREDCapMaintenanceAgreement.id)
                         .then(response => {
-                            if (response.data.data != undefined) {
-                                console.log(response.data.data)
-                                this.items_line_items = this.all_items_line_items = response.data.data;
-                                this.total_rows_line_items = this.all_items_line_items.length;
+                            if (response.data.data !== undefined) {
+                                this.processRMALineItems(response.data.data);
                             }
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
                         this.alertMessage = err.response.data.message
                     });
+                },
+                processRMALineItems: function (data) {
+                    var arr = []
+                    for (var i = 0; i < data.length; i++) {
+                        // has invoice line items
+                        if (data[i]['invoice_line_items'].length > 0) {
+                            for (var j = 0; j < data[i]['invoice_line_items'].length; j++) {
+                                arr.push({
+                                    'id': data[i]['invoice_line_items'][j]['id'],
+                                    'sow_title': data[i]['sow_title'],
+                                    'monthly_payment': data[i]['monthly_payment'],
+                                    'number_of_months': data[i]['number_of_months'],
+                                    'total_amount': data[i]['total_amount'],
+                                    'status': data[i]['invoice_line_items'][j]['status'] === 0 ? 'Not Processed' : 'Processed',
+                                    'line_item_month_year': data[i]['invoice_line_items'][j]['line_item_month_year'],
+                                    'is_recurring': data[i]['is_recurring'] === true ? 'Yes' : 'No',
+                                })
+                            }
+                        }
+                    }
+                    this.items_line_items = this.all_items_line_items = arr;
+                    this.total_rows_line_items = this.all_items_line_items.length;
                 },
                 getREDCapProjectsNames: function () {
                     var projects = ''
