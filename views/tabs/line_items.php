@@ -25,7 +25,7 @@
         </template>
         <template #thead-top="data">
             <b-tr style="background-color: #D7D7D7">
-                <b-th colspan="5">
+                <b-th colspan="7">
                     <b-row>
                         <b-col lg="12">
                             <!--                            <b-form-checkbox v-model="current_project_line_items"-->

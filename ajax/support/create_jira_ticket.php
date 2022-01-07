@@ -32,6 +32,7 @@ try {
 
     $data = $module->getSupport()->createJiraTicketViaPortal($redcapProjectId, $summary, $issueType, $description, $portalProjectId, $module->getProject()->project['app_title'], $user_firstname, $user_lastname);
     echo json_encode(array_merge($data, array('status' => 'success', 'message' => "<a target='_blank' href='" . $module->getClient()->getPortalBaseURL() . "support?id=" . $data['id'] . "'><h3>" . $data['jira']['key'] . "</h3></a>&nbsp;<h3>been created</h3>")));
+    echo json_encode(array('message' => 'jira ticket created '));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);
