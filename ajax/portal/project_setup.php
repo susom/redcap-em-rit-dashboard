@@ -25,7 +25,7 @@ try {
                         <?php
                     } else {
                         ?>
-                        <i style="font-size: 30px; margin-left: 20%;" class="fas fa-times"></i>
+                        <i style="font-size: 30px; margin-left: 20%;" class="fas fa-exclamation-circle"></i>
                         <?php
                     }
                     ?>
@@ -98,7 +98,8 @@ try {
             <div class="rounded alert alert-<?php echo($module->getProject()->project['status'] == '1' ? 'danger' : 'warning') ?>">
                 <div class="row">
                     <div class="col-2">
-                        <div class="row"><i style="font-size: 30px; margin-left: 20%;" class="fas fa-times"></i></div>
+                        <div class="row"><i style="font-size: 30px; margin-left: 20%;"
+                                            class="fas fa-exclamation-circle"></i></div>
                     </div>
                     <div class="col-8">
                         <div class="row">
