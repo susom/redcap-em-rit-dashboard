@@ -496,6 +496,11 @@ try {
                                 this.showNoneDismissibleAlert = true
                                 this.noneDismissibleAlertMessage += this.replaceNotificationsVariables(this.notifications.get_project_ems_prod, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
                                 this.noneDismissibleVariant = "danger"
+                            } else if (this.project_status == "1" && this.totalFees <= 0) {
+                                // Production mode redcap project
+                                this.showNoneDismissibleAlert = true
+                                this.noneDismissibleAlertMessage += this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_no_fees, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
+                                this.noneDismissibleVariant = "warning"
                             }
                         }
                     });
@@ -683,6 +688,11 @@ try {
                     if (this.totalFees > 0 && this.project_status === "1") {
                         var notification = this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_2, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
                         this.setEMAlertMessage("danger", notification, true)
+                        // project in analysis mode but has EM with monthly fees
+                    }
+                    if (this.totalFees <= 0 && this.project_status === "1") {
+                        var notification = this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_no_fees_2, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
+                        this.setEMAlertMessage("warning", notification, true)
                         // project in analysis mode but has EM with monthly fees
                     }
                     if (this.totalFees > 0 && this.project_status === "2") {

@@ -45,16 +45,6 @@ try {
                                 $notification = $module::replaceNotificationsVariables($notification, array('a' => $module->getPortal()->projectPortalSavedConfig['portal_project_url'], 'name' => $module->getPortal()->projectPortalSavedConfig['portal_project_name']));
                                 echo $notification;
                                 ?>
-                                <!--                                    <span>i class="fas fa-wrench"></i-->
-                                <!-- This REDCap project is part of the R2P2 Project-->
-                                <!--                                        <br><a style="text-decoration: underline" class="portal-setupx" target="_blank"-->
-                                <!--                                               href="-->
-                                <?php //echo $module->getPortal()->projectPortalSavedConfig['portal_project_url'] ?><!--">-->
-                                <!---->
-                                <!--                                            <i class="fas fa-external-link-alt"></i> <span>-->
-                                <?php //echo $module->getPortal()->projectPortalSavedConfig['portal_project_name'] ?><!--</span>-->
-                                <!--                                        </a>-->
-                                <!--                                    </span>-->
                             </div>
                         </div>
                         <?php
@@ -67,12 +57,6 @@ try {
                             $notification = $module::replaceNotificationsVariables($notification, array('a' => $url, 'wiki' => 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'));
                             echo $notification;
                             ?>
-                            <!--                            This REDCap project is NOT yet linked to an R2P2 project.-->
-                            <!--                            <br> Click the-->
-                            <!--                            <a class="portal-setup" href="-->
-                            <?php //echo $module->getUrl("views/index.php") ?><!--">-->
-                            <!--                                <i class="fas fa-column"></i> <span>REDCap R2P2 Dashboard</span>-->
-                            <!--                            </a> link on the left sidebar to get started.-->
                         </div>
                         <?php
                     }
@@ -95,7 +79,7 @@ try {
         $statuses = [2, 6, 7];
         if (empty($data) || !in_array($data['status'], $statuses)) {
             ?>
-            <div class="rounded alert alert-<?php echo($module->getProject()->project['status'] == '1' ? 'danger' : 'warning') ?>">
+            <div class="rounded alert alert-<?php echo($module->getProject()->project['status'] == '1' && $module->getEntity()->getTotalMonthlyPayment($module->getProjectId()) > 0 ? 'danger' : 'warning') ?>">
                 <div class="row">
                     <div class="col-2">
                         <div class="row"><i style="font-size: 30px; margin-left: 20%;"
@@ -106,19 +90,24 @@ try {
                             <div class="row">
                                 <div class="">
                                     <?php
-                                    if ($module->getProject()->project['status'] == '1') {
+                                    if ($module->getProject()->project['status'] == '1' && $module->getEntity()->getTotalMonthlyPayment($module->getProjectId()) > 0) {
                                         $notification = $module->getNotifications()['get_project_ems_prod'];
                                         $notification = $module::replaceNotificationsVariables($notification, array('wiki' => 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'));
                                         ?>
                                         <span><?php echo $notification ?></span>
                                         <?php
-                                    } else {
+                                    } elseif ($module->getProject()->project['status'] == '1' && $module->getEntity()->getTotalMonthlyPayment($module->getProjectId()) <= 0) {
+                                        $notification = $module->getNotifications()['get_project_ems_prod_no_fees'];
+                                        $notification = $module::replaceNotificationsVariables($notification, array('wiki' => 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'));
+                                        ?>
+                                        <span><?php echo $notification ?></span>
+                                    <?php } else {
                                         ?>
                                         <span><?php echo $module->getNotifications()['get_project_ems_dev'] ?></span>
                                         <?php
                                     }
                                     ?>
-                                    <br>If RMA in place please make sure its approved. otherwise Click the
+                                    <br>If RMA in place please make sure its approved. otherwise, Click the
                                     <a class="portal-setup" href="<?php echo $module->getUrl("views/index.php") ?>">
                                         <i class="fas fa-external-link-alt"></i> <span>REDCap R2P2 Dashboard</span>
                                     </a> link on the left sidebar to generate RMA.
