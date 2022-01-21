@@ -130,8 +130,8 @@ try {
 
             <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
                 <div class="mt-3">
-                    <b-tabs content-class="">
-                        <b-tab title="R2P2" active>
+                    <b-tabs content-class="" :value="activeTabIndex">
+                        <b-tab title="R2P2">
                             <?php
                             require("tabs/portal_linkage.php");
                             ?>
@@ -174,9 +174,18 @@ try {
         // Vue.component('Navigation', Navigation)
         new Vue({
             el: "#app",
-
+            computed: {
+                activeTabIndex() {
+                    const route = this.fullURL.toLowerCase();
+                    var parts = route.split("#")
+                    const im = this.tabsPathsDictionary.findIndex(element => element === parts[1]) || 0;
+                    return im;
+                }
+            },
             data() {
                 return {
+                    fullURL: window.location.href,
+                    tabsPathsDictionary: ['r2p2', 'support', 'external-modules', 'payment-history'],
                     options: [{value: 'CA', label: 'Canada'}],
                     notifications: <?php echo json_encode($module->getNotifications()) ?>,
                     variant: "danger",
@@ -447,7 +456,15 @@ try {
                 prepareComponent: function () {
                     this.getUserTickets()
                     this.getProjectEMs()
-                    this.manupilateProjectInfo()
+                    this.manupilateProjectInfo();
+                    this.processURL()
+                },
+                processURL: function () {
+                    const urlSearchParams = new URLSearchParams(window.location.search);
+                    const params = Object.fromEntries(urlSearchParams.entries());
+                    if (params['open-support-modal'] != undefined && params['open-support-modal'] == 'true') {
+                        this.$refs['generic-modal'].show()
+                    }
                 },
                 manupilateProjectInfo: function () {
                     var element = document.getElementById('subheaderDiv2')
