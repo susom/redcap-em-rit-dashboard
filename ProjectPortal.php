@@ -9,6 +9,7 @@ require_once("classes/Support.php");
 require_once("classes/Client.php");
 require_once("classes/Portal.php");
 require_once("classes/Entity.php");
+require_once("classes/ManagerEM.php");
 
 const MAJOR_VERSION = 7 ;
 use ExternalModules\ExternalModules;
@@ -19,6 +20,7 @@ use Sabre\DAV\Exception;
 use Stanford\ProjectPortal\Client;
 use Stanford\ProjectPortal\Support;
 use Stanford\ProjectPortal\User;
+use Stanford\ProjectPortal\ManagerEM;
 
 /**
  * Class ProjectPortal
@@ -28,6 +30,7 @@ use Stanford\ProjectPortal\User;
  * @property \Stanford\ProjectPortal\Client $client
  * @property \Stanford\ProjectPortal\Portal $portal
  * @property \Stanford\ProjectPortal\Entity $entity
+ * @property \Stanford\ProjectPortal\ManagerEM $managerEm
  * @property array $ips
  * @property array $projects
  * @property \Project $project
@@ -71,6 +74,8 @@ class ProjectPortal extends AbstractExternalModule
     private $request;
 
 
+    private $managerEm;
+
     /**
      * @var
      */
@@ -92,6 +97,9 @@ class ProjectPortal extends AbstractExternalModule
 
 
         $this->setClient(new Client($this->PREFIX));
+
+
+        $this->setManagerEm(new \Stanford\ProjectPortal\ManagerEM($this->PREFIX));
 
 
         $this->setEntity(new Entity());
@@ -659,4 +667,22 @@ class ProjectPortal extends AbstractExternalModule
 
         return $notification;
     }
+
+    /**
+     * @return \Stanford\ProjectPortal\ManagerEM
+     */
+    public function getManagerEm()
+    {
+        return $this->managerEm;
+    }
+
+    /**
+     * @param \Stanford\ProjectPortal\ManagerEM $managerEm
+     */
+    public function setManagerEm($managerEm): void
+    {
+        $this->managerEm = $managerEm;
+    }
+
+
 }
