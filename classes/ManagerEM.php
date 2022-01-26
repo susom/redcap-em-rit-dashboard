@@ -17,8 +17,9 @@ class ManagerEM
     public function __construct($prefix)
     {
         $this->setPrefix($prefix);
-
-        $this->setManagerEM(ExternalModules::getModuleInstance(ExternalModules::getSystemSetting($this->getPrefix(), 'external-modules-manager-em')));
+        if (ExternalModules::getSystemSetting($this->getPrefix(), 'external-modules-manager-em') != '') {
+            $this->setManagerEM(ExternalModules::getModuleInstance(ExternalModules::getSystemSetting($this->getPrefix(), 'external-modules-manager-em')));
+        }
 
     }
 
