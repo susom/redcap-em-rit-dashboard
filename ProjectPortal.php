@@ -99,7 +99,7 @@ class ProjectPortal extends AbstractExternalModule
         $this->setClient(new Client($this->PREFIX));
 
 
-        $this->setManagerEm(new \Stanford\ProjectPortal\ManagerEM($this->PREFIX));
+       // $this->setManagerEm(new \Stanford\ProjectPortal\ManagerEM($this->PREFIX));
 
 
         $this->setEntity(new Entity());
