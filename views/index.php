@@ -422,7 +422,7 @@ try {
                 filterEms() {
                     if (this.currentProjectEms === 'Yes') {
                         this.items_em = this.allEms.filter(function (n) {
-                            return n.maintenance_fees > 0;
+                            return n.maintenance_fees > 0 || n.maintenance_monthly_cost != 'Module Disabled';
                         });
                     } else {
                         this.items_em = this.allEms
