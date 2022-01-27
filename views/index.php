@@ -490,9 +490,8 @@ try {
                             if (response.data.data != undefined) {
                                 this.items_em = this.allEms = response.data.data;
                                 this.totalRows_em = this.items_em.length;
-                                for (var i = 0; i < this.items_em.length; i++) {
-                                    this.totalFees += parseFloat(this.items_em[i].maintenance_fees)
-                                }
+
+                                this.calculateTotalFees()
                                 this.filterEms()
                             }
                         }).then(() => {
@@ -601,6 +600,12 @@ try {
                         this.alertMessage = err.response.data.message
                     });
                 },
+                calculateTotalFees: function () {
+                    this.totalFees = 0
+                    for (var i = 0; i < this.items_em.length; i++) {
+                        this.totalFees += parseFloat(this.items_em[i].maintenance_fees)
+                    }
+                },
                 generateSignedAuth: function () {
                     axios.post(this.ajaxGenerateSignedAuthURL, {
                         project_portal_id: this.ticket.project_portal_id,
@@ -615,6 +620,10 @@ try {
                             this.alertMessage = response.data.message
                             this.portalREDCapMaintenanceAgreement = response.data;
                             this.setEMAlertMessage("success", response.data.message, true)
+
+                            //this will update em list in case the list changed during RMA genertion.
+                            this.items_em = response.data.ems
+                            this.calculateTotalFees()
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true

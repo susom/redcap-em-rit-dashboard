@@ -22,7 +22,11 @@ try {
         throw new \Exception("portal project id is required");
     }
 
-    $ems = $body['external_modules'];
+    # before generating RMA lets make sure to update EM list to capture correct price.
+    $module->getManagerEm()->updateProjectEMUtil($module->getProjectId());
+
+    #$ems = $body['external_modules'];
+    $ems = $module->getEntity()->generateProjectEMUsageArray($module->getProjectId());
     // before generating RMA check if overdue payment exists
     $overdue = $module->processOverduePayments();
 
@@ -34,7 +38,7 @@ try {
     if ($overdue) {
         $module->getEntity()->deleteOverduePayments($module->getProjectId());
     }
-    echo json_encode(array_merge($data, array('status' => 'success', 'message' => $module->getNotifications()['generate_rma_success_message'], 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
+    echo json_encode(array_merge($data, array('status' => 'success', 'message' => $module->getNotifications()['generate_rma_success_message'], 'ems' => $ems, 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);
