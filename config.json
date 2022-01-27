@@ -66,6 +66,12 @@
       "type": "text"
     },
     {
+      "key": "external-modules-manager-redcap-project",
+      "name": "<b>Set External Modules Manager REDCap project to allow dashboard to communicate with it.</b>",
+      "type": "project-id",
+      "default": "16000"
+    },
+    {
       "key": "external-modules-manager-em",
       "name": "<b>Set External Modules Manager EM to allow dashboard to communicate with it.</b>",
       "type": "text"

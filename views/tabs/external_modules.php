@@ -15,19 +15,19 @@
     </div>
 
 
-    <!--    <b-row class="mb-3 mt-3">-->
-    <!--        <b-col lg="6" class="ml-2">-->
-    <!--            <span v-html="notifications.update_em_list"></span>-->
-    <!--        </b-col>-->
-    <!--    </b-row>-->
-    <!---->
-    <!--    <b-row class="mb-3 mt-3">-->
-    <!--        <b-col lg="6">-->
-    <!--            <b-button size="sm" variant="success" :disabled='isDisabled' @click="updateExternalModuleList()">Update-->
-    <!--                External Modules List-->
-    <!--            </b-button>-->
-    <!--        </b-col>-->
-    <!--    </b-row>-->
+    <b-row class="mb-3 mt-3">
+        <b-col lg="6" class="ml-2">
+            <span v-html="notifications.update_em_list"></span>
+        </b-col>
+    </b-row>
+
+    <b-row class="mb-3 mt-3">
+        <b-col lg="6">
+            <b-button size="sm" variant="success" :disabled='isDisabled' @click="updateExternalModuleList()">Update
+                External Modules List
+            </b-button>
+        </b-col>
+    </b-row>
 
 
     <b-table striped hover :items="items_em" :fields="fields_em" :current-page="currentPage_em"
