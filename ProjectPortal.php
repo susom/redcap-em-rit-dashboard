@@ -10,6 +10,7 @@ require_once("classes/Client.php");
 require_once("classes/Portal.php");
 require_once("classes/Entity.php");
 require_once("classes/ManagerEM.php");
+require_once("classes/Utilities.php");
 
 const MAJOR_VERSION = 7 ;
 use ExternalModules\ExternalModules;
@@ -89,6 +90,12 @@ class ProjectPortal extends AbstractExternalModule
     private $notifications;
 
     /**
+     * determine what is project state
+     * @var int
+     */
+    private $state;
+
+    /**
      * ProjectPortal constructor.
      */
     public function __construct()
@@ -110,7 +117,7 @@ class ProjectPortal extends AbstractExternalModule
 
             //$this->setProjects($this->getEnabledProjects());
 
-            $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title']));
+            $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title'], $this->getProject()->project['status']));
 
             // only make connection if and only if the called page within this EM
             preg_match('/prefix=rit_dashboard.*page=.*/m', $_SERVER['REQUEST_URI'], $matches, PREG_OFFSET_CAPTURE);
@@ -654,19 +661,7 @@ class ProjectPortal extends AbstractExternalModule
         $this->notifications = parse_ini_file($path);;
     }
 
-    /**
-     * @param string $notification
-     * @param array $variables
-     * @return string
-     */
-    public static function replaceNotificationsVariables(string $notification, array $variables)
-    {
-        foreach ($variables as $key => $value) {
-            $notification = str_replace("[" . $key . "]", $value, $notification);
-        }
 
-        return $notification;
-    }
 
     /**
      * @return \Stanford\ProjectPortal\ManagerEM
@@ -682,6 +677,22 @@ class ProjectPortal extends AbstractExternalModule
     public function setManagerEm($managerEm): void
     {
         $this->managerEm = $managerEm;
+    }
+
+    /**
+     * @return int
+     */
+    public function getState(): int
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param int $state
+     */
+    public function setState($status, $fees, $isLinked, $hasRMA = false, $approvedRMA = false): void
+    {
+        $this->state = Utilities::determineProjectState($status, $fees, $isLinked, $hasRMA, $approvedRMA);
     }
 
 

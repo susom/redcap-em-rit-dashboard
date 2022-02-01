@@ -4,7 +4,10 @@ namespace Stanford\ProjectPortal;
 
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 
+
 try {
+    $monthlyFees = $module->getEntity()->getTotalMonthlyPayment($module->getProjectId());
+    $module->setState($module->getProject()->project['status'], $monthlyFees, isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']), $module->getPortal()->getHasRMA(), $module->getPortal()->getRMAStatus());
     ?>
     <!--    <style>-->
     <!--        portal-setupx.a {-->
@@ -14,53 +17,25 @@ try {
     <div id="portal-linkage-container" class="mb-2"
          data-is-linked="<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? 'true' : 'false' ?>"">
     <div id="portal-errors" class="alert alert-danger hidden"></div>
-    <div class="rounded alert alert-<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? 'success' : 'danger' ?>">
+    <div class="rounded alert alert-<?php echo Utilities::determineProjectAlert($module->getState()) ?>">
         <div class="row">
             <div class="col-2">
                 <div class="row">
-                    <?php
-                    if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-                        ?>
-                        <i style="font-size: 20px; margin-left: 20%;" class="fas fa-check"></i>
-                        <?php
-                    } else {
-                        ?>
-                        <i style="font-size: 30px; margin-left: 20%;" class="fas fa-exclamation-circle"></i>
-                        <?php
-                    }
-                    ?>
+                    <i style="font-size: 30px; margin-left: 20%;"
+                       class="<?php echo Utilities::determineProjectIcon($module->getState()) ?>"></i>
                 </div>
 
             </div>
             <div class="col-8">
                 <div class="row">
-                    <?php
-                    // If the PID is associated to a REDCap Project
-                    if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-                        ?>
-                        <div class="row">
-                            <div class="">
-                                <?php
-                                $notification = $module->getNotifications()['project_setup_linked_r2p2'];
-                                $notification = $module::replaceNotificationsVariables($notification, array('a' => $module->getPortal()->projectPortalSavedConfig['portal_project_url'], 'name' => $module->getPortal()->projectPortalSavedConfig['portal_project_name']));
-                                echo $notification;
-                                ?>
-                            </div>
-                        </div>
+                    <div>
                         <?php
-                    } else {
+                        $notification = $module->getNotifications()['project_state_' . $module->getState()];
+                        $url = $module->getUrl("views/index.php");
+                        $notification = Utilities::replaceNotificationsVariables($notification, array('a' => $url, 'wiki' => 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'));
+                        echo $notification;
                         ?>
-                        <div>
-                            <?php
-                            $notification = $module->getNotifications()['project_setup_no_linked_r2p2'];
-                            $url = $module->getUrl("views/index.php");
-                            $notification = $module::replaceNotificationsVariables($notification, array('a' => $url, 'wiki' => 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'));
-                            echo $notification;
-                            ?>
-                        </div>
-                        <?php
-                    }
-                    ?>
+                    </div>
                 </div>
             </div>
             <div class="col-2">
@@ -73,81 +48,6 @@ try {
         </div>
     </div>
 
-    <?php
-    if (isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
-        $data = $module->getPortal()->getREDCapSignedAuthInPortal($module->getPortal()->projectPortalSavedConfig['portal_project_id'], $module->getProjectId(), $module->getProject()->project['status']);
-        $statuses = [2, 6, 7];
-        if (empty($data) || !in_array($data['status'], $statuses)) {
-            ?>
-            <div class="rounded alert alert-<?php echo($module->getProject()->project['status'] == '1' && $module->getEntity()->getTotalMonthlyPayment($module->getProjectId()) > 0 ? 'danger' : 'warning') ?>">
-                <div class="row">
-                    <div class="col-2">
-                        <div class="row"><i style="font-size: 30px; margin-left: 20%;"
-                                            class="fas fa-exclamation-circle"></i></div>
-                    </div>
-                    <div class="col-8">
-                        <div class="row">
-                            <div class="row">
-                                <div class="">
-                                    <?php
-                                    if ($module->getProject()->project['status'] == '1' && $module->getEntity()->getTotalMonthlyPayment($module->getProjectId()) > 0) {
-                                        $notification = $module->getNotifications()['get_project_ems_prod'];
-                                        $notification = $module::replaceNotificationsVariables($notification, array('wiki' => 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'));
-                                        ?>
-                                        <span><?php echo $notification ?></span>
-                                        <?php
-                                    } elseif ($module->getProject()->project['status'] == '1' && $module->getEntity()->getTotalMonthlyPayment($module->getProjectId()) <= 0) {
-                                        $notification = $module->getNotifications()['get_project_ems_prod_no_fees'];
-                                        $notification = $module::replaceNotificationsVariables($notification, array('wiki' => 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'));
-                                        ?>
-                                        <span><?php echo $notification ?></span>
-                                    <?php } else {
-                                        ?>
-                                        <span><?php echo $module->getNotifications()['get_project_ems_dev'] ?></span>
-                                        <?php
-                                    }
-                                    ?>
-                                    <br>If RMA in place please make sure its approved. otherwise, Click the
-                                    <a class="portal-setup" href="<?php echo $module->getUrl("views/index.php") ?>">
-                                        <i class="fas fa-external-link-alt"></i> <span>REDCap R2P2 Dashboard</span>
-                                    </a> link on the left sidebar to generate RMA.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <?php
-        } else {
-            ?>
-            <div data-1="<?php echo (empty($data) || !in_array($data['status'], $statuses)) ? 1 : 0 ?>"
-                 data-2="<?php echo (!in_array($data['status'], $statuses)) ? 1 : 0 ?>"
-                 data-status="<?php echo $data['status'] ?>" class="rounded alert alert-success">
-                <div class="row">
-                    <div class="col-2">
-                        <div class="row"><i style="font-size: 20px; margin-left: 20%;" class="fas fa-check"></i></div>
-                    </div>
-                    <div class="col-8">
-                        <div class="row">
-                            <div class="row">
-                                <div class="">
-                                    <h5
-                                            class="d-inline-block  p-1"></h5>This REDCap Project is linked to
-                                    an
-                                    approved
-                                    REDCap Maintenance Agreement.
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <?php
-        }
-    }
-    ?>
-    </div>
     <?php
 } catch (\LogicException $e) {
     echo "<div class='alert-danger'>" . $e->getMessage() . "</div>";

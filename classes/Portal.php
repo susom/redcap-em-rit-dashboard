@@ -10,8 +10,11 @@ namespace Stanford\ProjectPortal;
  * @property \Stanford\ProjectPortal\Client $client
  * @property array $projectPortalList
  * @property int $projectId
+ * @property bool $projectStatus
  * @property string $projectTitle
  * @property array $projectPortalSavedConfig
+ * @property boolean $hasRMA
+ * @property int $RMAStatus
  */
 class Portal
 {
@@ -21,21 +24,29 @@ class Portal
 
     private $projectId;
 
+    private $projectStatus;
+
     private $projectTitle;
 
     public $projectPortalSavedConfig;
+
+    private $hasRMA;
+
+    private $RMAStatus;
 
     /**
      * User constructor.
      * @param \Stanford\ProjectPortal\Client $client
      */
-    public function __construct(Client $client, $projectId = null, $projectTitle = null)
+    public function __construct(Client $client, $projectId = null, $projectTitle = null, $projectStatus = null)
     {
         $this->setClient($client);
 
         $this->setProjectId($projectId);
 
         $this->setProjectTitle($projectTitle);
+
+        $this->setProjectStatus($projectStatus);
 
 
     }
@@ -86,6 +97,12 @@ class Portal
                 $this->projectPortalSavedConfig['portal_project_description'] = $projects['portal_project_description'];
                 $this->projectPortalSavedConfig['portal_project_url'] = $this->getClient()->getPortalBaseURL() . 'detail/' . $projects['project_id'];
 
+
+                $rma = $this->getREDCapSignedAuthInPortal($projects['project_id'], $this->getProjectId(), $this->getProjectStatus());
+                if (!empty($data)) {
+                    $this->setHasRMA(true);
+                    $this->setRMAStatus($rma['status']);
+                }
             }
         } catch (\Exception $e) {
             echo $e->getMessage();
@@ -335,6 +352,54 @@ class Portal
     public function setProjectTitle($projectTitle): void
     {
         $this->projectTitle = $projectTitle;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHasRMA()
+    {
+        return $this->hasRMA;
+    }
+
+    /**
+     * @param mixed $hasRMA
+     */
+    public function setHasRMA($hasRMA): void
+    {
+        $this->hasRMA = $hasRMA;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRMAStatus()
+    {
+        return $this->RMAStatus;
+    }
+
+    /**
+     * @param mixed $RMAStatus
+     */
+    public function setRMAStatus($RMAStatus): void
+    {
+        $this->RMAStatus = $RMAStatus;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProjectStatus()
+    {
+        return $this->projectStatus;
+    }
+
+    /**
+     * @param mixed $projectStatus
+     */
+    public function setProjectStatus($projectStatus): void
+    {
+        $this->projectStatus = $projectStatus;
     }
 
 
