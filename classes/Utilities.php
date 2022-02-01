@@ -19,15 +19,12 @@ class Utilities
      */
     public static function determineProjectAlert($state): string
     {
-        $alert = 'success';
-        if ($state & self::PROD) {
-            if ($state & self::HAS_FEES || $state & self::LINKED || $state & self::HAS_RMA) {
-                return 'danger';
-            }
-        } else {
-            if ($state & self::HAS_FEES || $state & self::LINKED || $state & self::HAS_RMA) {
-                return 'warning';
-            }
+        $alert = 'warning';
+        if ($state & self::LINKED && $state & self::HAS_RMA && $state & self::APPROVED_RMA) {
+            return 'success';
+        }
+        if ($state & self::PROD && $state & self::HAS_FEES) {
+            return 'danger';
         }
         return $alert;
     }
@@ -46,7 +43,7 @@ class Utilities
 
     /**
      * bitwise operation to determine redcap project state
-     * @param bool $status
+     * @param bool $status either prod or not (dev, completed, archived)
      * @param int $fees
      * @param bool $isLinked
      * @param bool $hasRMA
