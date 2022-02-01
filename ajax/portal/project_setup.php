@@ -7,7 +7,7 @@ namespace Stanford\ProjectPortal;
 
 try {
     $monthlyFees = $module->getEntity()->getTotalMonthlyPayment($module->getProjectId());
-    $module->setState($module->getProject()->project['status'], $monthlyFees, isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']), $module->getPortal()->getHasRMA(), $module->getPortal()->getRMAStatus());
+    $module->setState($module->getProject()->project['status'] == '1', $monthlyFees, isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']), $module->getPortal()->getHasRMA(), $module->getPortal()->getRMAStatus());
     ?>
     <!--    <style>-->
     <!--        portal-setupx.a {-->

@@ -8,6 +8,8 @@ use GuzzleHttp\Exception\GuzzleException;
 
 
 try {
+    $monthlyFees = $module->getEntity()->getTotalMonthlyPayment($module->getProjectId());
+    $module->setState($module->getProject()->project['status'] == '1', $monthlyFees, isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']), $module->getPortal()->getHasRMA(), $module->getPortal()->getRMAStatus());
 
 
     ?>
@@ -169,7 +171,7 @@ try {
     </div>
     <!--    <script src="--><?php //echo $module->getUrl('views/tabs/Test.vue.js', false, false) ?><!--"></script>-->
     <script type="module">
-        var ajaxCalls = []
+        var ajaxCalls = [];
         Vue.component('v-select', VueSelect.VueSelect);
         // Vue.component('Navigation', Navigation)
         new Vue({
@@ -184,6 +186,12 @@ try {
             },
             data() {
                 return {
+                    PROD: 1,
+                    HAS_FEES: 2,
+                    LINKED: 4,
+                    HAS_RMA: 8,
+                    APPROVED_RMA: 16,
+                    projectState: <?php echo $module->getState() ?>,
                     fullURL: window.location.href,
                     tabsPathsDictionary: ['r2p2', 'support', 'external-modules', 'payment-history'],
                     options: [{value: 'CA', label: 'Canada'}],
@@ -499,26 +507,35 @@ try {
                         if (this.linked()) {
                             return this.getSignedAuth()
                         } else {
-                            if (this.hasREDCapMaintenanceAgreement() === false) {
+                            if (this.projectState & this.HAS_RMA === false) {
                                 this.emTabAlerts()
                             }
+                            var notification = this.notifications['project_state_' + this.projectState]
+                            notification = this.replaceNotificationsVariables(notification, {
+                                'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333',
+                                'a': '#'
+                            })
+                            this.setEMAlertMessage(this.determineProjectAlert(), notification, true)
+                            this.showNoneDismissibleAlert = true
+                            this.noneDismissibleAlertMessage += notification
+                            this.noneDismissibleVariant = this.determineProjectAlert()
                             // global alert message that is none dismissible
-                            if (this.project_status == "0" && this.totalFees > 0) {
-                                // Dev-mode redcap project
-                                this.showNoneDismissibleAlert = true
-                                this.noneDismissibleAlertMessage += this.notifications.get_project_ems_dev
-                                this.noneDismissibleVariant = "warning"
-                            } else if (this.project_status == "1" && this.totalFees > 0) {
-                                // Production mode redcap project
-                                this.showNoneDismissibleAlert = true
-                                this.noneDismissibleAlertMessage += this.replaceNotificationsVariables(this.notifications.get_project_ems_prod, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
-                                this.noneDismissibleVariant = "danger"
-                            } else if (this.project_status == "1" && this.totalFees <= 0) {
-                                // Production mode redcap project
-                                this.showNoneDismissibleAlert = true
-                                this.noneDismissibleAlertMessage += this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_no_fees, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
-                                this.noneDismissibleVariant = "warning"
-                            }
+                            // if ((this.projectState & this.PROD) === false && this.projectState & this.HAS_FEES) {
+                            //     // Dev-mode redcap project
+                            //     this.showNoneDismissibleAlert = true
+                            //     this.noneDismissibleAlertMessage += notification
+                            //     this.noneDismissibleVariant = this.determineProjectAlert()
+                            // } else if (this.projectState & this.PROD && this.projectState & this.HAS_FEES) {
+                            //     // Production mode redcap project
+                            //     this.showNoneDismissibleAlert = true
+                            //     this.noneDismissibleAlertMessage += this.replaceNotificationsVariables(this.notifications.get_project_ems_prod, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
+                            //     this.noneDismissibleVariant = "danger"
+                            // } else if (this.projectState & this.PROD && (this.projectState & this.HAS_FEES) === false) {
+                            //     // Production mode redcap project
+                            //     this.showNoneDismissibleAlert = true
+                            //     this.noneDismissibleAlertMessage += this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_no_fees, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
+                            //     this.noneDismissibleVariant = "warning"
+                            // }
                         }
                     });
                 },
@@ -722,27 +739,60 @@ try {
                     window.open(url, '_blank')
                 },
                 emTabAlerts: function () {
-                    // project in dev mode but has EM with monthly fees
-                    if (this.totalFees > 0 && this.project_status === "0") {
-                        this.setEMAlertMessage("warning", this.notifications.get_project_ems_dev_2, true)
-                        // project in prod mode but has EM with monthly fees
-                    }
-                    if (this.totalFees > 0 && this.project_status === "1") {
-                        var notification = this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_2, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
-                        this.setEMAlertMessage("danger", notification, true)
-                        // project in analysis mode but has EM with monthly fees
-                    }
-                    if (this.totalFees <= 0 && this.project_status === "1") {
-                        var notification = this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_no_fees_2, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
-                        this.setEMAlertMessage("warning", notification, true)
-                        // project in analysis mode but has EM with monthly fees
-                    }
-                    if (this.totalFees > 0 && this.project_status === "2") {
+                    var notification = this.notifications['project_state_' + this.projectState]
+                    notification = this.replaceNotificationsVariables(notification, {
+                        'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333',
+                        'a': '#r2p2'
+                    })
+                    this.setEMAlertMessage(this.determineProjectAlert(), notification, true)
+                    // // project in dev mode but has EM with monthly fees
+                    // if ((this.projectState & this.PROD) === false && this.projectState & this.HAS_FEES) {
+                    //     this.setEMAlertMessage("warning", this.notifications.get_project_ems_dev_2, true)
+                    //     // project in prod mode but has EM with monthly fees
+                    // }
+                    // if (this.projectState & this.HAS_FEES && this.projectState & this.PROD) {
+                    //     var notification = this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_2, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
+                    //     this.setEMAlertMessage("danger", notification, true)
+                    //     // project in analysis mode but has EM with monthly fees
+                    // }
+                    // if ((this.projectState & this.HAS_FEES) === false && this.projectState & this.PROD) {
+                    //     var notification = this.replaceNotificationsVariables(this.notifications.get_project_ems_prod_no_fees_2, {'wiki': 'https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333'})
+                    //     this.setEMAlertMessage("warning", notification, true)
+                    //     // project in analysis mode but has EM with monthly fees
+                    // }
+                    if (this.projectState & this.HAS_FEES && (this.projectState & this.PROD) === false && this.project_status === "2") {
                         this.setEMAlertMessage("info", this.notifications.get_project_ems_analysis, true)
                     }
                 },
+                determineProjectAlert: function () {
+                    var alert = 'warning'
+
+                    if (this.projectState & this.PROD === false && this.projectState & this.HAS_FEES === false) {
+                        return 'success'
+                    } else if (this.projectState & this.PROD === false && this.projectState & this.HAS_FEES) {
+                        if (this.projectState & this.LINKED && this.projectState & this.HAS_RMA && this.projectState & this.APPROVED_RMA) {
+                            return 'success'
+                        } else {
+                            return 'warning'
+                        }
+                    }
+                    if (this.projectState & this.PROD && this.projectState & this.HAS_FEES === false) {
+                        return 'success'
+                    } else if (this.projectState & this.PROD && this.projectState & this.HAS_FEES) {
+                        if (this.projectState & this.LINKED && this.projectState & this.HAS_RMA && this.projectState & this.APPROVED_RMA) {
+                            return 'success'
+                        } else {
+                            return 'danger'
+                        }
+                    }
+                    return alert
+                },
+                /**
+                 * below is different from project state. this step for RMA
+                 * @returns {number}
+                 */
                 determineREDCapStep: function () {
-                    if (this.hasREDCapMaintenanceAgreement() === false) {
+                    if (this.projectState & this.HAS_RMA === false) {
                         return 1
                     } else {
                         /**
