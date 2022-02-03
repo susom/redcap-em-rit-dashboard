@@ -334,6 +334,9 @@ class ProjectPortal extends AbstractExternalModule
             if (!isset($_POST['redcap_project_id'])) {
                 throw new \LogicException("REDCap Project ID is missing!");
             }
+            // make sure to update project utilized EMs to make sure array is up-to-date.
+            $this->getManagerEm()->updateProjectEMUtil($this->getProjectId());
+
             $result = $this->getEntity()->generateProjectEMUsageArray(filter_var($_POST['redcap_project_id'], FILTER_SANITIZE_NUMBER_INT));
             header('Content-Type: application/json');
             echo json_encode($result);
