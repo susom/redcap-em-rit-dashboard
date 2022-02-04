@@ -2,19 +2,18 @@
 
 namespace Stanford\ProjectPortal;
 
+use Dompdf\Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 
 try {
-    $data = $module->getPortal()->getREDCapSignedAuthInPortal($module->getPortal()->projectPortalSavedConfig['portal_project_id'], $module->getProjectId(), $module->getProject()->project['status']);
-    if (!empty($data)) {
-        $data['sow_status'] = $data['status'];
-        echo json_encode(array_merge($data, array('status' => 'success', 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
-    } else {
-        echo json_encode(array('status' => 'empty'));
+    if (!isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
+        throw new \LogicException("This REDCap project is not linked to R2P2 project.");
     }
+    $data = $module->getPortal()->updateRMA($module->getPortal()->projectPortalSavedConfig['portal_project_id']);
+    echo json_encode(array('status' => 'success', 'message' => $data['message']));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);

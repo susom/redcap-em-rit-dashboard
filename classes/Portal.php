@@ -68,6 +68,24 @@ class Portal
         }
     }
 
+    public function updateRMA($portalProjectId)
+    {
+        $rma = $this->getREDCapSignedAuthInPortal($portalProjectId, $this->getProjectId(), $this->getProjectStatus());
+
+        $jwt = $this->getClient()->getJwtToken();
+        $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/projects/sow/' . $rma['id'] . '/update-work-items/', [
+            'debug' => false,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new \Exception("could not get REDCap signed auth from portal.");
+        }
+    }
+
     /**
      * @param $redcapProjectId
      * @return void
@@ -99,7 +117,7 @@ class Portal
 
 
                 $rma = $this->getREDCapSignedAuthInPortal($projects['project_id'], $this->getProjectId(), $this->getProjectStatus());
-                if (!empty($data)) {
+                if (!empty($rma)) {
                     $this->setHasRMA(true);
                     $this->setRMAStatus($rma['status']);
                 }

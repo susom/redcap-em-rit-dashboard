@@ -338,6 +338,7 @@ try {
                     ajaxGenerateSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/generate_rma.php', false, true) ?>",
                     ajaxAppendSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/append_to_existing_ema.php', false, true) ?>",
                     ajaxGetSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/get_rma.php', false, true) ?>",
+                    ajaxUpdateSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/update_rma.php', false, true) ?>",
                     ajaxPortalProjectsListURL: "<?php echo $module->getUrl('ajax/user/get_user_r2p2_project_list.php', false, true) ?>",
                     attachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     detachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
@@ -467,6 +468,7 @@ try {
                     this.getProjectEMs()
                     this.manupilateProjectInfo();
                     this.processURL()
+                    // console.log(this.projectState)
                 },
                 processURL: function () {
                     const urlSearchParams = new URLSearchParams(window.location.search);
@@ -668,21 +670,42 @@ try {
                         this.alertMessage = err.response.data.message
                     });
                 },
+                updateRMA: function () {
+                    axios.get(this.ajaxUpdateSignedAuthURL)
+                        .then(response => {
+                            this.getProjectEMs()
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.alertMessage = response.data.message
+                            this.bodyMessage = response.data.message
+
+                        }).then(response => {
+                        // when RMA is loaded then load line items for it.
+                        //this.getRMALineItems()
+                    }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
+                },
                 getSignedAuth: function () {
                     axios.get(this.ajaxGetSignedAuthURL + '&monthly_payment=' + this.totalFees)
                         .then(response => {
-                            this.portalREDCapMaintenanceAgreement = response.data;
-                            if (this.determineREDCapStep() === 1) {
-                                this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_1, true)
-                            } else if (this.determineREDCapStep() === 2) {
-                                this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_2, true)
+                            if (response.data.status == 'success') {
+                                this.portalREDCapMaintenanceAgreement = response.data;
+                                if (this.determineREDCapStep() === 1) {
+                                    this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_1, true)
+                                } else if (this.determineREDCapStep() === 2) {
+                                    this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_2, true)
 
-                            } else if (this.determineREDCapStep() === 3) {
-                                this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_3, true)
+                                } else if (this.determineREDCapStep() === 3) {
+                                    this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_3, true)
+                                }
+                                if (this.hasREDCapMaintenanceAgreement() === false) {
+                                    this.emTabAlerts()
+                                }
                             }
-                            if (this.hasREDCapMaintenanceAgreement() === false) {
-                                this.emTabAlerts()
-                            }
+
                         }).then(response => {
                         // when RMA is loaded then load line items for it.
                         //this.getRMALineItems()
@@ -767,16 +790,16 @@ try {
                 determineProjectAlert: function () {
                     var alert = 'warning'
 
-                    if (this.projectState & this.PROD === false && this.projectState & this.HAS_FEES === false) {
+                    if ((this.projectState & this.PROD) !== this.PROD && (this.projectState & this.HAS_FEES) !== this.HAS_FEES) {
                         return 'success'
-                    } else if (this.projectState & this.PROD === false && this.projectState & this.HAS_FEES) {
+                    } else if ((this.projectState & this.PROD) !== this.PROD && this.projectState & this.HAS_FEES) {
                         if (this.projectState & this.LINKED && this.projectState & this.HAS_RMA && this.projectState & this.APPROVED_RMA) {
                             return 'success'
                         } else {
                             return 'warning'
                         }
                     }
-                    if (this.projectState & this.PROD && this.projectState & this.HAS_FEES === false) {
+                    if (this.projectState & this.PROD && (this.projectState & this.HAS_FEES) !== this.HAS_FEES) {
                         return 'success'
                     } else if (this.projectState & this.PROD && this.projectState & this.HAS_FEES) {
                         if (this.projectState & this.LINKED && this.projectState & this.HAS_RMA && this.projectState & this.APPROVED_RMA) {
@@ -792,7 +815,8 @@ try {
                  * @returns {number}
                  */
                 determineREDCapStep: function () {
-                    if (this.projectState & this.HAS_RMA === false) {
+
+                    if ((this.projectState & this.HAS_RMA) === 0 || this.portalREDCapMaintenanceAgreement.length === 0) {
                         return 1
                     } else {
                         /**

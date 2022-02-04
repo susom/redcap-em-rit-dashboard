@@ -28,6 +28,13 @@
             </b-button>
         </b-col>
     </b-row>
+    <!---->
+    <!--    <b-row v-if="projectState & HAS_RMA" class="mb-3 mt-3">-->
+    <!--        <b-col lg="6">-->
+    <!--            <b-button size="sm" variant="success" :disabled='isDisabled' @click="updateRMA()">Update Existing RMA-->
+    <!--            </b-button>-->
+    <!--        </b-col>-->
+    <!--    </b-row>-->
 
 
     <b-table striped hover :items="items_em" :fields="fields_em" :current-page="currentPage_em"
