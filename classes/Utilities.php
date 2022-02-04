@@ -20,16 +20,18 @@ class Utilities
     public static function determineProjectAlert($state): string
     {
         $alert = 'warning';
-        if ($state & self::PROD == false && $state & self::HAS_FEES == false) {
+        // dev project without fees
+        if (($state & self::PROD) != self::PROD && ($state & self::HAS_FEES) != self::HAS_FEES) {
             return 'success';
-        } elseif ($state & self::PROD == false && $state & self::HAS_FEES) {
+        } elseif (($state & self::PROD) != self::PROD && $state & self::HAS_FEES) {
             if ($state & self::LINKED && $state & self::HAS_RMA && $state & self::APPROVED_RMA) {
                 return 'success';
             } else {
                 return 'warning';
             }
         }
-        if ($state & self::PROD && $state & self::HAS_FEES == false) {
+        // prod project without fees
+        if ($state & self::PROD && ($state & self::HAS_FEES) != self::HAS_FEES) {
             return 'success';
         } elseif ($state & self::PROD && $state & self::HAS_FEES) {
             if ($state & self::LINKED && $state & self::HAS_RMA && $state & self::APPROVED_RMA) {
