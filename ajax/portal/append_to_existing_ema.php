@@ -12,6 +12,7 @@ try {
     $portalProjectId = $body['project_portal_id'];
     $redcapProjectId = $body['redcap_project_id'];;
     $portalSowId = $body['portal_sow_id'];;
+    $monthlyFees = $body['monthly_fees'];;
     if (!isset($body['redcap_project_id'])) {
         $redcapProjectId = $module->getProjectId();
     }
@@ -31,13 +32,14 @@ try {
 
     // before generating RMA check if overdue payment exists
     $overdue = $module->processOverduePayments();
+    $module->setState($module->getProject()->project['status'] == '1', $monthlyFees, true, true, $data['sow_status']);
 
     $data = $module->getPortal()->appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSowId, $external_modules, USERID, $overdue);
     $data['sow_status'] = $data['status'];
     if ($overdue) {
         $module->getEntity()->deleteOverduePayments($module->getProjectId());
     }
-    echo json_encode(array_merge($data, array('status' => 'success', 'message' => $module->getNotifications()['append_rma_success_message'], 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
+    echo json_encode(array_merge($data, array('state' => $module->getState(), 'status' => 'success', 'message' => $module->getNotifications()['append_rma_success_message'], 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);

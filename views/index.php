@@ -428,6 +428,9 @@ try {
                     }
 
                 },
+                setProjectState: function (state) {
+                    this.projectState = state
+                },
                 filterEms() {
                     if (this.currentProjectEms === 'Yes') {
                         this.items_em = this.allEms.filter(function (n) {
@@ -629,7 +632,8 @@ try {
                     axios.post(this.ajaxGenerateSignedAuthURL, {
                         project_portal_id: this.ticket.project_portal_id,
                         redcap_project_id: this.ticket.redcap_project_id,
-                        external_modules: this.items_em
+                        external_modules: this.items_em,
+                        monthly_fees: this.monthly_fees
                     })
                         .then(response => {
                             this.variant = 'success'
@@ -639,11 +643,13 @@ try {
                             this.alertMessage = response.data.message
                             this.portalREDCapMaintenanceAgreement = response.data;
                             this.setEMAlertMessage("success", response.data.message, true)
-
+                            this.setProjectState(response.data.state)
                             //this will update em list in case the list changed during RMA genertion.
                             this.items_em = response.data.ems
                             this.calculateTotalFees()
-                        }).catch(err => {
+                        }).then(response => {
+                        this.determineREDCapStep()
+                    }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
                         this.alertMessage = err.response.data.message
@@ -654,7 +660,8 @@ try {
                         project_portal_id: this.ticket.project_portal_id,
                         redcap_project_id: this.ticket.redcap_project_id,
                         portal_sow_id: this.portalREDCapMaintenanceAgreement.id,
-                        external_modules: this.items_em
+                        external_modules: this.items_em,
+                        monthly_fees: this.monthly_fees
                     })
                         .then(response => {
                             this.variant = 'success'
@@ -664,7 +671,10 @@ try {
                             this.alertMessage = response.data.message
                             this.portalREDCapMaintenanceAgreement = response.data;
                             this.setEMAlertMessage("success", response.data.message, true)
-                        }).catch(err => {
+                            this.setProjectState(response.data.state)
+                        }).then(response => {
+                        this.determineREDCapStep()
+                    }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
                         this.alertMessage = err.response.data.message

@@ -11,6 +11,7 @@ try {
     $body = json_decode(file_get_contents('php://input'), true);
     $portalProjectId = $body['project_portal_id'];
     $redcapProjectId = $body['redcap_project_id'];;
+    $monthlyFees = $body['monthly_fees'];;
     if (!isset($body['redcap_project_id'])) {
         $redcapProjectId = $module->getProjectId();
     }
@@ -38,7 +39,10 @@ try {
     if ($overdue) {
         $module->getEntity()->deleteOverduePayments($module->getProjectId());
     }
-    echo json_encode(array_merge($data, array('status' => 'success', 'message' => $module->getNotifications()['generate_rma_success_message'], 'ems' => $ems, 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
+
+    $module->setState($module->getProject()->project['status'] == '1', $monthlyFees, true, true, $data['sow_status']);
+
+    echo json_encode(array_merge($data, array('state' => $module->getState(), 'status' => 'success', 'message' => $module->getNotifications()['generate_rma_success_message'], 'ems' => $ems, 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);

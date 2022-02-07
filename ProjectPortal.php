@@ -693,8 +693,9 @@ class ProjectPortal extends AbstractExternalModule
     /**
      * @param int $state
      */
-    public function setState($status, $fees, $isLinked, $hasRMA = false, $approvedRMA = false): void
+    public function setState($status, $fees, $isLinked, $hasRMA = false, $rmaStatus = false): void
     {
+        $approvedRMA = in_array($rmaStatus, [2, 6, 7]);
         $this->state = Utilities::determineProjectState($status, $fees, $isLinked, $hasRMA, $approvedRMA);
     }
 
