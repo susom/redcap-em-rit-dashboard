@@ -91,7 +91,9 @@ class Entity
     {
         $total = 0;
         foreach ($this->getProjectEmUsageRecords($projectId) as $data) {
-            $total += $data['maintenance_fees'];
+            if ($data['is_em_enabled']) {
+                $total += $data['maintenance_fees'];
+            }
         }
 
         return $total;
