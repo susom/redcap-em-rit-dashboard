@@ -34,7 +34,7 @@
         </b-row>
         <b-row :show="showServiceBlockButton" class="mb-3 mt-3">
             <b-col lg="6">
-                <b-button size="sm" variant="success" v-b-modal.service-block-modal>Generate Service Block
+                <b-button size="sm" variant="success" v-b-modal.service-block-modal>Generate Sprint Block
                 </b-button>
             </b-col>
         </b-row>
