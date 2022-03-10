@@ -15,13 +15,44 @@
         </b-button>
     </template>
 </b-modal>
-<b-modal ref="ticket-modal" size="lg" id="ticket-modal" title="Support Ticket">
+<b-modal ref="result-modal" size="lg" id="result-modal" :title="resultModalTitle">
     <div class="d-block text-center">
         <span class="row ml-2" v-html="bodyMessage"></span>
     </div>
     <template #modal-footer="{ ok, cancel, hide }">
         <b-button :disabled='isDisabled' variant="secondary" @click="cancel()">
             Close
+        </b-button>
+    </template>
+</b-modal>
+<b-modal ref="service-block-modal" size="lg" id="service-block-modal" title="Generate Sprint Block">
+    <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
+        <div class="form-group">
+            <label for="portal-projects">Service Block Size</label>
+
+            <v-select class="mb-3 nopadding" v-model="selectedServiceBlock.id" :options="sprintBlocks"
+                      label="title">
+            </v-select>
+
+        </div>
+        <div class="form-group">
+            <label for="description"><strong>Detailed Description</strong></label>
+            <b-form-textarea
+                    id="textarea"
+                    v-model="selectedServiceBlock.description"
+                    placeholder="Please describe what you need help with."
+                    rows="6"
+                    max-rows="10"
+            ></b-form-textarea>
+        </div>
+    </b-overlay>
+    <template #modal-footer="{ ok, cancel, hide }">
+        <!-- Emulate built in modal footer ok and cancel button actions -->
+        <b-button :disabled='isDisabled' variant="primary" @click="submitServiceBlock()">
+            Submit
+        </b-button>
+        <b-button :disabled='isDisabled' variant="danger" @click="cancel()">
+            Cancel
         </b-button>
     </template>
 </b-modal>

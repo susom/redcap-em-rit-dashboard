@@ -35,6 +35,16 @@ class Portal
     private $RMAStatus;
 
     /**
+     * @var array[]
+     */
+    public $sprintBlocks = [
+        ['id' => 1, 'title' => 'Micro Block($500)', 'price' => 500],
+        ['id' => 2, 'title' => 'Small Block($2200)', 'price' => 2200],
+        ['id' => 3, 'title' => 'Standard Block($4200)', 'price' => 4200],
+        ['id' => 4, 'title' => 'Large Block($8200)', 'price' => 8200],
+    ];
+
+    /**
      * User constructor.
      * @param \Stanford\ProjectPortal\Client $client
      */
@@ -192,6 +202,56 @@ class Portal
     }
 
 
+    public function getWorkItemsTypes()
+    {
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/work-items-type/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                $result = json_decode($response->getBody(), true);
+                return $result['results'];
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+    /**
+     * @param $type
+     * @return array|mixed
+     */
+    public function searchWorkItemType($type)
+    {
+        $types = $this->getWorkItemsTypes();
+        foreach ($this->getWorkItemsTypes() as $itemsType) {
+            if ($type == $itemsType['name']) {
+                return $itemsType;
+            }
+        }
+        return [];
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function searchServiceBlock($id)
+    {
+        foreach ($this->sprintBlocks as $sprintBlock) {
+            if ($id == $sprintBlock['id']) {
+                return $sprintBlock;
+            }
+        }
+        return [];
+    }
+
     public function generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, $username, $overdue = '')
     {
         try {
@@ -212,6 +272,31 @@ class Portal
                 return json_decode($response->getBody(), true);
             } else {
                 throw new \Exception("could not generate REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            throw new \LogicException($e->getMessage());
+        }
+    }
+
+    public function generateR2P2SOW($portalProjectId, $redcapProjectId, $workItems)
+    {
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/sow/generate/', [
+                'debug' => false,
+                'form_params' => [
+                    'user' => USERID,
+                    'redcap_project_id' => $redcapProjectId,
+                    'work_items' => json_encode($workItems),
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not generate SOW.");
             }
         } catch (\Exception $e) {
             throw new \LogicException($e->getMessage());
@@ -316,6 +401,7 @@ class Portal
                 'portal_project_name' => $portalProjectName,
                 'portal_project_description' => $portalProjectDescription,
                 'portal_project_url' => $this->getClient()->getPortalBaseURL() . 'detail/' . $portalProjectId,
+                'portal_project_sow_url' => $this->getClient()->getPortalBaseURL() . 'detail/' . $portalProjectId . '/sow',
             );
             return $inputs;
         } catch (\Exception $e) {

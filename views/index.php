@@ -148,6 +148,11 @@ try {
                             require("tabs/external_modules.php");
                             ?>
                         </b-tab>
+                        <b-tab title="Professional Services">
+                            <?php
+                            require("tabs/professional_services.php");
+                            ?>
+                        </b-tab>
                         <!--                        <b-tab title="Invoice Line Items">-->
                         <!--                            --><?php
                         //                            require("tabs/line_items.php");
@@ -192,6 +197,13 @@ try {
                     HAS_RMA: 8,
                     APPROVED_RMA: 16,
                     projectState: <?php echo $module->getState() ?>,
+                    workItemTypes: <?php echo json_encode($module->getPortal()->getWorkItemsTypes()) ?>,
+                    sprintBlocks: <?php echo json_encode($module->getPortal()->sprintBlocks) ?>,
+                    selectedServiceBlock: {
+                        id: null,
+                        description: null
+                    },
+                    showServiceBlockButton: false,
                     fullURL: window.location.href,
                     tabsPathsDictionary: ['r2p2', 'support', 'external-modules', 'payment-history'],
                     options: [{value: 'CA', label: 'Canada'}],
@@ -316,6 +328,7 @@ try {
                     showPortalLinkageDismissibleAlert: false,
                     showEMDismissibleAlert: false,
                     show_line_items_dismissibleAlert: false,
+                    resultModalTitle: 'Support Ticket',
                     ticket: {
                         redcap_project_id: "<?php echo $module->getProjectId() ?>",
                         summary: "",
@@ -324,7 +337,8 @@ try {
                         project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
                         project_portal_name: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_name']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_name'] : '' ?>",
                         project_portal_id_saved: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? "true" : "false" ?>",
-                        project_portal_url: "<?php echo $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] ?>"
+                        project_portal_url: "<?php echo $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] ?>",
+                        project_portal_sow_url: "<?php echo $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow' ?>"
                     },
                     base_portal_url: "<?php echo $module->getClient()->getPortalBaseURL() ?>",
                     project_status: "<?php echo $module->getProject()->project['status'] ?>",
@@ -336,6 +350,7 @@ try {
                     ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/user/get_user_tickets.php', false, true) ?>",
                     ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/entity/get_project_external_modules.php', false, true) ?>",
                     ajaxGenerateSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/generate_rma.php', false, true) ?>",
+                    ajaxCreateServiceBlockURL: "<?php echo $module->getUrl('ajax/portal/generate_service_block.php', false, true) ?>",
                     ajaxAppendSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/append_to_existing_ema.php', false, true) ?>",
                     ajaxGetSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/get_rma.php', false, true) ?>",
                     ajaxUpdateSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/update_rma.php', false, true) ?>",
@@ -393,6 +408,14 @@ try {
                 });
             },
             methods: {
+                canShowServiceBlockButton: function () {
+                    for (var i = 0; i < this.workItemTypes.length; i++) {
+                        if (this.workItemTypes[i]['name'] === 'sprint_block') {
+                            this.showServiceBlockButton = true
+                            break;
+                        }
+                    }
+                },
                 setPortalLinkageAlertMessage: function (variant, message, show) {
                     // Portal Linkage tab alert message
                     this.portalLinkageAlertMessage = message
@@ -470,7 +493,8 @@ try {
                     this.getUserTickets()
                     this.getProjectEMs()
                     this.manupilateProjectInfo();
-                    this.processURL()
+                    this.processURL();
+                    this.canShowServiceBlockButton()
                     // console.log(this.projectState)
                 },
                 processURL: function () {
@@ -555,7 +579,23 @@ try {
                         .then(response => {
                             this.getUserTickets()
                             this.$refs['generic-modal'].hide()
-                            this.$refs['ticket-modal'].show()
+                            this.$refs['result-modal'].show()
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.alertMessage = response.data.message
+                            this.bodyMessage = response.data.message
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
+                    ;
+                },
+                submitServiceBlock: function () {
+                    axios.post(this.ajaxCreateServiceBlockURL, this.selectedServiceBlock)
+                        .then(response => {
+                            this.$refs['service-block-modal'].hide()
+                            this.$refs['result-modal'].show()
                             this.variant = 'success'
                             this.showDismissibleAlert = true
                             this.alertMessage = response.data.message
@@ -601,6 +641,7 @@ try {
                             this.showNoneDismissibleAlert = false
                             this.alertMessage = response.data.message
                             this.ticket.project_portal_url = response.data.portal_project.portal_project_url
+                            this.ticket.project_portal_sow_url = response.data.portal_project.project_portal_sow_url
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
