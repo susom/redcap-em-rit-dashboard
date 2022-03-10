@@ -14,6 +14,13 @@ try {
     $description = $body['description'];
     $sprintBlockId = $body['id']['id'];
 
+    if (!$description) {
+        throw new \Exception("Sprint block description is missing");
+    }
+
+    if (!$sprintBlockId) {
+        throw new \Exception("Please select sprint block size. ");
+    }
     $sprintBlock = $module->getPortal()->searchServiceBlock($sprintBlockId);
     $sprintBlockType = $module->getPortal()->searchWorkItemType('sprint_block');
 

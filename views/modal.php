@@ -26,12 +26,19 @@
     </template>
 </b-modal>
 <b-modal ref="service-block-modal" size="lg" id="service-block-modal" title="Generate Sprint Block">
+    <b-alert :variant="variant"
+             dismissible
+             fade
+             :show="showDismissibleAlert"
+    >
+        <b class="row" v-html="alertMessage"></b>
+    </b-alert>
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
         <div class="form-group">
             <label for="portal-projects">Service Block Size</label>
 
             <v-select class="mb-3 nopadding" v-model="selectedServiceBlock.id" :options="sprintBlocks"
-                      label="title">
+                      label="title" required>
             </v-select>
 
         </div>

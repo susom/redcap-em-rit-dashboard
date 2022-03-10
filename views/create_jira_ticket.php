@@ -5,7 +5,13 @@ namespace Stanford\ProjectPortal;
 ?>
 
 <div class="container-fluid">
-    <div class="alert hidden messages"></div>
+    <b-alert :variant="variant"
+             dismissible
+             fade
+             :show="showDismissibleAlert"
+    >
+        <b class="row" v-html="alertMessage"></b>
+    </b-alert>
     <form id="jira-ticket">
 
         <div class="form-group">

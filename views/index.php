@@ -380,6 +380,8 @@ try {
             created() {
                 axios.interceptors.request.use((config) => {
                     // trigger 'loading=true' event here
+                    this.showNoneDismissibleAlert = false
+                    this.showDismissibleAlert = false
                     ajaxCalls.push(config)
                     if (this.isLoading != undefined) {
                         this.isLoading = true
@@ -602,6 +604,7 @@ try {
                             this.bodyMessage = response.data.message
                         }).catch(err => {
                         this.variant = 'danger'
+                        this.isDisabled = false
                         this.showDismissibleAlert = true
                         this.alertMessage = err.response.data.message
                     });
