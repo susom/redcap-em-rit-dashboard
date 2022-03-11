@@ -3,7 +3,8 @@
         <b-col lg="12">
             Research IT provides professional services to the Stanford community with cost recovery for hands-on
             assistance, software development, and more. To learn about our offerings, check out our <a target="_blank"
-                                                                                                       href="https://medwiki.stanford.edu/x/uiK3Cg">the
+                                                                                                       href="https://medwiki.stanford.edu/x/uiK3Cg"><i
+                        class="fas fa-external-link-alt"></i> the
                 R2P2 Wiki</a>
         </b-col>
     </b-row>
@@ -28,7 +29,8 @@
         <b-row>
             <b-col lg="12">
                 * Please note that a Sprint Block is an estimate of work. Work not completed in the allotted time may
-                require another Sprint Block. See our <a target="_blank" href="https://medwiki.stanford.edu/x/uiK3Cg">wiki</a>
+                require another Sprint Block. See our <a target="_blank" href="https://medwiki.stanford.edu/x/uiK3Cg"><i
+                            class="fas fa-external-link-alt"></i> wiki</a>
                 for more details
             </b-col>
         </b-row>
