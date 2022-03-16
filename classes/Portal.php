@@ -38,10 +38,10 @@ class Portal
      * @var array[]
      */
     public $sprintBlocks = [
-        ['id' => 1, 'title' => 'Micro Block($500)', 'price' => 500],
-        ['id' => 2, 'title' => 'Small Block($2200)', 'price' => 2200],
-        ['id' => 3, 'title' => 'Standard Block($4200)', 'price' => 4200],
-        ['id' => 4, 'title' => 'Large Block($8200)', 'price' => 8200],
+        ['id' => 1, 'title' => 'Micro Block - $500', 'price' => 500],
+        ['id' => 2, 'title' => 'Small Block - $2200', 'price' => 2200],
+        ['id' => 3, 'title' => 'Standard Block - $4200', 'price' => 4200],
+        ['id' => 4, 'title' => 'Large Block - $8200', 'price' => 8200],
     ];
 
     /**

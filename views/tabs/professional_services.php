@@ -1,17 +1,14 @@
 <b-container fluid class="mt-3">
     <b-row>
-        <b-col lg="12">
+        <b-col class="mt-3" lg="8">
             Research IT provides professional services to the Stanford community with cost recovery for hands-on
-            assistance, software development, and more. To learn about our offerings, check out our <a target="_blank"
-                                                                                                       href="https://medwiki.stanford.edu/x/uiK3Cg"><i
-                        class="fas fa-external-link-alt"></i> the
-                R2P2 Wiki</a>
+            assistance, software development, and more.
         </b-col>
     </b-row>
     <div v-if="linked() == false">
 
         <b-row>
-            <b-col lg="12">
+            <b-col class="mt-3" lg="8">
                 In order to request a sprint block, please first link this REDCap project to a R2P2 Research Project.
                 See the first tab for more details.
             </b-col>
@@ -19,30 +16,35 @@
     </div>
     <div v-else>
         <b-row>
-            <b-col lg="12">
+            <b-col class="mt-3" lg="8">
                 To easily request professional assistance, a “Sprint Block” Statement of Work can be created from this
-                page. Simply select the level, enter a description of the work to be performed, and submit. A new
-                Statement of Work will be automatically created in R2P2. You MUST first approve the SoW and provide a
-                PTA before work will be initiated.
+                page. The size of the block and dollar amount should come from documentation or a conversation with RIT
+                personnel. All Sprint Blocks represent an estimate of time and work and do not guarantee project
+                completion. Additional Sprint Blocks may be required.
             </b-col>
         </b-row>
         <b-row>
-            <b-col lg="12">
-                * Please note that a Sprint Block is an estimate of work. Work not completed in the allotted time may
-                require another Sprint Block. See our <a target="_blank" href="https://medwiki.stanford.edu/x/uiK3Cg"><i
-                            class="fas fa-external-link-alt"></i> wiki</a>
-                for more details
+            <b-col class="mt-3" lg="8">
+                After a Sprint Block is requested, a new Statement of Work (SoW) will be automatically created in R2P2.
+                Before work can being, you or someone from the research team must approve the SoW and provide a PTA.
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col class="mt-3" lg="8">
+                To learn more about R2P2 and Professional Services view the <a target="_blank"
+                                                                               href="https://medwiki.stanford.edu/x/uiK3Cg"><i
+                            class="fas fa-external-link-alt"></i> The R2P2 wiki</a>
             </b-col>
         </b-row>
         <b-row :show="showServiceBlockButton" class="mb-3 mt-3">
-            <b-col lg="6">
+            <b-col class="mt-3" lg="6">
                 <b-button size="sm" variant="success" v-b-modal.service-block-modal>Generate Sprint Block
                 </b-button>
             </b-col>
         </b-row>
         <b-row>
 
-            <b-col class="justify-content-center align-self-center" lg="12">
+            <b-col class="justify-content-center align-self-center mt-3" lg="8">
                 <a :href="ticket.project_portal_sow_url" target="_blank" class="ml-1"><i
                             class="fas fa-external-link-alt"></i>
                     <span>{{ticket.project_portal_name}} Statements of Work</span></a>

@@ -247,6 +247,7 @@ try {
                     ],
                     filter: null,
                     isDisabled: false,
+                    isAccepted: false,
                     currentPage: 1,
                     totalRows: 0,
                     perPage: 100,

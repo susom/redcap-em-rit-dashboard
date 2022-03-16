@@ -35,15 +35,7 @@
     </b-alert>
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
         <div class="form-group">
-            <label for="portal-projects">Service Block Size</label>
-
-            <v-select class="mb-3 nopadding" v-model="selectedServiceBlock.id" :options="sprintBlocks"
-                      label="title" required>
-            </v-select>
-
-        </div>
-        <div class="form-group">
-            <label for="description"><strong>Detailed Description</strong></label>
+            <label for="description"><strong>Detailed Description: </strong></label>
             <b-form-textarea
                     id="textarea"
                     v-model="selectedServiceBlock.description"
@@ -52,10 +44,32 @@
                     max-rows="10"
             ></b-form-textarea>
         </div>
+        <div class="form-group">
+            <label for="portal-projects"><strong>Service Block Size <a
+                            href="https://medwiki.stanford.edu/display/redcap/The+Statement+of+Work%3A+How+we+price+professional+services"
+                            target="_blank" class="ml-1"><i
+                                class="fas fa-external-link-alt"></i><span>more info</span></a>: </strong></label>
+
+            <v-select class="mb-3 nopadding" v-model="selectedServiceBlock.id" :options="sprintBlocks"
+                      label="title" required>
+            </v-select>
+
+        </div>
+        <b-form-checkbox
+                id="checkbox-1"
+                v-model="isAccepted"
+                name="checkbox-1"
+                value="accepted"
+                unchecked-value="not_accepted"
+        >
+            I understand this is a request for a fixed amount of project assistance and depending on the scope and time
+            of work additional blocks may be necessary.
+        </b-form-checkbox>
+
     </b-overlay>
     <template #modal-footer="{ ok, cancel, hide }">
         <!-- Emulate built in modal footer ok and cancel button actions -->
-        <b-button :disabled='isDisabled' variant="primary" @click="submitServiceBlock()">
+        <b-button :disabled='isDisabled || isAccepted != "accepted"' variant="primary" @click="submitServiceBlock()">
             Submit
         </b-button>
         <b-button :disabled='isDisabled' variant="danger" @click="cancel()">
