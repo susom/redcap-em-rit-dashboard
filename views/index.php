@@ -611,15 +611,18 @@ try {
                     });
                     ;
                 },
+
                 updateExternalModuleList: function () {
                     axios.post(this.ajaxUpdateProjectEMUtil)
                         .then(response => {
                             this.getProjectEMs()
-                            this.variant = 'success'
-                            this.showDismissibleAlert = true
-                            this.alertMessage = response.data.message
-                            this.bodyMessage = response.data.message
-                        }).catch(err => {
+                            return response
+                        }).then(response => {
+                        this.variant = 'success'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = response.data.message
+                        this.bodyMessage = response.data.message
+                    }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
                         this.alertMessage = err.response.data.message
@@ -729,14 +732,12 @@ try {
                     axios.get(this.ajaxUpdateSignedAuthURL)
                         .then(response => {
                             this.getProjectEMs()
-                            this.variant = 'success'
-                            this.showDismissibleAlert = true
-                            this.alertMessage = response.data.message
-                            this.bodyMessage = response.data.message
-
+                            return response
                         }).then(response => {
-                        // when RMA is loaded then load line items for it.
-                        //this.getRMALineItems()
+                        this.variant = 'success'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = response.data.message
+                        this.bodyMessage = response.data.message
                     }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
