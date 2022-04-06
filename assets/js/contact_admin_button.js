@@ -49,7 +49,7 @@ ContactButton = {
                 ContactButton.modifyContactAdminButtons();
             },
             error: function (request, error) {
-                alert("Request: " + JSON.stringify(request));
+                console.log("Request: " + JSON.stringify(request));
             }
         });
     }

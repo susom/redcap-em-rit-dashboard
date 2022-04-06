@@ -21,41 +21,6 @@ ProjectSetup = {
             }
         });
     },
-    detachRedCapProject: function (projectPortalID, redcapProjectID) {
-        jQuery.ajax({
-            url: ProjectSetup.detachREDCapURL,
-            type: 'POST',
-            data: {
-                project_portal_id: projectPortalID,
-                redcap_project_id: redcapProjectID,
-            },
-            success: function (data) {
-                $('#linked-project').text('')
-                $('#linked-project').data('project-id', '')
-                ProjectSetup.getProjectPortalLinkageSection()
-            },
-            error: function (request, error) {
-                $("#portal-errors").removeClass('hidden').text("Request: " + JSON.stringify(request));
-            }
-        });
-    }, attachRedCapProject: function (projectPortalID, projectPortalName, projectPortalDescription) {
-        jQuery.ajax({
-            url: ProjectSetup.attachREDCapURL,
-            type: 'POST',
-            data: {
-                project_portal_id: projectPortalID,
-                project_portal_name: projectPortalName,
-                project_portal_description: projectPortalDescription,
-            },
-            success: function (data) {
-                alert('This REDCap project is linked to ' + projectPortalName)
-                ProjectSetup.getProjectPortalLinkageSection()
-            },
-            error: function (request, error) {
-                $("#portal-errors").removeClass('hidden').text("Request: " + JSON.stringify(request));
-            }
-        });
-    },
     addProjectSetupLoad: function () {
         // setting a timeout
         var data = '<div id="portal-linkage-container">        <div class="alert alert-secondary d-flex justify-content-center">\n' +
@@ -87,7 +52,7 @@ ProjectSetup = {
 
             },
             error: function (request, error) {
-                alert("Request: " + JSON.stringify(request));
+                console.log("Request: " + JSON.stringify(request));
             }
         });
     }
