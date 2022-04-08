@@ -38,40 +38,27 @@ class Support
 
         $jwt = $this->getClient()->getJwtToken();
         if (is_null($portalProjectId) || $portalProjectId == '') {
-            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/issues/add-issue/', [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer {$jwt}",
-                ],
-                'form_params' => [
-                    'redcap' => $redcapProjectId,
-                    'redcap_name' => $redcapProjectName,
-                    'summary' => $summary,
-                    'request_type' => $issueTypeId,
-                    'description' => $description,
-                    'raise_on_behalf_of' => USERID,
-                    'raise_on_behalf_of_firstname' => $user_firstname,
-                    'raise_on_behalf_of_lastname' => $user_lastname
-                ],
-            ]);
+            $url = $this->getClient()->getPortalBaseURL() . 'api/issues/add-issue/';
+
         } else {
-            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/add-issue/', [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer {$jwt}",
-                ],
-                'form_params' => [
-                    'redcap' => $redcapProjectId,
-                    'redcap_name' => $redcapProjectName,
-                    'summary' => $summary,
-                    'request_type' => $issueTypeId,
-                    'description' => $description,
-                    'raise_on_behalf_of' => USERID,
-                    'raise_on_behalf_of_firstname' => $user_firstname,
-                    'raise_on_behalf_of_lastname' => $user_lastname
-                ],
-            ]);
+            $url = $this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/add-issue/';
         }
+        $response = $this->getClient()->getGuzzleClient()->post($url, [
+            'debug' => false,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ],
+            'form_params' => [
+                'redcap' => $redcapProjectId,
+                'redcap_name' => $redcapProjectName,
+                'summary' => $summary,
+                'request_type' => $issueTypeId,
+                'description' => $description,
+                'raise_on_behalf_of' => USERID,
+                'raise_on_behalf_of_firstname' => $user_firstname,
+                'raise_on_behalf_of_lastname' => $user_lastname
+            ],
+        ]);
 
         if ($response->getStatusCode() < 300) {
             return json_decode($response->getBody(), true);
