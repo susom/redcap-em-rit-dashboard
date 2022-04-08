@@ -590,6 +590,7 @@ try {
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
+                        this.isDisabled = false
                         this.alertMessage = err.response.data.message
                     });
                     ;

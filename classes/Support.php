@@ -62,6 +62,7 @@ class Support
                 ],
                 'form_params' => [
                     'redcap' => $redcapProjectId,
+                    'redcap_name' => $redcapProjectName,
                     'summary' => $summary,
                     'request_type' => $issueTypeId,
                     'description' => $description,
