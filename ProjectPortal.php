@@ -211,8 +211,10 @@ class ProjectPortal extends AbstractExternalModule
 //            $this->prepareProjectPortalList();
 //
 //        }
-        // this to override the functionality for contact admin button on all pages.
-        $this->includeFile("views/contact_admin_button.php");
+        // exclude surveys from loading contact admin button
+        if (strpos($_SERVER['REQUEST_URI'], 'surveys/') === false && !isset($_GET['s'])) {
+            $this->includeFile("views/contact_admin_button.php");
+        }
     }
 
     /**
@@ -457,7 +459,7 @@ class ProjectPortal extends AbstractExternalModule
         echo json_encode(["error" => $error_message]);
 
         $this->emError($error_message);
-        exit();
+        $this->exitAfterHook();
     }
 
     /**
