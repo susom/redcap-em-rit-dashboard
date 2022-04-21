@@ -12,7 +12,7 @@ require_once("classes/Entity.php");
 require_once("classes/ManagerEM.php");
 require_once("classes/Utilities.php");
 
-const MAJOR_VERSION = 7 ;
+const MAJOR_VERSION = 7;
 use ExternalModules\ExternalModules;
 use REDCap;
 use Records;
@@ -102,39 +102,39 @@ class ProjectPortal extends AbstractExternalModule
     {
         parent::__construct();
 
+        // exclude surveys when large number of surveys are loaded a database lock error gets triggered.
+        if (!$this->isSurveyPage()) {
+            $this->setClient(new Client($this->PREFIX));
 
-        $this->setClient(new Client($this->PREFIX));
+            $this->setManagerEm(new \Stanford\ProjectPortal\ManagerEM($this->getClient(), $this->PREFIX));
 
 
-        $this->setManagerEm(new \Stanford\ProjectPortal\ManagerEM($this->getClient(), $this->PREFIX));
+            $this->setEntity(new Entity());
 
+            if ($_GET && ($_GET['projectid'] != null || $_GET['pid'] != null)) {
 
-        $this->setEntity(new Entity());
+                $this->setProject(new \Project($this->getProjectId()));
 
-        if ($_GET && ($_GET['projectid'] != null || $_GET['pid'] != null)) {
+                //$this->setProjects($this->getEnabledProjects());
 
-            $this->setProject(new \Project($this->getProjectId()));
+                $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title'], $this->getProject()->project['status']));
 
-            //$this->setProjects($this->getEnabledProjects());
+                // only make connection if and only if the called page within this EM
+                preg_match('/prefix=rit_dashboard.*page=.*/m', $_SERVER['REQUEST_URI'], $matches, PREG_OFFSET_CAPTURE);
+                if (!empty($matches)) {
+                    $this->getPortal()->prepareR2P2SavedProject();
+                }
 
-            $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title'], $this->getProject()->project['status']));
-
-            // only make connection if and only if the called page within this EM
-            preg_match('/prefix=rit_dashboard.*page=.*/m', $_SERVER['REQUEST_URI'], $matches, PREG_OFFSET_CAPTURE);
-            if (!empty($matches)) {
-                $this->getPortal()->prepareR2P2SavedProject();
             }
 
+
+            // set these fields as we might need them later for linkage process.
+
+            $this->setUser(new User($this->getClient(), $this->getEntity(), $this->getProjectId()));
+
+            $this->setSupport(new Support($this->getClient()));
+
         }
-
-
-        // set these fields as we might need them later for linkage process.
-
-        $this->setUser(new User($this->getClient(), $this->getEntity(), $this->getProjectId()));
-
-        $this->setSupport(new Support($this->getClient()));
-
-
     }
 
     public function checkProjectsRMACron()
@@ -212,7 +212,7 @@ class ProjectPortal extends AbstractExternalModule
 //
 //        }
         // exclude surveys from loading contact admin button
-        if (strpos($_SERVER['REQUEST_URI'], 'surveys/') === false && !isset($_GET['s'])) {
+        if (!$this->isSurveyPage()) {
             $this->includeFile("views/contact_admin_button.php");
         }
     }
@@ -490,8 +490,6 @@ class ProjectPortal extends AbstractExternalModule
     }
 
 
-
-
     /**
      * @return array
      */
@@ -665,7 +663,6 @@ class ProjectPortal extends AbstractExternalModule
         $path = dirname(__DIR__) . '/' . $this->PREFIX . '_' . $this->VERSION . "/language/Notifications.ini";
         $this->notifications = parse_ini_file($path);;
     }
-
 
 
     /**
