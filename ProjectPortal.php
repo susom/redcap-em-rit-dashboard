@@ -23,6 +23,11 @@ use Stanford\ProjectPortal\Support;
 use Stanford\ProjectPortal\User;
 use Stanford\ProjectPortal\ManagerEM;
 
+define('DEVELOPMENT_STATUS', 0);
+define('PRODUCTION_STATUS', 1);
+define('ARCHIVED_STATUS', 2);
+define('COMPLETED_STATUS', 3);
+
 /**
  * Class ProjectPortal
  * @package Stanford\ProjectPortal
@@ -117,7 +122,7 @@ class ProjectPortal extends AbstractExternalModule
 
                 //$this->setProjects($this->getEnabledProjects());
 
-                $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title'], $this->getProject()->project['status']));
+                $this->setPortal(new Portal($this->getClient(), $this->getProjectId(), $this->getProject()->project['app_title'], $this->getREDCapProjectStatus()));
 
                 // only make connection if and only if the called page within this EM
                 preg_match('/prefix=rit_dashboard.*page=.*/m', $_SERVER['REQUEST_URI'], $matches, PREG_OFFSET_CAPTURE);
@@ -169,6 +174,15 @@ class ProjectPortal extends AbstractExternalModule
         }
 
         return null;
+    }
+
+    public function getREDCapProjectStatus()
+    {
+        if (!is_null($this->getProject()->project['completed_time'])) {
+            return COMPLETED_STATUS;
+        } else {
+            return $this->getProject()->project['status'];
+        }
     }
 
     /**

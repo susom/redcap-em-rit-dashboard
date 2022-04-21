@@ -80,7 +80,7 @@ class Portal
 
     public function updateRMA($portalProjectId)
     {
-        $rma = $this->getREDCapSignedAuthInPortal($portalProjectId, $this->getProjectId(), $this->getProjectStatus());
+        $rma = $this->getREDCapSignedAuthInPortal($portalProjectId, $this->getProjectId());
 
         $jwt = $this->getClient()->getJwtToken();
         $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/projects/sow/' . $rma['id'] . '/update-work-items/', [
@@ -126,7 +126,7 @@ class Portal
                 $this->projectPortalSavedConfig['portal_project_url'] = $this->getClient()->getPortalBaseURL() . 'detail/' . $projects['project_id'];
 
 
-                $rma = $this->getREDCapSignedAuthInPortal($projects['project_id'], $this->getProjectId(), $this->getProjectStatus());
+                $rma = $this->getREDCapSignedAuthInPortal($projects['project_id'], $this->getProjectId());
                 if (!empty($rma)) {
                     $this->setHasRMA(true);
                     $this->setRMAStatus($rma['status']);
@@ -145,7 +145,7 @@ class Portal
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $redcapStatus = 0)
+    public function getREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId)
     {
         try {
             $jwt = $this->getClient()->getJwtToken();
@@ -153,7 +153,7 @@ class Portal
                 'debug' => false,
                 'form_params' => [
                     'redcap_project_id' => $redcapProjectId,
-                    'redcap_project_status' => $redcapStatus,
+                    'redcap_project_status' => $this->getProjectStatus() ?: DEVELOPMENT_STATUS,
                 ],
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",
