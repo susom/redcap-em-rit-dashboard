@@ -71,7 +71,7 @@ class Entity
             $q = db_query($query);
             $row = db_fetch_assoc($q);
             if (empty($row)) {
-                $sql = "insert into redcap_entity_projects_overdue_payments (`project_id`, monthly_payments, created, updated, instance) values ('$projectId' , '{$monthlyPayment}','" . time() . "','" . time() . "','1')";
+                $sql = "insert into redcap_entity_projects_overdue_payments (`project_id`, monthly_payments, created, updated, instance, year, month) values ('$projectId' , '{$monthlyPayment}','" . time() . "','" . time() . "','1', '" . date("Y") . "', '" . date("m") . "')";
                 db_query($sql);
             }
         }
