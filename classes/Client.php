@@ -279,7 +279,7 @@ class Client
     private function setAccessToken($accessToken): void
     {
         $this->accessToken = $accessToken;
-        ExternalModules::setSystemSetting($this->getPrefix(), 'access-token', $accessToken);
+        ExternalModules::setSystemSetting($this->getPrefix(), 'access-token', (string)$accessToken);
     }
 
     /**
@@ -296,7 +296,7 @@ class Client
     private function setRefreshToken($refreshToken): void
     {
         $this->refreshToken = $refreshToken;
-        ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-token', $refreshToken);
+        ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-token', (string)$refreshToken);
     }
 
     /**
@@ -313,7 +313,7 @@ class Client
     private function setExpiryTimestamp($expiryTimestamp): void
     {
         $this->expiryTimestamp = $expiryTimestamp;
-        ExternalModules::setSystemSetting($this->getPrefix(), 'expiry-timestamp', $expiryTimestamp);
+        ExternalModules::setSystemSetting($this->getPrefix(), 'expiry-timestamp', (string)$expiryTimestamp);
     }
 
     /**
@@ -346,7 +346,7 @@ class Client
     private function setRefreshExpiryTimestamp($refreshExpiryTimestamp): void
     {
         $this->refreshExpiryTimestamp = $refreshExpiryTimestamp;
-        ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-expiry-timestamp', $refreshExpiryTimestamp);
+        ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-expiry-timestamp', (string)$refreshExpiryTimestamp);
     }
 
 
