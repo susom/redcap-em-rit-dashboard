@@ -111,7 +111,7 @@ class Entity
                 $maintenance_monthly_cost = '$' . $data['maintenance_fees'];
             } elseif (is_null($data['maintenance_fees']) && $data['is_em_enabled']) {
                 $maintenance_monthly_cost = '<a target="_blank" href="https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333#R2P2REDCapMaintenanceAgreement(RMA)-WhatdoesitmeanifanExternalModule\'smonthlymaintenancecostis%22ToBeDetermined%22">To be determined</a>';
-            } elseif (!$data['is_em_enabled']) {
+            } elseif (!$data['is_em_enabled'] && $data['maintenance_fees']) {
                 $maintenance_monthly_cost = 'Module Disabled';
             } else {
                 $maintenance_monthly_cost = 'No Monthly Charge';
