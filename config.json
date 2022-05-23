@@ -160,7 +160,7 @@
       "cron_name": "project_rma_check",
       "cron_description": "Check projects in Prod status if RMA in place or not. monthly ",
       "method": "checkProjectsRMACron",
-      "cron_frequency": "2592000",
+      "cron_frequency": "86400",
       "cron_max_run_time": "3600"
     }
   ]
