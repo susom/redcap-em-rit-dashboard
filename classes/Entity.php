@@ -107,7 +107,9 @@ class Entity
             //$data = $entity->getData();
 
 
-            if ($data['maintenance_fees'] != '' && $data['is_em_enabled'] && $data['maintenance_fees']) {
+            if ($data['has_maintenance_fees'] == '0') {
+                $maintenance_monthly_cost = 'Fee waived';
+            } elseif ($data['maintenance_fees'] != '' && $data['is_em_enabled'] && $data['maintenance_fees']) {
                 $maintenance_monthly_cost = '$' . $data['maintenance_fees'];
             } elseif (is_null($data['maintenance_fees']) && $data['is_em_enabled']) {
                 $maintenance_monthly_cost = '<a target="_blank" href="https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333#R2P2REDCapMaintenanceAgreement(RMA)-WhatdoesitmeanifanExternalModule\'smonthlymaintenancecostis%22ToBeDetermined%22">To be determined</a>';
