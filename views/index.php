@@ -509,7 +509,7 @@ try {
                 },
                 manupilateProjectInfo: function () {
                     var element = document.getElementById('subheaderDiv2')
-                    element.style.float = "right"
+                    element.style.float = "left"
                     element.className = ''
                 },
                 getUserTickets: function () {
