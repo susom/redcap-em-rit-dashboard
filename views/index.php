@@ -338,8 +338,9 @@ try {
                         project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
                         project_portal_name: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_name']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_name'] : '' ?>",
                         project_portal_id_saved: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? "true" : "false" ?>",
-                        project_portal_url: "<?php echo $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] ?>",
-                        project_portal_sow_url: "<?php echo $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow' ?>"
+                        project_portal_url: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
+                        project_portal_sow_url: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow' : '' ?>",
+                        project_portal_consultation_url: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/consultation' : '' ?>"
                     },
                     base_portal_url: "<?php echo $module->getClient()->getPortalBaseURL() ?>",
                     project_status: "<?php echo $module->getProject()->project['status'] ?>",

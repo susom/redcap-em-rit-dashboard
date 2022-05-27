@@ -5,6 +5,20 @@ namespace Stanford\ProjectPortal;
 ?>
 
 <div class="container-fluid">
+    <b-row class="mb-3">
+        <b-col>
+            <strong>
+                <i v-if="linked() == true">If you are requesting <a target="_blank"
+                                                                    href="https://medwiki.stanford.edu/x/qafZB">professional
+                        services</a> please create a consultation request in <a target="_blank"
+                                                                                :href="ticket.project_portal_consultation_url">R2P2</a>
+                    instead of a support ticket.</i>
+                <i v-else>If you are requesting <a target="_blank" href="https://medwiki.stanford.edu/x/qafZB">professional
+                        services</a> please create a consultation request in <a target="_blank" :href="base_portal_url">R2P2</a>
+                    instead of a support ticket.</i>
+            </strong>
+        </b-col>
+    </b-row>
     <b-alert :variant="variant"
              dismissible
              fade
@@ -12,6 +26,7 @@ namespace Stanford\ProjectPortal;
     >
         <b class="row" v-html="alertMessage"></b>
     </b-alert>
+
     <form id="jira-ticket">
 
         <div class="form-group">
