@@ -111,9 +111,13 @@ class Client
                 } elseif (property_exists($data, 'access')) {
                     $this->jwtToken = $data->access;
                     $this->setAccessToken($data->access);
+                    ExternalModules::setSystemSetting($this->getPrefix(), 'access-token', (string)$data->access);
                     $this->setRefreshToken($data->refresh);
+                    ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-token', (string)$data->refresh);
                     $this->setExpiryTimestamp((string)(time() + 60 * 60 * 24 * 2));
+                    ExternalModules::setSystemSetting($this->getPrefix(), 'expiry-timestamp', (string)(time() + 60 * 60 * 24 * 2));
                     $this->setRefreshExpiryTimestamp((string)(time() + 60 * 60 * 24 * 7));
+                    ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-expiry-timestamp', (string)(time() + 60 * 60 * 24 * 7));
                     $this->setJWTTokenIntoSession($data->access);
                 } else {
                     throw new \Exception("Could not find JWT token property.");
@@ -143,8 +147,10 @@ class Client
                     if (property_exists($data, 'access')) {
                         $this->jwtToken = $data->access;
                         $this->setAccessToken((string)$data->access);
+                        ExternalModules::setSystemSetting($this->getPrefix(), 'access-token', (string)$data->access);
                         $this->setJWTTokenIntoSession($data->access);
                         $this->setExpiryTimestamp(time() + 60 * 60 * 24 * 2);
+                        ExternalModules::setSystemSetting($this->getPrefix(), 'expiry-timestamp', (string)(time() + 60 * 60 * 24 * 2));
                     } else {
                         throw new \Exception("Could not find JWT token property.");
                     }
@@ -279,7 +285,6 @@ class Client
     private function setAccessToken($accessToken): void
     {
         $this->accessToken = $accessToken;
-        ExternalModules::setSystemSetting($this->getPrefix(), 'access-token', (string)$accessToken);
     }
 
     /**
@@ -296,7 +301,6 @@ class Client
     private function setRefreshToken($refreshToken): void
     {
         $this->refreshToken = $refreshToken;
-        ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-token', (string)$refreshToken);
     }
 
     /**
@@ -313,7 +317,6 @@ class Client
     private function setExpiryTimestamp($expiryTimestamp): void
     {
         $this->expiryTimestamp = $expiryTimestamp;
-        ExternalModules::setSystemSetting($this->getPrefix(), 'expiry-timestamp', (string)$expiryTimestamp);
     }
 
     /**
@@ -346,7 +349,6 @@ class Client
     private function setRefreshExpiryTimestamp($refreshExpiryTimestamp): void
     {
         $this->refreshExpiryTimestamp = $refreshExpiryTimestamp;
-        ExternalModules::setSystemSetting($this->getPrefix(), 'refresh-expiry-timestamp', (string)$refreshExpiryTimestamp);
     }
 
 
