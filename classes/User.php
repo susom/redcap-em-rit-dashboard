@@ -274,10 +274,10 @@ class User
     /**
      * @return array
      */
-    public function getRedcapUsers(): array
+    public function getRedcapUsers($redcapProjectId = ''): array
     {
         if (!$this->redcapUsers) {
-            $this->setRedcapUsers();
+            $this->setRedcapUsers($redcapProjectId);
         }
         return $this->redcapUsers;
     }
@@ -285,9 +285,13 @@ class User
     /**
      * @return void
      */
-    public function setRedcapUsers(): void
+    public function setRedcapUsers($redcapProjectId): void
     {
-        $sql = "SELECT username, CONCAT(user_firstname, ' ', user_lastname) as `full_name` FROM redcap_user_information";
+        if ($redcapProjectId != '') {
+            $sql = "SELECT username, CONCAT(user_firstname, ' ', user_lastname) as `full_name` FROM redcap_user_information where username in (select username from redcap_user_rights where project_id = $redcapProjectId)";
+        } else {
+            $sql = "SELECT username, CONCAT(user_firstname, ' ', user_lastname) as `full_name` FROM redcap_user_information";
+        }
         $q = db_query($sql);
         $result = array();
         if (db_num_rows($q) > 0) {

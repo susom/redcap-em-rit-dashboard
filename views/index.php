@@ -209,7 +209,7 @@ try {
                     options: [{value: 'CA', label: 'Canada'}],
                     notifications: <?php echo json_encode($module->getNotifications()) ?>,
                     isSuperUser: <?php echo defined('SUPER_USER') && SUPER_USER == 1 ? 1 : 0 ?>,
-                    redcapUsers: <?php echo json_encode($module->getUser()->getRedcapUsers()) ?>,
+                    redcapUsers: <?php echo json_encode($module->getUser()->getRedcapUsers($module->getProjectId())) ?>,
                     variant: "danger",
                     noneDismissibleVariant: "danger",
                     portalLinkageVariant: "danger",
