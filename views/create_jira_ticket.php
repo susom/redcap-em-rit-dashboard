@@ -38,10 +38,6 @@ namespace Stanford\ProjectPortal;
         <div class="form-group">
             <label for="portal-projects"><strong>R2P2 Project</strong> (<span>To create new R2P2 project click <a
                             target="_blank" :href="base_portal_url">here</a></span>)</label>
-            <!--            <b-form-select v-model="ticket.project_portal_id" :options="portal_projects_list" class="mb-3"-->
-            <!--                           value-field="id"-->
-            <!--                           text-field="project_name">-->
-            <!--            </b-form-select>-->
             <v-select class="mb-3 nopadding" v-model="ticket.project_portal_id" :options="portal_projects_list"
                       :reduce="project_portal_id => project_portal_id.id"
                       label="project_name">
@@ -63,6 +59,14 @@ namespace Stanford\ProjectPortal;
                     rows="6"
                     max-rows="10"
             ></b-form-textarea>
+        </div>
+        <div v-if="isSuperUser == 1" class="form-group">
+            <label for="portal-projects">Submit on behalf of:</label>
+            <v-select class="mb-3 nopadding" v-model="ticket.on_behalf_of" :options="redcapUsers"
+                      :reduce="user => user.username"
+                      label="full_name">
+            </v-select>
+
         </div>
     </form>
 </div>

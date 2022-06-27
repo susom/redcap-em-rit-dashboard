@@ -28,6 +28,11 @@ class User
 
 
     /**
+     * @var array
+     */
+    private $redcapUsers = [];
+
+    /**
      * @param $client
      * @param \Stanford\ProjectPortal\Entity $entity
      * @param int|null $projectId
@@ -264,6 +269,33 @@ class User
     public function setEntity(Entity $entity): void
     {
         $this->entity = $entity;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRedcapUsers(): array
+    {
+        if (!$this->redcapUsers) {
+            $this->setRedcapUsers();
+        }
+        return $this->redcapUsers;
+    }
+
+    /**
+     * @return void
+     */
+    public function setRedcapUsers(): void
+    {
+        $sql = "SELECT username, CONCAT(user_firstname, ' ', user_lastname) as `full_name` FROM redcap_user_information";
+        $q = db_query($sql);
+        $result = array();
+        if (db_num_rows($q) > 0) {
+            while ($row = db_fetch_assoc($q)) {
+                $result[] = array('username' => $row['username'], 'full_name' => $row['full_name']);
+            }
+        }
+        $this->redcapUsers = json_decode(json_encode($result), true);
     }
 
 
