@@ -8,7 +8,8 @@ use GuzzleHttp\Exception\GuzzleException;
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 
 try {
-    if (!isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
+    //if (!isset($module->getPortal()->projectPortalSavedConfig['portal_project_id'])) {
+    if (!$module->getPortal()->getHasRMA()) {
         $module->getEntity()->checkOverduePayments($module->getProjectId(), $module->getEntity()->getTotalMonthlyPayment($module->getProjectId()));
     }
     header('Content-Type: application/json');

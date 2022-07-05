@@ -376,7 +376,7 @@ class ProjectPortal extends AbstractExternalModule
                     continue;
                 }
                 $overdueArray[] = array(
-                    'content' => 'Overdue payment for month of  ' . date("F", strtotime('00-' . $item['month'] . '-01') . '-' . $item['year']),
+                    'content' => '(' . $this->getProjectId() . ') Overdue payment for month of  ' . date("F", (int)strtotime('00-' . $item['month'] . '-01')) . '-' . $item['year'] . '<br>' . $this->getEntity()->makeExternalModuleHtmlTable($item['external_modules']),
                     'monthly_payments' => $item['monthly_payments']
                 );
             }

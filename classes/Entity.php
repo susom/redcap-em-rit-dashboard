@@ -71,10 +71,34 @@ class Entity
             $q = db_query($query);
             $row = db_fetch_assoc($q);
             if (empty($row)) {
-                $sql = "insert into redcap_entity_projects_overdue_payments (`project_id`, monthly_payments, created, updated, instance, year, month) values ('$projectId' , '{$monthlyPayment}','" . time() . "','" . time() . "','1', '" . date("Y") . "', '" . date("m") . "')";
+                $ems = $this->generateProjectEMUsageArray($projectId);
+                $external_modules = htmlspecialchars(json_encode($ems), ENT_QUOTES, 'UTF-8');
+                $sql = "insert into redcap_entity_projects_overdue_payments (`project_id`, `external_modules`, monthly_payments, created, updated, instance, year, month) values ('$projectId', '$external_modules' , '{$monthlyPayment}','" . time() . "','" . time() . "','1', '" . date("Y") . "', '" . date("m") . "')";
                 db_query($sql);
             }
         }
+    }
+
+    /**
+     * @param string $emJSON
+     * @return string;
+     */
+    public function makeExternalModuleHtmlTable($emJSON)
+    {
+        $external_modules = json_decode(html_entity_decode($emJSON), true);
+        $table = '';
+        if (!empty($external_modules)) {
+            $table = "<table><thead><tr><th>Name</th><th>Maintenance Fees</th></tr></thead><tbody>";
+
+            foreach ($external_modules as $external_module) {
+                if ($external_module['maintenance_fees'] == 0) {
+                    continue;
+                }
+                $table .= "<tr><td>" . $external_module['prefix'] . "</td><td>$" . $external_module['maintenance_fees'] . "</td></tr>";
+            }
+            $table .= "</tbody></table>";
+        }
+        return $table;
     }
 
     public function getProjectTotalMaintenanceFees($projectId)
@@ -112,7 +136,7 @@ class Entity
             } elseif ($data['maintenance_fees'] != '' && $data['is_em_enabled'] && $data['maintenance_fees']) {
                 $maintenance_monthly_cost = '$' . $data['maintenance_fees'];
             } elseif (is_null($data['maintenance_fees']) && $data['is_em_enabled']) {
-                $maintenance_monthly_cost = '<a target="_blank" href="https://medwiki.stanford.edu/pages/viewpage.action?pageId=177641333#R2P2REDCapMaintenanceAgreement(RMA)-WhatdoesitmeanifanExternalModule\'smonthlymaintenancecostis%22ToBeDetermined%22">To be determined</a>';
+                $maintenance_monthly_cost = '<a target=\"_blank\" href=\"https://medwiki.stanford.edu/x/dZeWCg\">To be determined</a>';
             } elseif (!$data['is_em_enabled'] && $data['maintenance_fees']) {
                 $maintenance_monthly_cost = 'Module Disabled';
             } else {
