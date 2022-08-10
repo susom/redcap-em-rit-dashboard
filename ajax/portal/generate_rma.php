@@ -37,7 +37,7 @@ try {
     $data = $module->getPortal()->generateREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $external_modules, USERID, $overdue);
     $data['sow_status'] = $data['status'];
     if ($overdue) {
-        $module->getEntity()->deleteOverduePayments($module->getProjectId());
+        $module->getEntity()->updateProcessedOverduePayments($module->getProjectId());
     }
 
     $module->setState($module->getProject()->project['status'] == '1', $monthlyFees, true, true, $data['sow_status']);

@@ -46,7 +46,7 @@ class Entity
      */
     public function getOverduePayments($projectId): array
     {
-        $query = "select * from redcap_entity_projects_overdue_payments where project_id = " . intval($projectId);
+        $query = "select * from redcap_entity_projects_overdue_payments where processed = 0 AND project_id = " . intval($projectId);
         $q = db_query($query);
         $result = [];
         while ($row = db_fetch_assoc($q)) {
@@ -58,6 +58,12 @@ class Entity
     public function deleteOverduePayments($projectId)
     {
         $query = "delete from redcap_entity_projects_overdue_payments where project_id = " . intval($projectId);
+        $q = db_query($query);
+    }
+
+    public function updateProcessedOverduePayments($projectId): void
+    {
+        $query = "UPDATE redcap_entity_projects_overdue_payments set processed = 1 where project_id = " . intval($projectId);
         $q = db_query($query);
     }
 

@@ -37,7 +37,7 @@ try {
     $data = $module->getPortal()->appendApprovedREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId, $portalSowId, $external_modules, USERID, $overdue);
     $data['sow_status'] = $data['status'];
     if ($overdue) {
-        $module->getEntity()->deleteOverduePayments($module->getProjectId());
+        $module->getEntity()->updateProcessedOverduePayments($module->getProjectId());
     }
     echo json_encode(array_merge($data, array('state' => $module->getState(), 'status' => 'success', 'message' => $module->getNotifications()['append_rma_success_message'], 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
 } catch (\LogicException $e) {
