@@ -654,7 +654,9 @@ try {
                             this.alertMessage = response.data.message
                             this.ticket.project_portal_url = response.data.portal_project.portal_project_url
                             this.ticket.project_portal_sow_url = response.data.portal_project.project_portal_sow_url
-                        }).catch(err => {
+                        }).then(response => {
+                        this.getSignedAuth()
+                    }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
                         this.alertMessage = err.response.data.message
@@ -754,6 +756,7 @@ try {
                         .then(response => {
                             if (response.data.status == 'success') {
                                 this.portalREDCapMaintenanceAgreement = response.data;
+                                this.setProjectState(response.data.state)
                                 if (this.determineREDCapStep() === 1) {
                                     this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_1, true)
                                 } else if (this.determineREDCapStep() === 2) {
@@ -876,7 +879,6 @@ try {
                  * @returns {number}
                  */
                 determineREDCapStep: function () {
-
                     if ((this.projectState & this.HAS_RMA) === 0 || this.portalREDCapMaintenanceAgreement.length === 0) {
                         return 1
                     } else {

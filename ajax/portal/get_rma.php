@@ -11,6 +11,9 @@ try {
     $data = $module->getPortal()->getREDCapSignedAuthInPortal($module->getPortal()->projectPortalSavedConfig['portal_project_id'], $module->getProjectId());
     if (!empty($data)) {
         $data['sow_status'] = $data['status'];
+        $monthlyFees = $module->getEntity()->getTotalMonthlyPayment($module->getProjectId());
+        $module->setState($module->getProject()->project['status'] == '1', $monthlyFees, isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']), $module->getPortal()->getHasRMA(), $module->getPortal()->getRMAStatus());
+        $data['state'] = $module->getState();
         echo json_encode(array_merge($data, array('status' => 'success', 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
     } else {
         echo json_encode(array('status' => 'empty'));
