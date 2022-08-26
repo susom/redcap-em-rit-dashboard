@@ -356,6 +356,25 @@ class ProjectPortal extends AbstractExternalModule
             $result = $this->getEntity()->generateProjectEMUsageArray(filter_var($_POST['redcap_project_id'], FILTER_SANITIZE_NUMBER_INT));
             header('Content-Type: application/json');
             echo json_encode($result);
+        } elseif ($this->getRequest() == "get_em_monthly_charges") {
+            if (!isset($_POST['month'])) {
+                throw new \LogicException("Charges month is missing!");
+            }
+            if (!isset($_POST['year'])) {
+                throw new \LogicException("Charges year is missing!");
+            }
+            if (!is_numeric($_POST['month']) or !in_array($_POST['month'], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])) {
+                throw new \LogicException("Month has wrong format!");
+            }
+            if (!is_numeric($_POST['year']) or ($_POST['year'] < 2020 or $_POST['year'] > 2025)) {
+                throw new \LogicException("Year has wrong format!");
+            }
+            if (isset($_POST['project_id']) and !is_numeric($_POST['project_id'])) {
+                throw new \LogicException("Project id has wrong format!");
+            }
+            $result = $this->getEntity()->getEMMonthlyCharges(filter_var($_POST['year'], FILTER_SANITIZE_NUMBER_INT), filter_var($_POST['month'], FILTER_SANITIZE_NUMBER_INT), filter_var($_POST['project_id'], FILTER_SANITIZE_NUMBER_INT));
+            header('Content-Type: application/json');
+            echo json_encode($result);
         } else {
             throw new \Exception("something went wrong!");
         }

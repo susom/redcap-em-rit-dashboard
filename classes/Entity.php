@@ -10,6 +10,8 @@ namespace Stanford\ProjectPortal;
  */
 class Entity
 {
+    use emLoggerTrait;
+
     private $record;
 
     public function getREDCapRecordViaID($projectId, $eventId, $recordId)
@@ -127,6 +129,28 @@ class Entity
         }
 
         return $total;
+    }
+
+    public function getEMMonthlyCharges($year, $month, $project_id = '')
+    {
+        if ($project_id) {
+            $sql = sprintf("SELECT * from %s WHERE  charge_month = %s AND charge_year = %s AND project_id = %s", db_escape('redcap_entity_external_modules_charges'), db_escape($month), db_escape($year), db_escape($project_id));
+        } else {
+            $sql = sprintf("SELECT * from %s WHERE  charge_month = %s AND charge_year = %s", db_escape('redcap_entity_external_modules_charges'), db_escape($month), db_escape($year));
+        }
+
+        $result = array();
+        $q = db_query($sql);
+        if (db_num_rows($q) > 0) {
+            while ($row = db_fetch_assoc($q)) {
+                $result[] = $row;
+            }
+        } else {
+            if (db_error()) {
+                $this->emError(db_error());
+            }
+        }
+        return $result;
     }
 
     public function generateProjectEMUsageArray($projectID): array
