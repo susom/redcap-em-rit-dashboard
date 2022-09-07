@@ -375,6 +375,18 @@ class ProjectPortal extends AbstractExternalModule
             $result = $this->getEntity()->getEMMonthlyCharges(filter_var($_POST['year'], FILTER_SANITIZE_NUMBER_INT), filter_var($_POST['month'], FILTER_SANITIZE_NUMBER_INT), filter_var($_POST['project_id'], FILTER_SANITIZE_NUMBER_INT));
             header('Content-Type: application/json');
             echo json_encode($result);
+        } elseif ($this->getRequest() == "update_charge_ids") {
+            if (!isset($_POST['updated_ids'])) {
+                throw new \LogicException("Ids are missing!");
+            }
+            $updatedIds = json_decode($_POST['updated_ids'], true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \LogicException("Ids json is not valid!");
+            }
+            $result = $this->getEntity()->updateEMChargesWithR2P2Id($updatedIds);
+            header('Content-Type: application/json');
+            echo json_encode($result);
         } else {
             throw new \Exception("something went wrong!");
         }
