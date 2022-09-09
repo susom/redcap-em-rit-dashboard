@@ -382,7 +382,7 @@ class ProjectPortal extends AbstractExternalModule
             $updatedIds = json_decode($_POST['updated_ids'], true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \LogicException("Ids json is not valid!");
+                throw new \LogicException("Ids json is not valid! " . json_last_error());
             }
             $result = $this->getEntity()->updateEMChargesWithR2P2Id($updatedIds);
             header('Content-Type: application/json');
