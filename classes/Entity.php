@@ -145,9 +145,9 @@ class Entity
     public function getEMMonthlyCharges($year, $month, $project_id = '')
     {
         if ($project_id) {
-            $sql = sprintf("SELECT * from %s WHERE  charge_month = %s AND charge_year = %s AND project_id = %s AND r2p2_charge_id IS NULL", db_escape('redcap_entity_external_modules_charges'), db_escape($month), db_escape($year), db_escape($project_id));
+            $sql = sprintf("SELECT * from %s WHERE  charge_month = %s AND charge_year = %s AND project_id = %s AND r2p2_em_charge_id IS NULL", db_escape('redcap_entity_external_modules_charges'), db_escape($month), db_escape($year), db_escape($project_id));
         } else {
-            $sql = sprintf("SELECT * from %s WHERE  charge_month = %s AND charge_year = %s AND r2p2_charge_id IS NULL", db_escape('redcap_entity_external_modules_charges'), db_escape($month), db_escape($year));
+            $sql = sprintf("SELECT * from %s WHERE  charge_month = %s AND charge_year = %s AND r2p2_em_charge_id IS NULL", db_escape('redcap_entity_external_modules_charges'), db_escape($month), db_escape($year));
         }
 
         $result = array();
