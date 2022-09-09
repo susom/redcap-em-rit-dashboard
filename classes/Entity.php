@@ -135,9 +135,9 @@ class Entity
     {
         $result = [];
         foreach ($updatedIds as $id) {
-            $sql = sprintf("UPDATE %s SET r2p2_charge_id = %s WHERE id = %s", db_escape('redcap_entity_external_modules_charges'), db_escape($id['r2p2_charge_id']), db_escape($id['redcap_charge_id']));
+            $sql = sprintf("UPDATE %s SET r2p2_em_charge_id = %s WHERE id = %s", db_escape('redcap_entity_external_modules_charges'), db_escape($id['r2p2_charge_id']), db_escape($id['redcap_charge_id']));
             $q = db_query($sql);
-            $result[] = 'REDCap Entity Charge Record ' . $id['r2p2_charge_id'] . ' Updated Successfully!';
+            $result[] = 'REDCap Entity Charge Record ' . $id['r2p2_em_charge_id'] . ' Updated Successfully!';
         }
         return $result;
     }
