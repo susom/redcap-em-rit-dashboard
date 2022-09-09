@@ -386,7 +386,7 @@ class ProjectPortal extends AbstractExternalModule
 //            }
 //            $result = $this->getEntity()->updateEMChargesWithR2P2Id($updatedIds);
             header('Content-Type: application/json');
-            echo json_encode($updatedIds);
+            echo json_encode($_POST['updated_ids']);
         } else {
             throw new \Exception("something went wrong!");
         }
