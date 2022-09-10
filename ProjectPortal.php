@@ -379,14 +379,17 @@ class ProjectPortal extends AbstractExternalModule
             if (!isset($_POST['updated_ids'])) {
                 throw new \LogicException("Ids are missing!");
             }
+            $this->emLog("=============== Debug start ===============");
+            $this->emLog($_POST['updated_ids']);
             $updatedIds = json_decode($_POST['updated_ids'], true);
-
+            $this->emLog($updatedIds);
+            $this->emLog("=============== Debug End ===============");
 //            if (json_last_error() !== JSON_ERROR_NONE) {
 //                throw new \LogicException("Ids json is not valid! " . json_last_error());
 //            }
 //            $result = $this->getEntity()->updateEMChargesWithR2P2Id($updatedIds);
             header('Content-Type: application/json');
-            echo json_encode($_POST['updated_ids']);
+            echo $_POST['updated_ids'];
         } else {
             throw new \Exception("something went wrong!");
         }
