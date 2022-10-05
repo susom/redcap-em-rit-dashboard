@@ -154,6 +154,19 @@ class ProjectPortal extends AbstractExternalModule
         }
     }
 
+
+    public function processCustomCharges()
+    {
+        // this will replicate em_charges and create charges for rma
+        $this->getPortal()->replicateREDCapEMCharges();
+
+        // get all charges from all instances
+        $charges = $this->getManagerEm()->getManagerEMObject()->processCustomCharges();
+
+
+        $this->getPortal()->pushChargesToR2P2($charges);
+    }
+
     // override code function to allow any logged in user to access the dashboard.
     public function redcap_module_link_check_display($project_id, $link)
     {
@@ -373,6 +386,10 @@ class ProjectPortal extends AbstractExternalModule
                 throw new \LogicException("Project id has wrong format!");
             }
             $result = $this->getEntity()->getEMMonthlyCharges(filter_var($_POST['year'], FILTER_SANITIZE_NUMBER_INT), filter_var($_POST['month'], FILTER_SANITIZE_NUMBER_INT), filter_var($_POST['project_id'], FILTER_SANITIZE_NUMBER_INT));
+            header('Content-Type: application/json');
+            echo json_encode($result);
+        } elseif ($this->getRequest() == "get_custom_charges") {
+            $result = $this->getManagerEm()->getManagerEMObject()->processCustomCharges();
             header('Content-Type: application/json');
             echo json_encode($result);
         } elseif ($this->getRequest() == "update_charge_ids") {

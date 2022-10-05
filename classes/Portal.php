@@ -34,6 +34,8 @@ class Portal
 
     private $RMAStatus;
 
+    private $rmaId;
+
     /**
      * @var array[]
      */
@@ -130,6 +132,7 @@ class Portal
                 if (!empty($rma)) {
                     $this->setHasRMA(true);
                     $this->setRMAStatus($rma['status']);
+                    $this->setRmaId($rma['id']);
                 }
             }
         } catch (\Exception $e) {
@@ -275,6 +278,87 @@ class Portal
             }
         } catch (\Exception $e) {
             throw new \LogicException($e->getMessage());
+        }
+    }
+
+    /**
+     * this method will replicate records from redcap_entity_external_modules_charges on redcap to app_redcapemcharges
+     * on r2p2
+     * @return array|mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function replicateREDCapEMCharges()
+    {
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/projects/redcap/charges/replicate/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                // when replicating is complete lets generate charges for newly replicated records.
+                $this->processRMACharges();
+                $result = json_decode($response->getBody(), true);
+                return $result['results'];
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+    public function pushChargesToR2P2($charges)
+    {
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/redcap/custom-charges/push/', [
+                'debug' => false,
+                'form_params' => [
+                    'charges' => json_encode($charges),
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                // when replicating is complete lets generate charges for newly replicated records.
+                $this->processRMACharges();
+                $result = json_decode($response->getBody(), true);
+                return $result['results'];
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+    /**
+     * this method will generate app_chargeitems records for
+     * @return array|mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function processRMACharges()
+    {
+        try {
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/projects/sow/charges/process-rma/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                $result = json_decode($response->getBody(), true);
+                return $result['results'];
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
         }
     }
 
@@ -505,6 +589,22 @@ class Portal
     public function setProjectStatus($projectStatus): void
     {
         $this->projectStatus = $projectStatus;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRmaId()
+    {
+        return $this->rmaId;
+    }
+
+    /**
+     * @param mixed $rmaId
+     */
+    public function setRmaId($rmaId)
+    {
+        $this->rmaId = $rmaId;
     }
 
 

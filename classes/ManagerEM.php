@@ -13,7 +13,8 @@ class ManagerEM
 {
 
     private $managerREDCapProjectId;
-    private $managerEM;
+
+    private $managerEMObject;
 
     private $client;
 
@@ -23,7 +24,7 @@ class ManagerEM
     {
         $this->setPrefix($prefix);
         if (ExternalModules::getSystemSetting($this->getPrefix(), 'external-modules-manager-em') != '') {
-            $this->setManagerEM(ExternalModules::getModuleInstance(ExternalModules::getSystemSetting($this->getPrefix(), 'external-modules-manager-em')));
+            $this->setManagerEMObject(ExternalModules::getModuleInstance(ExternalModules::getSystemSetting($this->getPrefix(), 'external-modules-manager-em')));
         }
         if (ExternalModules::getSystemSetting($this->getPrefix(), 'external-modules-manager-redcap-project') != '') {
             $this->setManagerREDCapProjectId(ExternalModules::getSystemSetting($this->getPrefix(), 'external-modules-manager-redcap-project'));
@@ -69,17 +70,17 @@ class ManagerEM
     /**
      * @return \Stanford\ExternalModuleManager\ExternalModuleManager
      */
-    public function getManagerEM()
+    public function getManagerEMObject()
     {
-        return $this->managerEM;
+        return $this->managerEMObject;
     }
 
     /**
      * @param \Stanford\ExternalModuleManager\ExternalModuleManager $managerEM
      */
-    public function setManagerEM($managerEM): void
+    public function setManagerEMObject($managerEM): void
     {
-        $this->managerEM = $managerEM;
+        $this->managerEMObject = $managerEM;
     }
 
     /**
