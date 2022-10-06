@@ -162,13 +162,6 @@
       "method": "checkProjectsRMACron",
       "cron_frequency": "86400",
       "cron_max_run_time": "3600"
-    },
-    {
-      "cron_name": "custom_charges",
-      "cron_description": "Daily cron to process Custom Charges.",
-      "method": "processCustomCharges",
-      "cron_frequency": "86400",
-      "cron_max_run_time": "3600"
     }
   ]
 }

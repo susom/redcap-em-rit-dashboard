@@ -155,19 +155,25 @@ class ProjectPortal extends AbstractExternalModule
     }
 
 
+    /**
+     * this is a cron that processes RMA and custom charges.
+     * TODO cron needs to be configured when R2P2 functionality is live.
+     * @return void
+     */
     public function processCustomCharges()
     {
         // this will replicate em_charges and create charges for rma
-        $this->getPortal()->replicateREDCapEMCharges();
+        // TODO R2P2 endpoint still not live.
+        //$this->getPortal()->replicateREDCapEMCharges();
 
         // get all charges from all instances
         $charges = $this->getManagerEm()->getManagerEMObject()->processCustomCharges();
 
-
-        $this->getPortal()->pushChargesToR2P2($charges);
+        // TODO R2P2 endpoint still not live.
+        //$this->getPortal()->pushChargesToR2P2($charges);
     }
 
-    // override code function to allow any logged in user to access the dashboard.
+    // override code function to allow any logged-in user to access the dashboard.
     public function redcap_module_link_check_display($project_id, $link)
     {
         if (ExternalModules::isNoAuth()) {
@@ -177,7 +183,7 @@ class ProjectPortal extends AbstractExternalModule
         }
 
         if (ExternalModules::isSuperUser()) {
-            // Super users can see all pages
+            // superusers can see all pages
             return $link;
         }
 
