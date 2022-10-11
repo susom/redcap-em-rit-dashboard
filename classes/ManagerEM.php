@@ -37,7 +37,7 @@ class ManagerEM
     {
         try {
             if ($this->getManagerREDCapProjectId() != '') {
-                $url = $this->getManagerEM()->getUrl('ajax/refresh_project_em_util.php', true, true) . '&redcap_project_id=' . $projectId . '&pid=' . $this->getManagerREDCapProjectId();
+                $url = $this->getManagerEMObject()->getUrl('ajax/refresh_project_em_util.php', true, true) . '&redcap_project_id=' . $projectId . '&pid=' . $this->getManagerREDCapProjectId();
                 $response = $this->getClient()->getGuzzleClient()->get($url, [
                     'debug' => false
                 ]);
