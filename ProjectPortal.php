@@ -157,20 +157,18 @@ class ProjectPortal extends AbstractExternalModule
 
     /**
      * this is a cron that processes RMA and custom charges.
-     * TODO cron needs to be configured when R2P2 functionality is live.
      * @return void
      */
     public function processCustomCharges()
     {
         // this will replicate em_charges and create charges for rma
-        // TODO R2P2 endpoint still not live.
-        //$this->getPortal()->replicateREDCapEMCharges();
+        $this->getPortal()->replicateREDCapEMCharges();
 
         // get all charges from all instances
         $charges = $this->getManagerEm()->getManagerEMObject()->processCustomCharges();
 
-        // TODO R2P2 endpoint still not live.
-        //$this->getPortal()->pushChargesToR2P2($charges);
+        // Push custom charges into R2P2
+        $this->getPortal()->pushChargesToR2P2($charges);
     }
 
     // override code function to allow any logged-in user to access the dashboard.

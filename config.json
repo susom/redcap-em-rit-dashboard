@@ -162,6 +162,13 @@
       "method": "checkProjectsRMACron",
       "cron_frequency": "86400",
       "cron_max_run_time": "3600"
+    },
+    {
+      "cron_name": "process_em_charges",
+      "cron_description": "This Cron will replicate EM charges to a table in R2P2. Also, it will process custom charges and replicate them into R2P2.",
+      "method": "processCustomCharges",
+      "cron_frequency": "86400",
+      "cron_max_run_time": "3600"
     }
   ]
 }
