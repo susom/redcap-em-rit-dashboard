@@ -161,6 +161,13 @@ class ProjectPortal extends AbstractExternalModule
      */
     public function processCustomCharges()
     {
+        // set project to 16000
+        $this->setProject(new \Project(ExternalModules::getSystemSetting($this->PREFIX, 'external-modules-manager-redcap-project')));
+
+        //$this->setProjects($this->getEnabledProjects());
+
+        $this->setPortal(new Portal($this->getClient(), $this->getProject()->project_id, $this->getProject()->project['app_title'], $this->getREDCapProjectStatus()));
+
         // this will replicate em_charges and create charges for rma
         $this->getPortal()->replicateREDCapEMCharges();
 
