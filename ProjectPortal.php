@@ -148,7 +148,7 @@ class ProjectPortal extends AbstractExternalModule
 
         while ($project = $projects->fetch_assoc()) {
             $id = $project['project_id'];
-            $url = $this->getUrl("ajax/entity/cron.php", true) . '&pid=' . $id;
+            $url = $this->getUrl("cron/entity/check_overdue_payments.php", true) . '&pid=' . $id;
             $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
             $this->emDebug("running cron for $url on project " . $project['app_title']);
         }
@@ -161,21 +161,9 @@ class ProjectPortal extends AbstractExternalModule
      */
     public function processCustomCharges()
     {
-        // set project to 16000
-        $this->setProject(new \Project(ExternalModules::getSystemSetting($this->PREFIX, 'external-modules-manager-redcap-project')));
-
-        //$this->setProjects($this->getEnabledProjects());
-
-        $this->setPortal(new Portal($this->getClient(), $this->getProject()->project_id, $this->getProject()->project['app_title'], $this->getREDCapProjectStatus()));
-
-        // this will replicate em_charges and create charges for rma
-        $this->getPortal()->replicateREDCapEMCharges();
-
-        // get all charges from all instances
-        $charges = $this->getManagerEm()->getManagerEMObject()->processCustomCharges();
-
-        // Push custom charges into R2P2
-        $this->getPortal()->pushChargesToR2P2($charges);
+        $id = ExternalModules::getSystemSetting($this->PREFIX, 'external-modules-manager-redcap-project');
+        $url = $this->getUrl("cron/portal/process_ems.php", true) . '&pid=' . $id;
+        $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
     }
 
     // override code function to allow any logged-in user to access the dashboard.

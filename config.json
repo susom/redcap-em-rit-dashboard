@@ -2,7 +2,7 @@
   "name": "Research IT Dashboard",
   "namespace": "Stanford\\ProjectPortal",
   "description": "A module that links redcap projects to Stanford Research Project Portal",
-  "framework-version": 6,
+  "framework-version": 7,
   "versions": [
     {
       "0.1": "Initial Development Version"
@@ -25,7 +25,8 @@
   ],
   "no-auth-pages": [
     "services",
-    "ajax/entity/cron"
+    "cron/entity/check_overdue_payments",
+    "cron/portal/process_ems"
   ],
   "links": {
     "project": [
