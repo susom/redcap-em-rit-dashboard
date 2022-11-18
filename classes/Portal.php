@@ -151,6 +151,9 @@ class Portal
     public function getREDCapSignedAuthInPortal($portalProjectId, $redcapProjectId)
     {
         try {
+            if (!$portalProjectId) {
+                return [];
+            }
             $jwt = $this->getClient()->getJwtToken();
             $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/sow/get-signed-auth/', [
                 'debug' => false,
