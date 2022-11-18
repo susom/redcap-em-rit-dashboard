@@ -207,23 +207,24 @@ class Portal
 
     public function getWorkItemsTypes()
     {
-        try {
-            $jwt = $this->getClient()->getJwtToken();
-            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/work-items-type/', [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer {$jwt}",
-                ]
-            ]);
-            if ($response->getStatusCode() < 300) {
-                $result = json_decode($response->getBody(), true);
-                return $result['results'];
-            } else {
-                throw new \Exception("could not get REDCap signed auth from portal.");
-            }
-        } catch (\Exception $e) {
-            return array();
-        }
+        return [];
+//        try {
+//            $jwt = $this->getClient()->getJwtToken();
+//            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/work-items-type/', [
+//                'debug' => false,
+//                'headers' => [
+//                    'Authorization' => "Bearer {$jwt}",
+//                ]
+//            ]);
+//            if ($response->getStatusCode() < 300) {
+//                $result = json_decode($response->getBody(), true);
+//                return $result['results'];
+//            } else {
+//                throw new \Exception("could not get REDCap signed auth from portal.");
+//            }
+//        } catch (\Exception $e) {
+//            return array();
+//        }
     }
 
     /**

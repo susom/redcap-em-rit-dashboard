@@ -416,12 +416,7 @@ try {
             },
             methods: {
                 canShowServiceBlockButton: function () {
-                    for (var i = 0; i < this.workItemTypes.length; i++) {
-                        if (this.workItemTypes[i]['name'] === 'sprint_block') {
-                            this.showServiceBlockButton = true
-                            break;
-                        }
-                    }
+                    this.showServiceBlockButton = true
                 },
                 setPortalLinkageAlertMessage: function (variant, message, show) {
                     // Portal Linkage tab alert message
