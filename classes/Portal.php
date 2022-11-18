@@ -83,7 +83,9 @@ class Portal
     public function updateRMA($portalProjectId)
     {
         $rma = $this->getREDCapSignedAuthInPortal($portalProjectId, $this->getProjectId());
-
+        if (empty($rma)) {
+            throw new \Exception('This project is not Linked to R2P2 project.');
+        }
         $jwt = $this->getClient()->getJwtToken();
         $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/projects/sow/' . $rma['id'] . '/update-work-items/', [
             'debug' => false,
