@@ -22,12 +22,8 @@ try {
         throw new \Exception("Please select sprint block size. ");
     }
     $sprintBlock = $module->getPortal()->searchServiceBlock($sprintBlockId);
-    $sprintBlockType = $module->getPortal()->searchWorkItemType('sprint_block');
 
-    if (empty($sprintBlockType)) {
-        throw new \Exception("Could not find Service block type.");
-    }
-    $work_items = array(array('type_id' => $sprintBlockType['id'], 'total_amount' => $sprintBlock['price'], 'description' => $description, 'number_of_months' => 1, 'text' => $sprintBlock['text']));
+    $work_items = array(array('total_amount' => $sprintBlock['price'], 'description' => $description, 'text' => $sprintBlock['text']));
     $data = $module->getPortal()->generateR2P2SOW($portalProjectId, $module->getProjectId(), $work_items);
 
     echo json_encode(array_merge($data, array('status' => 'success', 'message' => 'New Service Block Statement of Work was created in R2P2. Please click this &nbsp;<a target="_blank" href="' . $module->getPortal()->projectPortalSavedConfig['portal_project_url'] . '/sow?id=' . $data['id'] . '"><strong>link</strong></a>&nbsp; and Approve the Statement of Work.')));

@@ -371,6 +371,7 @@ class Portal
                 'form_params' => [
                     'user' => USERID,
                     'redcap_project_id' => $redcapProjectId,
+                    'description' => '',
                     'work_items' => json_encode($workItems),
                     'title' => $this->projectPortalSavedConfig['portal_project_name'] . ' - Request for ' . $workItems[0]['text']
                 ],
