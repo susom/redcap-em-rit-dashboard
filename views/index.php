@@ -470,7 +470,7 @@ try {
                 filterOpenTickets() {
                     if (this.openTickets === 'Yes') {
                         this.items = this.allItems.filter(function (n) {
-                            return n.status !== 'Done';
+                            return n.status_category !== 'Done';
                         });
                     } else {
                         this.filterTickets()
