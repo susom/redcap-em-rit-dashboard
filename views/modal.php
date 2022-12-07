@@ -55,6 +55,11 @@
             </v-select>
 
         </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Have you met with someone from REDCap team? If so, please describe.</label>
+            <b-form-input v-model="selectedServiceBlock.redcap_admin" max="250"
+                          placeholder="Whom you met with?"></b-form-input>
+        </div>
         <b-form-checkbox
                 id="checkbox-1"
                 v-model="isAccepted"

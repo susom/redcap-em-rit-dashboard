@@ -12,6 +12,7 @@ try {
     $module->getPortal()->prepareR2P2SavedProject();
     $portalProjectId = $module->getPortal()->projectPortalSavedConfig['portal_project_id'];
     $description = $body['description'];
+    $redcap_admin = $body['redcap_admin'];
     $sprintBlockId = $body['id']['id'];
 
     if (!$description) {
@@ -22,6 +23,12 @@ try {
         throw new \Exception("Please select sprint block size. ");
     }
     $sprintBlock = $module->getPortal()->searchServiceBlock($sprintBlockId);
+
+    // if user provided info about meeting with redcap admin please attach it to the description.
+    if ($redcap_admin) {
+        $description .= '<br><strong>Have you met with someone from REDCap team? If so, please describe.</strong><br>' . $redcap_admin;
+    }
+
 
     $work_items = array(array('total_amount' => $sprintBlock['price'], 'description' => $description, 'text' => $sprintBlock['text']));
     $data = $module->getPortal()->generateR2P2SOW($portalProjectId, $module->getProjectId(), $work_items);

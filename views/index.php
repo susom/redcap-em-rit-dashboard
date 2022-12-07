@@ -201,7 +201,8 @@ try {
                     sprintBlocks: <?php echo json_encode($module->getPortal()->sprintBlocks) ?>,
                     selectedServiceBlock: {
                         id: null,
-                        description: null
+                        description: null,
+                        redcap_admin: null
                     },
                     showServiceBlockButton: false,
                     fullURL: window.location.href,
