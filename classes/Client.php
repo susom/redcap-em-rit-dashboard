@@ -38,7 +38,7 @@ class Client
 
         $this->setPrefix($prefix);
 
-        $this->setGuzzleClient(new \GuzzleHttp\Client());
+        $this->setGuzzleClient(new \GuzzleHttp\Client(['headers' => ['X-Foo' => 'Bar']]));
 
         $this->setToken(ExternalModules::getSystemSetting($this->getPrefix(), 'project-portal-api-token'));
 
