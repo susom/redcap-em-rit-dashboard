@@ -14,7 +14,7 @@ try {
     // get all charges from all instances
     $charges = $module->getManagerEm()->getManagerEMObject()->processCustomCharges();
     // Test
-    $module->emLog($charges);
+
     // Push custom charges into R2P2
     $module->getPortal()->pushChargesToR2P2($charges);
     header('Content-Type: application/json');
