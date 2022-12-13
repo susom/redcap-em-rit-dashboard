@@ -323,7 +323,7 @@ class Portal
             $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/redcap/custom-charges/push/', [
                 'debug' => false,
                 'form_params' => [
-                    'charges' => json_encode($charges),
+                    'charges' => json_encode($charges, JSON_FORCE_OBJECT),
                 ],
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",
