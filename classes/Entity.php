@@ -186,7 +186,7 @@ class Entity
             $row = array(
                 'prefix' => $data['module_prefix'],
 //            'is_enabled' => $data['is_em_enabled'] == true ? 'Yes' : 'No',
-                'maintenance_fees' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] ? $data['maintenance_fees'] : 0,
+                'maintenance_fees' => $data['maintenance_fees'] != '' && $data['is_em_enabled'] && $data['has_maintenance_fees'] != '0' ? $data['maintenance_fees'] : 0,
                 'maintenance_monthly_cost' => $maintenance_monthly_cost,
             );
             $pointer++;
