@@ -17,6 +17,7 @@ namespace Stanford\ProjectPortal;
 
         // for redcap 12.3.2 remove top contact admin button
         $(document).find("a:contains('Contact REDCap administrator')").parent().remove()
+        console.log($(".btn-contact-admin"))
         $('.btn-contact-admin').first().parent().remove()
     };
 </script>
