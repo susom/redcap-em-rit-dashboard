@@ -175,7 +175,7 @@ class ProjectPortal extends AbstractExternalModule
             return $link;
         }
 
-        if (ExternalModules::isSuperUser()) {
+        if ($this->isSuperUser()) {
             // superusers can see all pages
             return $link;
         }
