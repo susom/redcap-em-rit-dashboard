@@ -209,7 +209,7 @@ try {
                     tabsPathsDictionary: ['r2p2', 'support', 'external-modules', 'payment-history'],
                     options: [{value: 'CA', label: 'Canada'}],
                     notifications: <?php echo json_encode($module->getNotifications()) ?>,
-                    isSuperUser: <?php echo $module->isSuperUser() ?>,
+                    isSuperUser: <?php echo $module->isSuperUser() ?: 0 ?>,
                     redcapUsers: <?php echo json_encode($module->getUser()->getRedcapUsers($module->getProjectId())) ?>,
                     variant: "danger",
                     noneDismissibleVariant: "danger",
