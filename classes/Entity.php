@@ -171,7 +171,9 @@ class Entity
         foreach ($this->getProjectEmUsageRecords($projectID) as $data) {
             //$data = $entity->getData();
 
-
+            if (!$data['is_em_enabled']) {
+                continue;
+            }
             if ($data['has_maintenance_fees'] == '0') {
                 $maintenance_monthly_cost = 'Fee waived';
             } elseif ($data['maintenance_fees'] != '' && $data['is_em_enabled'] && $data['maintenance_fees']) {
