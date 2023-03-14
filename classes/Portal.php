@@ -177,6 +177,70 @@ class Portal
         }
     }
 
+    /**
+     * @param int $portalProjectId
+     * @param int $redcapProjectId
+     * @param int $redcapStatus
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function searchIRB($irbNum)
+    {
+        try {
+            if (!$irbNum) {
+                return [];
+            }
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/irb/search/', [
+                'debug' => false,
+                'form_params' => [
+                    'number' => $irbNum,
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+    /**
+     * @param int $portalProjectId
+     * @param int $redcapProjectId
+     * @param int $redcapStatus
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function requstProjectAccess($portalProjectId, $user)
+    {
+
+        $jwt = $this->getClient()->getJwtToken();
+        $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/request-access/', [
+            'debug' => false,
+            'form_params' => [
+                'on_behalf_of_email' => $user['user_email'],
+                'on_behalf_of_username' => $user['user_username'],
+                'on_behalf_of_first_name' => $user['user_firstname'],
+                'on_behalf_of_last_name' => $user['user_lastname'],
+            ],
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new \Exception("could not get request access to R2P2 pid $portalProjectId");
+        }
+
+    }
+
 
     /**
      * @param int $portalProjectId

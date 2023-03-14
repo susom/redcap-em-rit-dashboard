@@ -2,6 +2,7 @@
 
 namespace Stanford\ProjectPortal;
 
+use ExternalModules\ExternalModules;
 use GuzzleHttp\Exception\GuzzleException;
 
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
@@ -187,11 +188,18 @@ try {
                     var parts = route.split("#")
                     const im = this.tabsPathsDictionary.findIndex(element => element === parts[1]) || 0;
                     return im;
+                },
+                progress: function () {
+                    return Math.round(100 / this.max_step) * this.current_step;
                 }
             },
             data() {
                 return {
                     PROD: 1,
+                    max_step: 5,
+                    irb: {},
+                    irb_num: null,
+                    current_step: 1,
                     HAS_FEES: 2,
                     LINKED: 4,
                     HAS_RMA: 8,
@@ -273,6 +281,28 @@ try {
                             sortable: true
                         }
                     ],
+                    fields_irb_projects: [
+                        {
+                            key: 'project_name',
+                            label: 'Project Name',
+                            sortable: true
+                        },
+                        {
+                            key: 'project_description',
+                            label: 'Project Description',
+                            sortable: true
+                        },
+                        {
+                            key: 'project_created_at',
+                            label: 'Created At',
+                            sortable: true
+                        },
+                        {
+                            key: 'action',
+                            label: 'Action',
+                            sortable: false
+                        }
+                    ],
                     fields_line_items: [
                         {
                             key: 'id',
@@ -328,6 +358,7 @@ try {
                     allEms: [],
                     totalFees: 0,
                     showDismissibleAlert: false,
+                    showIRBResultCard: false,
                     showNoneDismissibleAlert: false,
                     showPortalLinkageDismissibleAlert: false,
                     showEMDismissibleAlert: false,
@@ -364,6 +395,8 @@ try {
                     attachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     detachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSectionURL: "<?php echo $module->getURL('ajax/portal/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalSearchIRB: "<?php echo $module->getURL('ajax/portal/search_irb.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalRequestAccess: "<?php echo $module->getURL('ajax/portal/request_access.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalRMALineItems: "<?php echo $module->getURL('ajax/portal/get_line_items.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     ajaxUpdateProjectEMUtil: "<?php echo $module->getURL('ajax/manager/update_project_em_util.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     portal_linkage_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header')); ?>",
@@ -416,6 +449,62 @@ try {
                 });
             },
             methods: {
+                searchIRB: function () {
+                    console.log(this.irb_num)
+                    axios.post(this.projectPortalSearchIRB, {'irb_num': this.irb_num})
+                        .then(response => {
+                            console.log(response)
+                            console.log(response.data)
+                            if (response.data.status == "empty") {
+                                this.variant = 'danger'
+                                this.showDismissibleAlert = true
+                                this.isDisabled = false
+                                this.alertMessage = "IRB # " + this.irb_num + " yielded no results in our system, please try a different number."
+                            } else {
+                                this.variant = 'success'
+                                this.showDismissibleAlert = true
+                                this.isDisabled = false
+                                this.alertMessage = "IRB # " + this.irb_num + " match found."
+                                this.irb = response.data
+                            }
+                            this.showIRBResultCard = true
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                    });
+                },
+                requestAccess: function (project) {
+                    console.log(project.item.id)
+                    axios.post(this.projectPortalRequestAccess, {'r2p2_project_id': project.item.id})
+                        .then(response => {
+                            console.log(response)
+                            console.log(response.data)
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.isDisabled = false
+                            this.alertMessage = response.data.message
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                    });
+                },
+                onClickNext: function (step) {
+                    if (step === undefined) {
+                        this.current_step++;
+                    } else {
+                        this.current_step = step;
+                    }
+                },
+                onClickBack: function () {
+                    this.current_step--;
+                },
+                onClickFirst: function () {
+                    this.current_step = 1;
+                },
                 canShowServiceBlockButton: function () {
                     this.showServiceBlockButton = true
                 },
