@@ -199,6 +199,11 @@ try {
                     max_step: 5,
                     irb: {},
                     irb_num: null,
+                    disable_overlay: false,
+                    search_term: null,
+                    selected_user: [],
+                    search_users: [],
+                    user_projects: [],
                     current_step: 1,
                     HAS_FEES: 2,
                     LINKED: 4,
@@ -397,6 +402,8 @@ try {
                     projectPortalSectionURL: "<?php echo $module->getURL('ajax/portal/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSearchIRB: "<?php echo $module->getURL('ajax/portal/search_irb.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalRequestAccess: "<?php echo $module->getURL('ajax/portal/request_access.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalSearchUsers: "<?php echo $module->getURL('ajax/portal/search_users.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalGetUserProjects: "<?php echo $module->getURL('ajax/portal/get_user_projects.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalRMALineItems: "<?php echo $module->getURL('ajax/portal/get_line_items.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     ajaxUpdateProjectEMUtil: "<?php echo $module->getURL('ajax/manager/update_project_em_util.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     portal_linkage_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header')); ?>",
@@ -417,44 +424,52 @@ try {
                 }
             },
             created() {
-                axios.interceptors.request.use((config) => {
-                    // trigger 'loading=true' event here
-                    this.showNoneDismissibleAlert = false
-                    this.showDismissibleAlert = false
-                    ajaxCalls.push(config)
-                    if (this.isLoading != undefined) {
-                        this.isLoading = true
-                    }
-                    this.isDisabled = true
-                    return config;
-                }, (error) => {
-                    // trigger 'loading=false' event here
-                    this.isLoading = false
-                    return Promise.reject(error);
-                });
+                if (this.disable_overlay === false) {
+                    axios.interceptors.request.use((config) => {
+                    \                        if (this.disable_overlay === false) {
+                            // trigger 'loading=true' event here
+                            this.showNoneDismissibleAlert = false
+                            this.showDismissibleAlert = false
+                            ajaxCalls.push(config)
+                            if (this.isLoading != undefined) {
+                                this.isLoading = true
+                            }
+                            this.isDisabled = true
 
-                axios.interceptors.response.use((response) => {
-                    // trigger 'loading=false' event here
-                    var temp = []
-                    temp = ajaxCalls.pop()
-                    if (ajaxCalls.length === 0) {
+                        }
+                        this.disable_overlay = false
+                        return config;
+
+                    }, (error) => {
+                        // trigger 'loading=false' event here
                         this.isLoading = false
-                    }
-                    this.isDisabled = false
-                    return response;
-                }, (error) => {
-                    // trigger 'loading=false' event here
-                    this.isLoading = false
-                    return Promise.reject(error);
-                });
+                        return Promise.reject(error);
+                    });
+
+                    axios.interceptors.response.use((response) => {
+                        // trigger 'loading=false' event here
+                        if (this.disable_overlay === false) {
+                            var temp = []
+                            temp = ajaxCalls.pop()
+                            if (ajaxCalls.length === 0) {
+                                this.isLoading = false
+                            }
+                            this.isDisabled = false
+                        }
+                        this.disable_overlay = false
+                        return response;
+                    }, (error) => {
+                        // trigger 'loading=false' event here
+                        this.isLoading = false
+                        return Promise.reject(error);
+                    });
+                }
             },
             methods: {
                 searchIRB: function () {
-                    console.log(this.irb_num)
                     axios.post(this.projectPortalSearchIRB, {'irb_num': this.irb_num})
                         .then(response => {
-                            console.log(response)
-                            console.log(response.data)
+
                             if (response.data.status == "empty") {
                                 this.variant = 'danger'
                                 this.showDismissibleAlert = true
@@ -475,16 +490,57 @@ try {
                         this.alertMessage = err.response.data.message
                     });
                 },
+                selectUser: function (user) {
+                    console.log(user)
+                    axios.post(this.projectPortalGetUserProjects, {'suid': user.suid})
+                        .then(response => {
+                            console.log(response.data.projects)
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.isDisabled = false
+                            this.alertMessage = "Below Projects found for " + user.fullname
+                            this.user_projects = response.data.projects
+                            this.showIRBResultCard = true
+                            loading(false)
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                        loading(false)
+                    });
+                },
+                searchUser: function (search, loading) {
+
+                    // we do not want overlay for this ajax
+                    this.disable_overlay = true
+                    if (search.length > 2) {
+                        loading(true)
+                        axios.post(this.projectPortalSearchUsers, {'term': search})
+                            .then(response => {
+                                this.search_users = response.data.users
+                                loading(false)
+                            }).catch(err => {
+                            this.variant = 'danger'
+                            this.showDismissibleAlert = true
+                            this.isDisabled = false
+                            this.alertMessage = err.response.data.message
+                            loading(false)
+                        });
+                        ;
+                    }
+
+                },
                 requestAccess: function (project) {
-                    console.log(project.item.id)
+
                     axios.post(this.projectPortalRequestAccess, {'r2p2_project_id': project.item.id})
                         .then(response => {
-                            console.log(response)
-                            console.log(response.data)
+
                             this.variant = 'success'
                             this.showDismissibleAlert = true
                             this.isDisabled = false
                             this.alertMessage = response.data.message
+                            this.showIRBResultCard = true
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true

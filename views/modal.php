@@ -112,12 +112,16 @@
                 ?>
             </b-card-text>
             <b-button class="float-left" variant="danger" @click="onClickBack">Back</b-button>
-            <b-button class="float-right" variant="primary" @click="onClickNext(3)">Next</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext(3)">Skip</b-button>
         </b-card>
         <b-card v-if="current_step==3" class="card-style" title="Project Wizard">
-            <b-card-text>For furthermore in 3rd step.</b-card-text>
-            <b-button class="float-left" variant="secondary" @click="onClickBack">Back</b-button>
-            <b-button class="float-right" variant="primary" @click="onClickNext">Next</b-button>
+            <b-card-text>
+                <?php
+                require_once("project_creation/user_form.php");
+                ?>
+            </b-card-text>
+            <b-button class="float-left" variant="danger" @click="onClickBack">Back to IRB</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext">Skip</b-button>
         </b-card>
         <b-card v-if="current_step==4" class="card-style" title="Project Wizard">
             <b-card-text>Will soon finish.</b-card-text>
