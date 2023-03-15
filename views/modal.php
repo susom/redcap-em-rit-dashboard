@@ -112,7 +112,7 @@
                 ?>
             </b-card-text>
             <b-button class="float-left" variant="danger" @click="onClickBack">Back</b-button>
-            <b-button class="float-right" variant="primary" @click="onClickNext(3)">Skip</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext(3);irb={}">Skip</b-button>
         </b-card>
         <b-card v-if="current_step==3" class="card-style" title="Project Wizard">
             <b-card-text>

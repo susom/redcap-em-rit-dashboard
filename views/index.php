@@ -524,7 +524,6 @@ try {
                     });
                 },
                 selectUser: function (user) {
-                    console.log(user)
                     axios.post(this.projectPortalGetUserProjects, {'suid': user.suid})
                         .then(response => {
                             console.log(response.data.projects)
@@ -552,13 +551,17 @@ try {
                         axios.post(this.projectPortalSearchUsers, {'term': search})
                             .then(response => {
                                 this.search_users = response.data.users
-                                loading(false)
-                            }).catch(err => {
+                                this.disable_overlay = false
+                            }).then(response => {
+
+                            loading(false)
+                        }).catch(err => {
                             this.variant = 'danger'
                             this.showDismissibleAlert = true
                             this.isDisabled = false
                             this.alertMessage = err.response.data.message
                             loading(false)
+                            this.disable_overlay = false
                         });
                         ;
                     }
