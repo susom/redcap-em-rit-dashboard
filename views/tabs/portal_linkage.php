@@ -91,7 +91,8 @@
             </b-row>
             <b-row class="text-center">
                 <b-col>
-                    <b-button size="sm" class="mt-3" variant="success" v-b-modal.project-creation-modal>Create R2P2
+                    <b-button size="sm" class="mt-3" variant="success" v-b-modal.project-creation-modal>Create a new
+                        R2P2
                         Project
                     </b-button>
                 </b-col>
