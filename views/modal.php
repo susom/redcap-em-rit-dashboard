@@ -83,7 +83,7 @@
     </template>
 </b-modal>
 
-<b-modal ref="project-creation-modal" size="lg" id="project-creation-modal" title="Create New R2P2 Project">
+<b-modal ref="project-creation-modal" size="xl" id="project-creation-modal" title="Create New R2P2 Project">
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
         <div class="card-style">
             <b-progress :value="progress" variant="success"></b-progress>

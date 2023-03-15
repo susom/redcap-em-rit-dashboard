@@ -85,14 +85,14 @@
                 <b-col>
                     <h6>If you do not see the project in the list above, find/create the research project in R2P2:</h6>
                     <b-button size="sm" variant="success" @click="openWindow('https://rit-portal.med.stanford.edu/')">
-                        Find or Create a R2P2 Project
+                        Find R2P2 Project
                     </b-button>
                 </b-col>
             </b-row>
             <b-row class="text-center">
                 <b-col>
-                    <h6>If you do not see the project in the list above, find/create the research project in R2P2:</h6>
-                    <b-button size="sm" variant="success" v-b-modal.project-creation-modal>Project Creation Wizard
+                    <b-button size="sm" class="mt-3" variant="success" v-b-modal.project-creation-modal>Create R2P2
+                        Project
                     </b-button>
                 </b-col>
             </b-row>

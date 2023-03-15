@@ -37,7 +37,7 @@
                 <b class="row" v-html="alertMessage"></b>
             </b-alert>
         </b-card-text>
-        <b-card-text>
+        <b-card-text class="w-100">
 
 
             <b-card bg-variant="light">
@@ -46,12 +46,15 @@
                 </b-card-text>
             </b-card>
             <hr>
-            <b-table striped hover bordered :items="user_projects" :fields="fields_irb_projects">
+            <b-table striped hover bordered responsive :items="user_projects" :fields="fields_irb_projects">
                 <template #cell(action)="row">
                     <b-button variant="primary" size="sm" @click="requestAccess(row)" class="mr-2">
                         Join
                     </b-button>
 
+                </template>
+                <template #cell(project_description)="row">
+                    {{ sliceText(row.item.project_description, 100) }}
                 </template>
                 <template #bottom-row>
                     <!-- Adding &nbsp; to the cell so that it maintains the standard cell height -->

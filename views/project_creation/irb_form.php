@@ -73,6 +73,9 @@
                     </b-button>
 
                 </template>
+                <template #cell(project_description)="row">
+                    {{ sliceText(row.item.project_description, 100) }}
+                </template>
                 <template #bottom-row>
                     <!-- Adding &nbsp; to the cell so that it maintains the standard cell height -->
                     <td v-for="i in fields_irb_projects.length"><span v-if="fields_irb_projects.length == i"><b-button

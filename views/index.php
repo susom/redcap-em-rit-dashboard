@@ -90,6 +90,10 @@ try {
             margin-left: auto;
             margin-right: 0;
         }
+
+        p.card-text {
+            max-width: 2000px !important;
+        }
     </style>
 
 
@@ -483,7 +487,7 @@ try {
                     console.log(this.ticket)
                     axios.post(this.projectPortalCreateProject, this.ticket).then(response => {
                         this.ticket.project_portal_id = response.data
-
+                        this.$refs['project-creation-modal'].hide()
                         this.attachRedCapProject()
                     }).catch(err => {
                         this.variant = 'danger'
@@ -513,6 +517,7 @@ try {
                             this.showIRBResultCard = true
                         }).catch(err => {
                         this.variant = 'danger'
+                        this.showDismissibleAlert = true
                         this.showDismissibleAlert = true
                         this.isDisabled = false
                         this.alertMessage = err.response.data.message
@@ -582,14 +587,23 @@ try {
                     } else {
                         this.current_step = step;
                     }
-                    console.log(step)
-                    console.log(this.current_step)
+
+                    if (this.showIRBResultCard === true) {
+                        this.showIRBResultCard = false
+                    }
                 },
                 onClickBack: function () {
                     this.current_step--;
+                    if (this.showIRBResultCard === true) {
+                        this.showIRBResultCard = false
+                    }
+
                 },
                 onClickFirst: function () {
                     this.current_step = 1;
+                },
+                sliceText: function (str, n) {
+                    return (str.length > n) ? str.slice(0, n - 1) + '...' : str;
                 },
                 canShowServiceBlockButton: function () {
                     this.showServiceBlockButton = true
