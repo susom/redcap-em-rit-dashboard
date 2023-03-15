@@ -76,7 +76,7 @@
                 <template #bottom-row>
                     <!-- Adding &nbsp; to the cell so that it maintains the standard cell height -->
                     <td v-for="i in fields_irb_projects.length"><span v-if="fields_irb_projects.length == i"><b-button
-                                    variant="success" size="sm" @click="onClickNext(5)" class="mr-2">
+                                    variant="success" size="sm" @click="onClickNext(4)" class="mr-2">
                         New+
                     </b-button></span>&nbsp;
                     </td>

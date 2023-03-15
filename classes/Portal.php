@@ -46,6 +46,8 @@ class Portal
         ['id' => 4, 'title' => 'Large Block - $9,225', 'price' => 9225, 'text' => 'Large Sprint Block'],
     ];
 
+    const ADMIN_GROUP_ID = 3;
+
     /**
      * User constructor.
      * @param \Stanford\ProjectPortal\Client $client
@@ -208,6 +210,60 @@ class Portal
         } catch (\Exception $e) {
             return array();
         }
+    }
+
+
+    public function addProjectUser($projectId, $user)
+    {
+        try {
+            if (!$user) {
+                return [];
+            }
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . "api/projects/$projectId/add-user/", [
+                'debug' => false,
+                'form_params' => [
+                    'username' => $user['username'],
+                    'email' => $user['user_email'],
+                    'first_name' => $user['user_firstname'],
+                    'last_name' => $user['user_lastname'],
+                    // TODO PULL GROUP DATA FROM R2P2
+                    'group_id' => self::ADMIN_GROUP_ID
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+    public function createProject($project)
+    {
+
+        if (!$project) {
+            return [];
+        }
+        $jwt = $this->getClient()->getJwtToken();
+        $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/', [
+            'debug' => false,
+            'form_params' => $project,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new \Exception("could not get REDCap signed auth from portal.");
+        }
+
     }
 
     public function searchUsers($term)

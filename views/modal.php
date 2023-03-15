@@ -121,17 +121,16 @@
                 ?>
             </b-card-text>
             <b-button class="float-left" variant="danger" @click="onClickBack">Back to IRB</b-button>
-            <b-button class="float-right" variant="primary" @click="onClickNext">Skip</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext(4)">Skip</b-button>
         </b-card>
         <b-card v-if="current_step==4" class="card-style" title="Project Wizard">
-            <b-card-text>Will soon finish.</b-card-text>
-            <b-button class="float-left" variant="secondary" @click="onClickBack">Back</b-button>
-            <b-button class="float-right" variant="primary" @click="onClickNext">Next</b-button>
-        </b-card>
-        <b-card v-if="current_step==5" class="card-style" title="Project Wizard">
-            <b-card-text>Finished!</b-card-text>
-            <b-button class="float-left" variant="secondary" @click="onClickBack">Back</b-button>
-            <b-button class="float-center" variant="success" @click="onClickFirst">Back to first</b-button>
+            <b-card-text>
+                <?php
+                require_once("project_creation/project_form.php");
+                ?>
+            </b-card-text>
+            <b-button class="float-left" variant="danger" @click="onClickBack">Back</b-button>
+            <b-button class="float-right" variant="primary" @click="createR2P2Project">Create</b-button>
         </b-card>
     </b-overlay>
     <template #modal-footer="{ ok, cancel, hide }">

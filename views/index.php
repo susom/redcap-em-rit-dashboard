@@ -196,7 +196,7 @@ try {
             data() {
                 return {
                     PROD: 1,
-                    max_step: 5,
+                    max_step: 4,
                     irb: {},
                     irb_num: null,
                     disable_overlay: false,
@@ -369,12 +369,19 @@ try {
                     showEMDismissibleAlert: false,
                     show_line_items_dismissibleAlert: false,
                     resultModalTitle: 'Support Ticket',
+                    project: {
+                        project_name: '',
+                        project_description: '',
+                        project_type: '',
+                    },
                     ticket: {
                         redcap_project_id: "<?php echo $module->getProjectId() ?>",
                         summary: "",
                         type: "",
                         description: "",
                         on_behalf_of: "",
+                        project_portal_type: '',
+                        project_portal_description: '',
                         project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
                         project_portal_name: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_name']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_name'] : '' ?>",
                         project_portal_id_saved: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? "true" : "false" ?>",
@@ -403,6 +410,7 @@ try {
                     projectPortalSearchIRB: "<?php echo $module->getURL('ajax/portal/search_irb.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalRequestAccess: "<?php echo $module->getURL('ajax/portal/request_access.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSearchUsers: "<?php echo $module->getURL('ajax/portal/search_users.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalCreateProject: "<?php echo $module->getURL('ajax/portal/create_project.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalGetUserProjects: "<?php echo $module->getURL('ajax/portal/get_user_projects.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalRMALineItems: "<?php echo $module->getURL('ajax/portal/get_line_items.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     ajaxUpdateProjectEMUtil: "<?php echo $module->getURL('ajax/manager/update_project_em_util.php', false, true) . '&pid=' . $module->getProjectId() ?>",
@@ -426,7 +434,7 @@ try {
             created() {
                 if (this.disable_overlay === false) {
                     axios.interceptors.request.use((config) => {
-                    \                        if (this.disable_overlay === false) {
+                        if (this.disable_overlay === false) {
                             // trigger 'loading=true' event here
                             this.showNoneDismissibleAlert = false
                             this.showDismissibleAlert = false
@@ -466,6 +474,26 @@ try {
                 }
             },
             methods: {
+                createR2P2Project: function () {
+
+                    if (Object.keys(this.irb).length !== 0) {
+                        this.ticket['irb_number'] = this.irb.protocol_number
+                    }
+                    console.log(this.irb)
+                    console.log(this.ticket)
+                    axios.post(this.projectPortalCreateProject, this.ticket).then(response => {
+                        this.ticket.project_portal_id = response.data
+
+                        this.attachRedCapProject()
+                    }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                    });
+
+
+                },
                 searchIRB: function () {
                     axios.post(this.projectPortalSearchIRB, {'irb_num': this.irb_num})
                         .then(response => {
@@ -554,6 +582,8 @@ try {
                     } else {
                         this.current_step = step;
                     }
+                    console.log(step)
+                    console.log(this.current_step)
                 },
                 onClickBack: function () {
                     this.current_step--;
