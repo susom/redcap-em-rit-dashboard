@@ -27,16 +27,16 @@ try {
     <!--    <script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>-->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 
-    <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+    <script src="//unpkg.com/bootstrap-vue@2.23.1/dist/bootstrap-vue.min.js"></script>
 
     <!-- Load the following for BootstrapVueIcons support -->
-    <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+    <script src="//unpkg.com/bootstrap-vue@2.23.1/dist/bootstrap-vue-icons.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mdbvue/lib/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
-    <script src="https://unpkg.com/vue-select@latest"></script>
-    <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
+    <script src="https://unpkg.com/vue-select@3.20.2"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vue-select@3.20.2/dist/vue-select.css">
 
     <style>
         #user-tickets_processing {
