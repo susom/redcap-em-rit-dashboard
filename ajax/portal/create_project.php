@@ -18,6 +18,15 @@ try {
     } else {
         $project['irb_number'] = '';
     }
+    if (!$project['project_type']) {
+        throw new \Exception('Project type is missing');
+    }
+    if (!$project['project_description']) {
+        throw new \Exception('Project description is missing');
+    }
+    if (!$project['project_name']) {
+        throw new \Exception('Project name is missing');
+    }
     $data = $module->getPortal()->createProject($project);
     if (!empty($data)) {
         // add current user to newly created project.
