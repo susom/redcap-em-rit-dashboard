@@ -82,4 +82,72 @@
         </b-button>
     </template>
 </b-modal>
+
+<b-modal ref="project-creation-modal" size="xl" id="project-creation-modal" title="Create New R2P2 Project">
+    <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
+        <div class="card-style">
+            <b-progress :value="progress" variant="success"></b-progress>
+        </div>
+        <b-card v-if="current_step==1" class="card-style" title="Project Wizard">
+            <b-card-text>
+                <?php
+                require_once("project_creation/start.php");
+                ?>
+            </b-card-text>
+            <b-row>
+                <b-col class="d-flex justify-content-center">
+                    <b-button class="float-right" variant="primary" @click="onClickNext(2)">Yes - I know my IRB #
+                    </b-button>
+                </b-col>
+                <b-col class="d-flex justify-content-center">
+                    <b-button class="float-right" variant="primary" @click="onClickNext(3)">No</b-button>
+                </b-col>
+            </b-row>
+
+        </b-card>
+        <b-card v-if="current_step==2" class="card-style" title="Project Wizard">
+            <b-card-text>
+                <?php
+                require_once("project_creation/irb_form.php");
+                ?>
+            </b-card-text>
+            <b-button class="float-left" variant="danger" @click="onClickBack">Back</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext(3);irb={}">Skip</b-button>
+        </b-card>
+        <b-card v-if="current_step==3" class="card-style" title="Project Wizard">
+            <b-card-text>
+                <?php
+                require_once("project_creation/user_form.php");
+                ?>
+            </b-card-text>
+            <b-button class="float-left" variant="danger" @click="onClickBack">Back to IRB</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext(4)">Skip</b-button>
+        </b-card>
+        <b-card v-if="current_step==4" class="card-style" title="Project Wizard">
+            <b-card-text>
+                <?php
+                require_once("project_creation/project_form.php");
+                ?>
+            </b-card-text>
+            <b-button class="float-left" variant="danger" @click="onClickBack">Back</b-button>
+            <b-button class="float-right" variant="primary" @click="createR2P2Project">Create</b-button>
+        </b-card>
+    </b-overlay>
+    <template #modal-footer="{ ok, cancel, hide }">
+
+        <b-button :disabled='isDisabled' variant="danger" @click="cancel()">
+            Cancel
+        </b-button>
+    </template>
+</b-modal>
+<b-modal ref="result-modal" size="lg" id="result-modal" :title="resultModalTitle">
+    <div class="d-block text-center">
+        <span class="row ml-2" v-html="bodyMessage"></span>
+    </div>
+    <template #modal-footer="{ ok, cancel, hide }">
+        <b-button :disabled='isDisabled' variant="secondary" @click="cancel()">
+            Close
+        </b-button>
+    </template>
+</b-modal>
 <!-- END Time Slots Modal -->

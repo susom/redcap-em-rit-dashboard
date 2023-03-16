@@ -2,6 +2,7 @@
 
 namespace Stanford\ProjectPortal;
 
+use ExternalModules\ExternalModules;
 use GuzzleHttp\Exception\GuzzleException;
 
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
@@ -17,7 +18,7 @@ try {
 
     <!-- Load required Bootstrap and BootstrapVue CSS -->
     <!--    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>-->
-    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css"/>
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@2.23.1/dist/bootstrap-vue.min.css"/>
 
     <!-- Load polyfills to support older browsers -->
     <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"
@@ -88,6 +89,10 @@ try {
             /* display: block !important; */
             margin-left: auto;
             margin-right: 0;
+        }
+
+        p.card-text {
+            max-width: 2000px !important;
         }
     </style>
 
@@ -187,11 +192,23 @@ try {
                     var parts = route.split("#")
                     const im = this.tabsPathsDictionary.findIndex(element => element === parts[1]) || 0;
                     return im;
+                },
+                progress: function () {
+                    return Math.round(100 / this.max_step) * this.current_step;
                 }
             },
             data() {
                 return {
                     PROD: 1,
+                    max_step: 4,
+                    irb: {},
+                    irb_num: null,
+                    disable_overlay: false,
+                    search_term: null,
+                    selected_user: [],
+                    search_users: [],
+                    user_projects: [],
+                    current_step: 1,
                     HAS_FEES: 2,
                     LINKED: 4,
                     HAS_RMA: 8,
@@ -273,6 +290,28 @@ try {
                             sortable: true
                         }
                     ],
+                    fields_irb_projects: [
+                        {
+                            key: 'project_name',
+                            label: 'Project Name',
+                            sortable: true
+                        },
+                        {
+                            key: 'project_description',
+                            label: 'Project Description',
+                            sortable: true
+                        },
+                        {
+                            key: 'project_created_at',
+                            label: 'Created At',
+                            sortable: true
+                        },
+                        {
+                            key: 'action',
+                            label: 'Action',
+                            sortable: false
+                        }
+                    ],
                     fields_line_items: [
                         {
                             key: 'id',
@@ -328,17 +367,25 @@ try {
                     allEms: [],
                     totalFees: 0,
                     showDismissibleAlert: false,
+                    showIRBResultCard: false,
                     showNoneDismissibleAlert: false,
                     showPortalLinkageDismissibleAlert: false,
                     showEMDismissibleAlert: false,
                     show_line_items_dismissibleAlert: false,
                     resultModalTitle: 'Support Ticket',
+                    project: {
+                        project_name: '',
+                        project_description: '',
+                        project_type: '',
+                    },
                     ticket: {
                         redcap_project_id: "<?php echo $module->getProjectId() ?>",
                         summary: "",
                         type: "",
                         description: "",
                         on_behalf_of: "",
+                        project_portal_type: '',
+                        project_portal_description: '',
                         project_portal_id: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '' ?>",
                         project_portal_name: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_name']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_name'] : '' ?>",
                         project_portal_id_saved: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? "true" : "false" ?>",
@@ -364,6 +411,11 @@ try {
                     attachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     detachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSectionURL: "<?php echo $module->getURL('ajax/portal/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalSearchIRB: "<?php echo $module->getURL('ajax/portal/search_irb.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalRequestAccess: "<?php echo $module->getURL('ajax/portal/request_access.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalSearchUsers: "<?php echo $module->getURL('ajax/portal/search_users.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalCreateProject: "<?php echo $module->getURL('ajax/portal/create_project.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalGetUserProjects: "<?php echo $module->getURL('ajax/portal/get_user_projects.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalRMALineItems: "<?php echo $module->getURL('ajax/portal/get_line_items.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     ajaxUpdateProjectEMUtil: "<?php echo $module->getURL('ajax/manager/update_project_em_util.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     portal_linkage_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header')); ?>",
@@ -384,38 +436,178 @@ try {
                 }
             },
             created() {
-                axios.interceptors.request.use((config) => {
-                    // trigger 'loading=true' event here
-                    this.showNoneDismissibleAlert = false
-                    this.showDismissibleAlert = false
-                    ajaxCalls.push(config)
-                    if (this.isLoading != undefined) {
-                        this.isLoading = true
-                    }
-                    this.isDisabled = true
-                    return config;
-                }, (error) => {
-                    // trigger 'loading=false' event here
-                    this.isLoading = false
-                    return Promise.reject(error);
-                });
+                if (this.disable_overlay === false) {
+                    axios.interceptors.request.use((config) => {
+                        if (this.disable_overlay === false) {
+                            // trigger 'loading=true' event here
+                            this.showNoneDismissibleAlert = false
+                            this.showDismissibleAlert = false
+                            ajaxCalls.push(config)
+                            if (this.isLoading != undefined) {
+                                this.isLoading = true
+                            }
+                            this.isDisabled = true
 
-                axios.interceptors.response.use((response) => {
-                    // trigger 'loading=false' event here
-                    var temp = []
-                    temp = ajaxCalls.pop()
-                    if (ajaxCalls.length === 0) {
+                        }
+                        this.disable_overlay = false
+                        return config;
+
+                    }, (error) => {
+                        // trigger 'loading=false' event here
                         this.isLoading = false
-                    }
-                    this.isDisabled = false
-                    return response;
-                }, (error) => {
-                    // trigger 'loading=false' event here
-                    this.isLoading = false
-                    return Promise.reject(error);
-                });
+                        return Promise.reject(error);
+                    });
+
+                    axios.interceptors.response.use((response) => {
+                        // trigger 'loading=false' event here
+                        if (this.disable_overlay === false) {
+                            var temp = []
+                            temp = ajaxCalls.pop()
+                            if (ajaxCalls.length === 0) {
+                                this.isLoading = false
+                            }
+                            this.isDisabled = false
+                        }
+                        this.disable_overlay = false
+                        return response;
+                    }, (error) => {
+                        // trigger 'loading=false' event here
+                        this.isLoading = false
+                        return Promise.reject(error);
+                    });
+                }
             },
             methods: {
+                createR2P2Project: function () {
+
+                    if (Object.keys(this.irb).length !== 0) {
+                        this.ticket['irb_number'] = this.irb.protocol_number
+                    }
+                    console.log(this.irb)
+                    console.log(this.ticket)
+                    axios.post(this.projectPortalCreateProject, this.ticket).then(response => {
+                        this.ticket.project_portal_id = response.data
+                        this.$refs['project-creation-modal'].hide()
+                        this.attachRedCapProject()
+                    }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                    });
+
+
+                },
+                searchIRB: function () {
+                    axios.post(this.projectPortalSearchIRB, {'irb_num': this.irb_num})
+                        .then(response => {
+
+                            if (response.data.status == "empty") {
+                                this.variant = 'danger'
+                                this.showDismissibleAlert = true
+                                this.isDisabled = false
+                                this.alertMessage = "IRB # " + this.irb_num + " yielded no results in our system, please try a different number."
+                            } else {
+                                this.variant = 'success'
+                                this.showDismissibleAlert = true
+                                this.isDisabled = false
+                                this.alertMessage = "IRB # " + this.irb_num + " match found."
+                                this.irb = response.data
+                            }
+                            this.showIRBResultCard = true
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                    });
+                },
+                selectUser: function (user) {
+                    axios.post(this.projectPortalGetUserProjects, {'suid': user.suid})
+                        .then(response => {
+                            console.log(response.data.projects)
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.isDisabled = false
+                            this.alertMessage = "Below Projects found for " + user.fullname
+                            this.user_projects = response.data.projects
+                            this.showIRBResultCard = true
+                            loading(false)
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                        loading(false)
+                    });
+                },
+                searchUser: function (search, loading) {
+
+                    // we do not want overlay for this ajax
+                    this.disable_overlay = true
+                    if (search.length > 2) {
+                        loading(true)
+                        axios.post(this.projectPortalSearchUsers, {'term': search})
+                            .then(response => {
+                                this.search_users = response.data.users
+                                this.disable_overlay = false
+                            }).then(response => {
+
+                            loading(false)
+                        }).catch(err => {
+                            this.variant = 'danger'
+                            this.showDismissibleAlert = true
+                            this.isDisabled = false
+                            this.alertMessage = err.response.data.message
+                            loading(false)
+                            this.disable_overlay = false
+                        });
+                        ;
+                    }
+
+                },
+                requestAccess: function (project) {
+
+                    axios.post(this.projectPortalRequestAccess, {'r2p2_project_id': project.item.id})
+                        .then(response => {
+
+                            this.variant = 'success'
+                            this.showDismissibleAlert = true
+                            this.isDisabled = false
+                            this.alertMessage = response.data.message
+                            this.showIRBResultCard = true
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                    });
+                },
+                onClickNext: function (step) {
+                    if (step === undefined) {
+                        this.current_step++;
+                    } else {
+                        this.current_step = step;
+                    }
+
+                    if (this.showIRBResultCard === true) {
+                        this.showIRBResultCard = false
+                    }
+                },
+                onClickBack: function () {
+                    this.current_step--;
+                    if (this.showIRBResultCard === true) {
+                        this.showIRBResultCard = false
+                    }
+
+                },
+                onClickFirst: function () {
+                    this.current_step = 1;
+                },
+                sliceText: function (str, n) {
+                    return (str.length > n) ? str.slice(0, n - 1) + '...' : str;
+                },
                 canShowServiceBlockButton: function () {
                     this.showServiceBlockButton = true
                 },

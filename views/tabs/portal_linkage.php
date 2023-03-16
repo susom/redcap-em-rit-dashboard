@@ -85,7 +85,15 @@
                 <b-col>
                     <h6>If you do not see the project in the list above, find/create the research project in R2P2:</h6>
                     <b-button size="sm" variant="success" @click="openWindow('https://rit-portal.med.stanford.edu/')">
-                        Find or Create a R2P2 Project
+                        Find R2P2 Project
+                    </b-button>
+                </b-col>
+            </b-row>
+            <b-row class="text-center">
+                <b-col>
+                    <b-button size="sm" class="mt-3" variant="success" v-b-modal.project-creation-modal>Create a new
+                        R2P2
+                        Project
                     </b-button>
                 </b-col>
             </b-row>
@@ -177,11 +185,11 @@
                     <b-col md="6">
                         <b-button size="sm" variant="success"
                                   @click="generateSignedAuth()">
-<!--                            <span class="fa-stack fa-1x">-->
-<!--                              <i class="text-danger fa fa-circle fa-stack-2x"></i>-->
-<!--                              <strong class="fa-stack-1x calendar-text fa-inverse">1</strong>-->
-<!--                            </span>-->
-                             Step 1: Generate a REDCap Maintenance Agreement
+                            <!--                            <span class="fa-stack fa-1x">-->
+                            <!--                              <i class="text-danger fa fa-circle fa-stack-2x"></i>-->
+                            <!--                              <strong class="fa-stack-1x calendar-text fa-inverse">1</strong>-->
+                            <!--                            </span>-->
+                            Step 1: Generate a REDCap Maintenance Agreement
                         </b-button>
                     </b-col>
                 </b-row>
@@ -198,7 +206,7 @@
                 <b-row>
                     <b-col>
 
-                        <div class = "text-success justify-content-start align-self-center">
+                        <div class="text-success justify-content-start align-self-center">
                             <h5 class="d-inline-block  p-1"><i class="fa fa-check-circle "></i></h5>
                             Step 1: REDCap Maintenance Agreement Created
                         </div>
@@ -228,7 +236,7 @@
                 <b-row>
                     <b-col>
 
-                        <div class = "text-success justify-content-start align-self-center">
+                        <div class="text-success justify-content-start align-self-center">
                             <h5 class="d-inline-block  p-1"><i class="fa fa-check-circle "></i></h5>
                             Step 2: REDCap project linked to R2P2 REDCap Maintenance Agreement
                         </div>
@@ -242,7 +250,7 @@
                  class="">
                 <b-row class="">
                     <b-col md="12">
-                        <div class = "text-danger justify-content-start align-self-center">
+                        <div class="text-danger justify-content-start align-self-center">
                             <h5 class="d-inline-block  p-1"><i class="far fa-circle"></i></h5>
                             Step 3: The linked R2P2 REDCap Maintenance Agreement is awaiting approval.
                         </div>
@@ -261,7 +269,7 @@
             <div v-else-if="determineREDCapStep() > 3">
                 <b-row>
                     <b-col>
-                        <div class = "text-success justify-content-start align-self-center">
+                        <div class="text-success justify-content-start align-self-center">
                             <h5 class="d-inline-block  p-1"><i class="fa fa-check-circle "></i></h5>
                             Step 3: REDCap Maintenance Agreement Approved.
                         </div>
@@ -272,7 +280,7 @@
 
             <!-- STEP 4: SUCCESS -->
             <div v-if="determineREDCapStep() == 4">
-                <b-row >
+                <b-row>
                     <b-col>
                         <p>
                             Additional details on the REDCap Maintenance Agreement can be found
@@ -287,7 +295,8 @@
                             <b-row>
                                 <b-col class="justify-content-center align-self-center" lg="12"><h5
                                             class="d-inline-block  p-1"><i
-                                                class="fas fa-check-circle"></i></h5> This REDCap Project is linked to an
+                                                class="fas fa-check-circle"></i></h5> This REDCap Project is linked to
+                                    an
                                     approved
                                     REDCap Maintenance Agreement.
                                 </b-col>
@@ -296,17 +305,17 @@
                     </b-col>
                 </b-row>
             </div>
-<!--            <div v-else-if="determineREDCapStep() > 4">-->
-<!--                <b-row>-->
-<!--                    <b-col>-->
-<!---->
-<!--                        <div class = "text-success justify-content-start align-self-center">-->
-<!--                            <h5 class="d-inline-block  p-1"><i class="fa fa-check-circle "></i></h5>-->
-<!--                            Step 4: REDCap Maintenance Agreement Created, Linked, and Approved-->
-<!--                        </div>-->
-<!--                    </b-col>-->
-<!--                </b-row>-->
-<!--            </div>-->
+            <!--            <div v-else-if="determineREDCapStep() > 4">-->
+            <!--                <b-row>-->
+            <!--                    <b-col>-->
+            <!---->
+            <!--                        <div class = "text-success justify-content-start align-self-center">-->
+            <!--                            <h5 class="d-inline-block  p-1"><i class="fa fa-check-circle "></i></h5>-->
+            <!--                            Step 4: REDCap Maintenance Agreement Created, Linked, and Approved-->
+            <!--                        </div>-->
+            <!--                    </b-col>-->
+            <!--                </b-row>-->
+            <!--            </div>-->
 
 
         </b-card>

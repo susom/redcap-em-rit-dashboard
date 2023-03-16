@@ -46,6 +46,8 @@ class Portal
         ['id' => 4, 'title' => 'Large Block - $9,225', 'price' => 9225, 'text' => 'Large Sprint Block'],
     ];
 
+    const ADMIN_GROUP_ID = 3;
+
     /**
      * User constructor.
      * @param \Stanford\ProjectPortal\Client $client
@@ -175,6 +177,170 @@ class Portal
         } catch (\Exception $e) {
             return array();
         }
+    }
+
+    /**
+     * @param int $portalProjectId
+     * @param int $redcapProjectId
+     * @param int $redcapStatus
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function searchIRB($irbNum)
+    {
+        try {
+            if (!$irbNum) {
+                return [];
+            }
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/irb/search/', [
+                'debug' => false,
+                'form_params' => [
+                    'number' => $irbNum,
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+
+    public function addProjectUser($projectId, $user)
+    {
+        try {
+            if (!$user) {
+                return [];
+            }
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . "api/projects/$projectId/add-user/", [
+                'debug' => false,
+                'form_params' => [
+                    'username' => $user['username'],
+                    'email' => $user['user_email'],
+                    'first_name' => $user['user_firstname'],
+                    'last_name' => $user['user_lastname'],
+                    // TODO PULL GROUP DATA FROM R2P2
+                    'group_id' => self::ADMIN_GROUP_ID
+                ],
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+    public function createProject($project)
+    {
+
+        if (!$project) {
+            return [];
+        }
+        $jwt = $this->getClient()->getJwtToken();
+        $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/', [
+            'debug' => false,
+            'form_params' => $project,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new \Exception("could not get REDCap signed auth from portal.");
+        }
+
+    }
+
+    public function searchUsers($term)
+    {
+        try {
+            if (!$term) {
+                return [];
+            }
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/users/search/?term=' . $term, [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+    public function getR2P2UserProjects($suid)
+    {
+        try {
+            if (!$suid) {
+                return [];
+            }
+            $jwt = $this->getClient()->getJwtToken();
+            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/users/' . $suid . '/projects/', [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer {$jwt}",
+                ]
+            ]);
+            if ($response->getStatusCode() < 300) {
+                return json_decode($response->getBody(), true);
+            } else {
+                throw new \Exception("could not get REDCap signed auth from portal.");
+            }
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+    /**
+     * @param int $portalProjectId
+     * @param int $redcapProjectId
+     * @param int $redcapStatus
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function requstProjectAccess($portalProjectId, $user)
+    {
+
+        $jwt = $this->getClient()->getJwtToken();
+        $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/request-access/', [
+            'debug' => false,
+            'form_params' => [
+                'on_behalf_of_email' => $user['user_email'],
+                'on_behalf_of_username' => $user['user_username'],
+                'on_behalf_of_first_name' => $user['user_firstname'],
+                'on_behalf_of_last_name' => $user['user_lastname'],
+            ],
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new \Exception("could not get request access to R2P2 pid $portalProjectId");
+        }
+
     }
 
 
