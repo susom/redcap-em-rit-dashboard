@@ -227,6 +227,8 @@ class User
                 if ($response->getStatusCode() < 300) {
                     $data = json_decode($response->getBody());
                     $this->projectPortalList = json_decode(json_encode($data), true);
+                    // append new item for create new projects
+                    $this->projectPortalList[] = array('id' => 'new', 'project_name' => '**Create New Project**');
                 }
             }
         } catch (\Exception $e) {

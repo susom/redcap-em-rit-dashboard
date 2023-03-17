@@ -91,39 +91,48 @@
         <b-card v-if="current_step==1" class="card-style" title="Project Wizard">
             <b-card-text>
                 <?php
+                require_once("project_creation/project_search.php");
+                ?>
+            </b-card-text>
+
+
+        </b-card>
+        <b-card v-if="current_step==2" class="card-style" title="Project Wizard">
+            <b-card-text>
+                <?php
                 require_once("project_creation/start.php");
                 ?>
             </b-card-text>
             <b-row>
                 <b-col class="d-flex justify-content-center">
-                    <b-button class="float-right" variant="primary" @click="onClickNext(2)">Yes - I know my IRB #
+                    <b-button class="float-right" variant="primary" @click="onClickNext(1)">Yes - I know my IRB #
                     </b-button>
                 </b-col>
                 <b-col class="d-flex justify-content-center">
-                    <b-button class="float-right" variant="primary" @click="onClickNext(3)">No</b-button>
+                    <b-button class="float-right" variant="primary" @click="onClickNext(4)">No</b-button>
                 </b-col>
             </b-row>
 
         </b-card>
-        <b-card v-if="current_step==2" class="card-style" title="Project Wizard">
+        <b-card v-if="current_step==3" class="card-style" title="Project Wizard">
             <b-card-text>
                 <?php
                 require_once("project_creation/irb_form.php");
                 ?>
             </b-card-text>
             <b-button class="float-left" variant="danger" @click="onClickBack">Back</b-button>
-            <b-button class="float-right" variant="primary" @click="onClickNext(3);irb={}">Skip</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext(4);irb={}">Skip</b-button>
         </b-card>
-        <b-card v-if="current_step==3" class="card-style" title="Project Wizard">
+        <b-card v-if="current_step==4" class="card-style" title="Project Wizard">
             <b-card-text>
                 <?php
                 require_once("project_creation/user_form.php");
                 ?>
             </b-card-text>
             <b-button class="float-left" variant="danger" @click="onClickBack">Back to IRB</b-button>
-            <b-button class="float-right" variant="primary" @click="onClickNext(4)">Skip</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext(5)">Skip</b-button>
         </b-card>
-        <b-card v-if="current_step==4" class="card-style" title="Project Wizard">
+        <b-card v-if="current_step==5" class="card-style" title="Project Wizard">
             <b-card-text>
                 <?php
                 require_once("project_creation/project_form.php");
@@ -134,9 +143,8 @@
         </b-card>
     </b-overlay>
     <template #modal-footer="{ ok, cancel, hide }">
-
         <b-button :disabled='isDisabled' variant="danger" @click="cancel()">
-            Cancel
+            Close
         </b-button>
     </template>
 </b-modal>

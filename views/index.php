@@ -200,7 +200,7 @@ try {
             data() {
                 return {
                     PROD: 1,
-                    max_step: 4,
+                    max_step: 5,
                     irb: {},
                     irb_num: null,
                     disable_overlay: false,
@@ -522,6 +522,12 @@ try {
                         this.isDisabled = false
                         this.alertMessage = err.response.data.message
                     });
+                },
+                selectProject: function (project) {
+                    console.log(project)
+                    if(project.id === 'new'){
+                        this.onClickNext()
+                    }
                 },
                 selectUser: function (user) {
                     axios.post(this.projectPortalGetUserProjects, {'suid': user.suid})
