@@ -134,13 +134,22 @@ try {
                         is R2P2?</a> Contact us with a Support Ticket below.</i>
                 <!--                </b-alert>-->
             </div>
-
             <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
                 <div class="mt-3">
                     <b-tabs content-class="" :value="activeTabIndex">
-                        <b-tab title="R2P2">
+                        <b-tab title="R2P2 Linkage">
                             <?php
                             require("tabs/portal_linkage.php");
+                            ?>
+                        </b-tab>
+                        <b-tab :title-item-class="displayRMATab" title="REDCap Maintenance Agreement(RMA)">
+                            <template #title>
+                                REDCap Maintenance Agreement(RMA)
+
+                                <b-icon :icon="rmaTABIcon" :variant="rmaTABIconVariant"></b-icon>
+                            </template>
+                            <?php
+                            require("tabs/redcap_maintenance_agreement.php");
                             ?>
                         </b-tab>
                         <b-tab title="Support Tickets">
@@ -195,6 +204,15 @@ try {
                 },
                 progress: function () {
                     return Math.round(100 / this.max_step) * this.current_step;
+                },
+                displayRMATab: function () {
+                    return this.show_rma_tab ? '' : 'd-none';
+                },
+                rmaTABIconVariant: function () {
+                    return this.determineREDCapStep() !== 4 ? 'danger' : 'success'
+                },
+                rmaTABIcon: function () {
+                    return this.determineREDCapStep() !== 4 ? 'exclamation-circle-fill' : 'check-circle-fill'
                 }
             },
             data() {
@@ -204,6 +222,8 @@ try {
                     irb: {},
                     irb_num: null,
                     disable_overlay: false,
+                    show_rma_tab: false,
+                    show_rma_tab_badge: true,
                     search_term: null,
                     selected_user: [],
                     search_users: [],
@@ -483,8 +503,7 @@ try {
                     if (Object.keys(this.irb).length !== 0) {
                         this.ticket['irb_number'] = this.irb.protocol_number
                     }
-                    console.log(this.irb)
-                    console.log(this.ticket)
+
                     axios.post(this.projectPortalCreateProject, this.ticket).then(response => {
                         this.ticket.project_portal_id = response.data
                         this.$refs['project-creation-modal'].hide()
@@ -525,7 +544,7 @@ try {
                 },
                 selectProject: function (project) {
                     console.log(project)
-                    if(project.id === 'new'){
+                    if (project.id === 'new') {
                         this.onClickNext()
                     }
                 },
@@ -965,8 +984,8 @@ try {
                             }
 
                         }).then(response => {
-                        // when RMA is loaded then load line items for it.
-                        //this.getRMALineItems()
+                        //when RMA is loaded then load line items for it.
+                        this.show_rma_tab = true;
                     }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
