@@ -226,6 +226,7 @@ try {
                     registered_pta: <?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? json_encode($module->getPortal()->getProjectFinancesRecords()) : [] ?>,
                     sow_approval: {
                         'pta_number': '',
+                        'is_rma': false,
                         'registered_pta': '',
                         'reviewer_name': '',
                         'comment': '',
@@ -555,7 +556,6 @@ try {
                     });
                 },
                 selectPTA: function (pta) {
-                    console.log(pta)
                     this.disable_new_pta_input = true
                     this.sow_approval.registered_pta = pta.id
 
@@ -564,7 +564,13 @@ try {
                     axios.post(this.projectPortalApproveSOW, this.sow_approval)
                         .then(response => {
                             this.$refs['approve-sow-modal'].hide()
-                            this.getSignedAuth()
+                            if (this.sow_approval.is_rma === true) {
+                                this.getSignedAuth()
+                            } else {
+                                this.showDismissibleAlert = true
+                                this.resultModalTitle = 'Service Block'
+                                this.$refs['result-modal'].show()
+                            }
                         }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -851,11 +857,14 @@ try {
                     axios.post(this.ajaxCreateServiceBlockURL, this.selectedServiceBlock)
                         .then(response => {
                             this.$refs['service-block-modal'].hide()
-                            this.$refs['result-modal'].show()
+                            this.sow_approval.sow_id = response.data.id
+                            this.sow_approval.is_rma = false
+                            this.sow_approval.sow_title = 'Approve SOW: ' + response.data.title
+                            this.$refs['approve-sow-modal'].show()
                             this.variant = 'success'
-                            this.showDismissibleAlert = true
                             this.alertMessage = response.data.message
                             this.bodyMessage = response.data.message
+
                         }).catch(err => {
                         this.variant = 'danger'
                         this.isDisabled = false
@@ -956,6 +965,7 @@ try {
                     }).then(response => {
                         // give user the chance to approve their SOW
                         this.sow_approval.sow_id = this.portalREDCapMaintenanceAgreement.id
+                        this.sow_approval.is_rma = true
                         this.sow_approval.sow_title = 'Approve SOW: ' + this.portalREDCapMaintenanceAgreement.title
                         this.$refs['approve-sow-modal'].show()
                     }).catch(err => {
