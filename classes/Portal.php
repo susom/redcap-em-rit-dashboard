@@ -48,6 +48,8 @@ class Portal
 
     const ADMIN_GROUP_ID = 3;
 
+    const APPROVED_PENDING_DEVELOPMENT = 2;
+
     /**
      * User constructor.
      * @param \Stanford\ProjectPortal\Client $client
@@ -179,6 +181,23 @@ class Portal
         }
     }
 
+    public function getProjectFinancesRecords()
+    {
+        $jwt = $this->getClient()->getJwtToken();
+        $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/projects/' . $this->projectPortalSavedConfig['portal_project_id'] . '/finances/', [
+            'debug' => false,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            $result = json_decode($response->getBody(), true);
+            return $result['finances'];
+        } else {
+            throw new \Exception("could not pull finances records for R2P2 pid " . $this->projectPortalSavedConfig['portal_project_id']);
+        }
+    }
+
     /**
      * @param int $portalProjectId
      * @param int $redcapProjectId
@@ -266,6 +285,31 @@ class Portal
 
     }
 
+    public function approveSOW($approval, $sowId)
+    {
+
+        if (!$approval) {
+            return [];
+        }
+        // manually set status
+        $approval['status'] = self::APPROVED_PENDING_DEVELOPMENT;
+        $jwt = $this->getClient()->getJwtToken();
+        $r2p2ProjectId = $this->projectPortalSavedConfig['portal_project_id'];
+        $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . "api/projects/$r2p2ProjectId/sow/$sowId/approve/", [
+            'debug' => false,
+            'form_params' => $approval,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new \Exception("could not get REDCap signed auth from portal.");
+        }
+
+    }
+
     public function searchUsers($term)
     {
         try {
@@ -327,7 +371,7 @@ class Portal
             'debug' => false,
             'form_params' => [
                 'on_behalf_of_email' => $user['user_email'],
-                'on_behalf_of_username' => $user['user_username'],
+                'on_behalf_of_username' => $user['username'],
                 'on_behalf_of_first_name' => $user['user_firstname'],
                 'on_behalf_of_last_name' => $user['user_lastname'],
             ],

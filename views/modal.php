@@ -158,4 +158,78 @@
         </b-button>
     </template>
 </b-modal>
+
+<b-modal ref="approve-sow-modal" size="lg" id="approve-sow-modal" :title="sow_approval.sow_title">
+    <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
+        <b-row>
+            <b-col>
+                {{notifications.approve_sow_instructions}}
+            </b-col>
+        </b-row>
+        <b-alert
+                :variant="variant"
+                dismissible
+                fade
+                :show="showDismissibleAlert">
+            <b class="row" v-html="alertMessage"></b>
+        </b-alert>
+        <b-card class="card-style mb-3" bg-variant="light">
+            <b-card-text>
+
+                <b-row>
+                    <b-col lg="12">
+                        <label for="sow_approval.pta_number">Registered PTAs <span style="color: red">*</span></label>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col lg="12">
+                        <v-select class="col-8 nopadding"
+                                  :options="registered_pta"
+                                  label="pta_charge_number" @input="selectPTA">
+                        </v-select>
+                    </b-col>
+                </b-row>
+
+                <hr>
+                <b-form-group class="mb-3"
+                >
+                    <label for="sow_approval.pta_number">New PTA <span style="color: red">*</span></label>
+                    <b-input-group class="mb-2">
+                        <b-form-input :disabled="disable_new_pta_input !== false" id="sow_approval.pta_number"
+                                      v-model="sow_approval.pta_number"
+                                      type="text"></b-form-input>
+                    </b-input-group>
+                </b-form-group>
+            </b-card-text>
+
+        </b-card>
+        <b-form-group
+                class="mb-3"
+        >
+            <label for="sow_approval.reviewer_name">Please enter your full name here for verification <span
+                        style="color: red">*</span></label>
+            <b-input-group class="mb-2">
+                <b-form-input id="sow_approval.reviewer_name" v-model="sow_approval.reviewer_name"
+                              type="text"></b-form-input>
+            </b-input-group>
+        </b-form-group>
+
+        <b-form-group
+                label="Comment (optional)"
+                label-for="project_description"
+                class="mb-3"
+        >
+            <b-input-group class="mb-2">
+                <b-form-textarea id="sow_approval.comment" v-model="sow_approval.comment"
+                                 type="text"></b-form-textarea>
+            </b-input-group>
+        </b-form-group>
+    </b-overlay>
+    <template #modal-footer="{ ok, cancel, hide }">
+        <b-button :disabled='isDisabled' variant="success" @click="approveSOW()">
+            Approve
+        </b-button>
+    </template>
+
+</b-modal>
 <!-- END Time Slots Modal -->
