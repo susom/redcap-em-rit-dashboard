@@ -221,6 +221,7 @@ try {
                     max_step: 5,
                     irb: {},
                     irb_num: null,
+                    redcap_irb_num: <?php echo $module->getProject()->project['project_irb_number'] ?: null ?>,
                     selected_pta_number: '',
                     requires_pta: false,
                     disable_new_pta_input: false,
@@ -619,7 +620,20 @@ try {
                 selectProject: function (project) {
                     console.log(project)
                     if (project.id === 'new') {
-                        this.onClickNext()
+                        if (this.redcap_irb_num != null) {
+
+                            // set irb to be searched
+                            this.irb_num = this.redcap_irb_num
+
+                            // search r2p2 for saved irb
+                            this.searchIRB()
+
+                            // go to search IRB step
+                            this.onClickNext(3)
+                        } else {
+                            this.onClickNext()
+                        }
+
                     }
                 },
                 selectUser: function (user) {
