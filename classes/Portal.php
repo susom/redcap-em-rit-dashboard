@@ -183,6 +183,9 @@ class Portal
 
     public function getProjectFinancesRecords()
     {
+        if (!$this->projectPortalSavedConfig['portal_project_id']) {
+            throw new \Exception('No Linked R2P2 Project found');
+        }
         $jwt = $this->getClient()->getJwtToken();
         $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/projects/' . $this->projectPortalSavedConfig['portal_project_id'] . '/finances/', [
             'debug' => false,
@@ -192,6 +195,8 @@ class Portal
         ]);
         if ($response->getStatusCode() < 300) {
             $result = json_decode($response->getBody(), true);
+            $result['finances'][] = array('id' => 'new', 'pta_charge_number' => '**Create New PTA**');
+
             return $result['finances'];
         } else {
             throw new \Exception("could not pull finances records for R2P2 pid " . $this->projectPortalSavedConfig['portal_project_id']);
@@ -298,6 +303,29 @@ class Portal
         $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . "api/projects/$r2p2ProjectId/sow/$sowId/approve/", [
             'debug' => false,
             'form_params' => $approval,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new \Exception("could not get REDCap signed auth from portal.");
+        }
+
+    }
+
+    public function createNewPTA($finance)
+    {
+
+        if (!$finance) {
+            return [];
+        }
+        $jwt = $this->getClient()->getJwtToken();
+        $r2p2ProjectId = $this->projectPortalSavedConfig['portal_project_id'];
+        $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . "api/projects/$r2p2ProjectId/add-finance/", [
+            'debug' => false,
+            'form_params' => $finance,
             'headers' => [
                 'Authorization' => "Bearer {$jwt}",
             ]

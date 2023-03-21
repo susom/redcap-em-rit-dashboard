@@ -17,20 +17,19 @@ try {
         $approval['registered_pta'] = htmlentities($body['registered_pta']);
     }
 
+    if (!$approval['pta_number'] && !$approval['registered_pta']) {
+        throw new \Exception('PTA is missing. Please select or create a new one.');
+    }
+
     $approval['signature'] = htmlentities($body['reviewer_name']) ?: '';
     $approval['comment'] = htmlentities($body['comment']) ?: '';
-    $user = $module->framework->getUser();
-    $username = $user->getUsername();
-    $user = ExternalModules::getUserInfo($username);
-    $approval['on_behalf_of_email'] = $user['user_email'];
-    $approval['on_behalf_of_username'] = $user['username'];
-    $approval['on_behalf_of_first_name'] = $user['user_firstname'];
-    $approval['on_behalf_of_last_name'] = $user['user_lastname'];
+    $approval = $module->prepareOnBehalfUser($approval);
     $sowId = htmlentities($body['sow_id']);
 
     if (!$approval['signature']) {
         throw new \Exception('Reviewer Name is missing');
     }
+
 
     $data = $module->getPortal()->approveSOW($approval, $sowId);
     if (!empty($data)) {

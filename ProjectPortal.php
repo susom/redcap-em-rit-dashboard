@@ -760,4 +760,15 @@ class ProjectPortal extends AbstractExternalModule
     }
 
 
+    public function prepareOnBehalfUser($array)
+    {
+        $user = $this->framework->getUser();
+        $username = $user->getUsername();
+        $user = ExternalModules::getUserInfo($username);
+        $array['on_behalf_of_email'] = $user['user_email'];
+        $array['on_behalf_of_username'] = $user['username'];
+        $array['on_behalf_of_first_name'] = $user['user_firstname'];
+        $array['on_behalf_of_last_name'] = $user['user_lastname'];
+        return $array;
+    }
 }

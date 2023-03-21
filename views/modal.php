@@ -105,7 +105,7 @@
             </b-card-text>
             <b-row>
                 <b-col class="d-flex justify-content-center">
-                    <b-button class="float-right" variant="primary" @click="onClickNext(1)">Yes - I know my IRB #
+                    <b-button class="float-right" variant="primary" @click="onClickNext(3)">Yes - I know my IRB #
                     </b-button>
                 </b-col>
                 <b-col class="d-flex justify-content-center">
@@ -161,11 +161,7 @@
 
 <b-modal ref="approve-sow-modal" size="lg" id="approve-sow-modal" :title="sow_approval.sow_title">
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
-        <b-row>
-            <b-col>
-                {{notifications.approve_sow_instructions}}
-            </b-col>
-        </b-row>
+
         <b-alert
                 :variant="variant"
                 dismissible
@@ -173,36 +169,25 @@
                 :show="showDismissibleAlert">
             <b class="row" v-html="alertMessage"></b>
         </b-alert>
-        <b-card class="card-style mb-3" bg-variant="light">
-            <b-card-text>
-
-                <b-row>
-                    <b-col lg="12">
-                        <label for="sow_approval.pta_number">Registered PTAs <span style="color: red">*</span></label>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col lg="12">
-                        <v-select class="col-8 nopadding"
-                                  :options="registered_pta"
-                                  label="pta_charge_number" @input="selectPTA">
-                        </v-select>
-                    </b-col>
-                </b-row>
-
-                <hr>
-                <b-form-group class="mb-3"
-                >
-                    <label for="sow_approval.pta_number">New PTA <span style="color: red">*</span></label>
-                    <b-input-group class="mb-2">
-                        <b-form-input :disabled="disable_new_pta_input !== false" id="sow_approval.pta_number"
-                                      v-model="sow_approval.pta_number"
-                                      type="text"></b-form-input>
-                    </b-input-group>
-                </b-form-group>
-            </b-card-text>
-
-        </b-card>
+        <b-row>
+            <b-col>
+                {{notifications.approve_sow_instructions}}
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col lg="12">
+                <label for="sow_approval.pta_number">Registered PTAs <span style="color: red">*</span></label>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col lg="12">
+                <v-select class="col-8 nopadding"
+                          v-model="selected_pta_number"
+                          :options="registered_pta"
+                          label="pta_charge_number" @input="selectPTA">
+                </v-select>
+            </b-col>
+        </b-row>
         <b-form-group
                 class="mb-3"
         >
@@ -226,10 +211,39 @@
         </b-form-group>
     </b-overlay>
     <template #modal-footer="{ ok, cancel, hide }">
-        <b-button :disabled='isDisabled' variant="success" @click="approveSOW()">
+        <b-button :disabled='isDisabled' class="float-left" variant="danger"
+                  @click="openModal('result-modal');closeModal('approve-sow-modal')">Later
+        </b-button>
+        <b-button :disabled='isDisabled' class="float-right" variant="success" @click="approveSOW()">
             Approve
         </b-button>
     </template>
 
+</b-modal>
+
+<b-modal ref="create-pta-modal" size="lg" id="create-pta-modal" title="Create New PTA">
+    <b-alert
+            :variant="variant"
+            dismissible
+            fade
+            :show="showDismissibleAlert">
+        <b class="row" v-html="alertMessage"></b>
+    </b-alert>
+    <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
+        <b-form-group class="mb-3">
+            <label for="pta_number">PTA Number <span style="color: red">*</span></label>
+            <b-input-group class="mb-2">
+                <b-form-input id="pta_number"
+                              v-model="pta.pta_number"
+                              type="text"></b-form-input>
+            </b-input-group>
+        </b-form-group>
+
+    </b-overlay>
+    <template #modal-footer="{ ok, cancel, hide }">
+        <b-button :disabled='isDisabled' variant="success" @click="createNewPTA()">
+            Submit
+        </b-button>
+    </template>
 </b-modal>
 <!-- END Time Slots Modal -->
