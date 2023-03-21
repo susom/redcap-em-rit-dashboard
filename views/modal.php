@@ -91,39 +91,48 @@
         <b-card v-if="current_step==1" class="card-style" title="Project Wizard">
             <b-card-text>
                 <?php
+                require_once("project_creation/project_search.php");
+                ?>
+            </b-card-text>
+
+
+        </b-card>
+        <b-card v-if="current_step==2" class="card-style" title="Project Wizard">
+            <b-card-text>
+                <?php
                 require_once("project_creation/start.php");
                 ?>
             </b-card-text>
             <b-row>
                 <b-col class="d-flex justify-content-center">
-                    <b-button class="float-right" variant="primary" @click="onClickNext(2)">Yes - I know my IRB #
+                    <b-button class="float-right" variant="primary" @click="onClickNext(3)">Yes - I know my IRB #
                     </b-button>
                 </b-col>
                 <b-col class="d-flex justify-content-center">
-                    <b-button class="float-right" variant="primary" @click="onClickNext(3)">No</b-button>
+                    <b-button class="float-right" variant="primary" @click="onClickNext(4)">No</b-button>
                 </b-col>
             </b-row>
 
         </b-card>
-        <b-card v-if="current_step==2" class="card-style" title="Project Wizard">
+        <b-card v-if="current_step==3" class="card-style" title="Project Wizard">
             <b-card-text>
                 <?php
                 require_once("project_creation/irb_form.php");
                 ?>
             </b-card-text>
             <b-button class="float-left" variant="danger" @click="onClickBack">Back</b-button>
-            <b-button class="float-right" variant="primary" @click="onClickNext(3);irb={}">Skip</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext(4);irb={}">Skip</b-button>
         </b-card>
-        <b-card v-if="current_step==3" class="card-style" title="Project Wizard">
+        <b-card v-if="current_step==4" class="card-style" title="Project Wizard">
             <b-card-text>
                 <?php
                 require_once("project_creation/user_form.php");
                 ?>
             </b-card-text>
             <b-button class="float-left" variant="danger" @click="onClickBack">Back to IRB</b-button>
-            <b-button class="float-right" variant="primary" @click="onClickNext(4)">Skip</b-button>
+            <b-button class="float-right" variant="primary" @click="onClickNext(5)">Skip</b-button>
         </b-card>
-        <b-card v-if="current_step==4" class="card-style" title="Project Wizard">
+        <b-card v-if="current_step==5" class="card-style" title="Project Wizard">
             <b-card-text>
                 <?php
                 require_once("project_creation/project_form.php");
@@ -134,9 +143,8 @@
         </b-card>
     </b-overlay>
     <template #modal-footer="{ ok, cancel, hide }">
-
         <b-button :disabled='isDisabled' variant="danger" @click="cancel()">
-            Cancel
+            Close
         </b-button>
     </template>
 </b-modal>
@@ -147,6 +155,94 @@
     <template #modal-footer="{ ok, cancel, hide }">
         <b-button :disabled='isDisabled' variant="secondary" @click="cancel()">
             Close
+        </b-button>
+    </template>
+</b-modal>
+
+<b-modal ref="approve-sow-modal" size="lg" id="approve-sow-modal" :title="sow_approval.sow_title">
+    <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
+
+        <b-alert
+                :variant="variant"
+                dismissible
+                fade
+                :show="showDismissibleAlert">
+            <b class="row" v-html="alertMessage"></b>
+        </b-alert>
+        <b-row>
+            <b-col>
+                {{notifications.approve_sow_instructions}}
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col lg="12">
+                <label for="sow_approval.pta_number">Registered PTAs <span style="color: red">*</span></label>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col lg="12">
+                <v-select class="col-8 nopadding"
+                          v-model="selected_pta_number"
+                          :options="registered_pta"
+                          label="pta_charge_number" @input="selectPTA">
+                </v-select>
+            </b-col>
+        </b-row>
+        <b-form-group
+                class="mb-3"
+        >
+            <label for="sow_approval.reviewer_name">Please enter your full name here for verification <span
+                        style="color: red">*</span></label>
+            <b-input-group class="mb-2">
+                <b-form-input id="sow_approval.reviewer_name" v-model="sow_approval.reviewer_name"
+                              type="text"></b-form-input>
+            </b-input-group>
+        </b-form-group>
+
+        <b-form-group
+                label="Comment (optional)"
+                label-for="project_description"
+                class="mb-3"
+        >
+            <b-input-group class="mb-2">
+                <b-form-textarea id="sow_approval.comment" v-model="sow_approval.comment"
+                                 type="text"></b-form-textarea>
+            </b-input-group>
+        </b-form-group>
+    </b-overlay>
+    <template #modal-footer="{ ok, cancel, hide }">
+        <b-button :disabled='isDisabled' class="float-left" variant="danger"
+                  @click="openModal('result-modal');closeModal('approve-sow-modal')">Later
+        </b-button>
+        <b-button :disabled='isDisabled' class="float-right" variant="success" @click="approveSOW()">
+            Approve
+        </b-button>
+    </template>
+
+</b-modal>
+
+<b-modal ref="create-pta-modal" size="lg" id="create-pta-modal" title="Create New PTA">
+    <b-alert
+            :variant="variant"
+            dismissible
+            fade
+            :show="showDismissibleAlert">
+        <b class="row" v-html="alertMessage"></b>
+    </b-alert>
+    <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
+        <b-form-group class="mb-3">
+            <label for="pta_number">PTA Number <span style="color: red">*</span></label>
+            <b-input-group class="mb-2">
+                <b-form-input id="pta_number"
+                              v-model="pta.pta_number"
+                              type="text"></b-form-input>
+            </b-input-group>
+        </b-form-group>
+
+    </b-overlay>
+    <template #modal-footer="{ ok, cancel, hide }">
+        <b-button :disabled='isDisabled' variant="success" @click="createNewPTA()">
+            Submit
         </b-button>
     </template>
 </b-modal>

@@ -134,13 +134,22 @@ try {
                         is R2P2?</a> Contact us with a Support Ticket below.</i>
                 <!--                </b-alert>-->
             </div>
-
             <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
                 <div class="mt-3">
                     <b-tabs content-class="" :value="activeTabIndex">
-                        <b-tab title="R2P2">
+                        <b-tab title="R2P2 Linkage">
                             <?php
                             require("tabs/portal_linkage.php");
+                            ?>
+                        </b-tab>
+                        <b-tab :title-item-class="displayRMATab" title="REDCap Maintenance Agreement(RMA)">
+                            <template #title>
+                                REDCap Maintenance Agreement(RMA)
+
+                                <b-icon :icon="rmaTABIcon" :variant="rmaTABIconVariant"></b-icon>
+                            </template>
+                            <?php
+                            require("tabs/redcap_maintenance_agreement.php");
                             ?>
                         </b-tab>
                         <b-tab title="Support Tickets">
@@ -195,15 +204,43 @@ try {
                 },
                 progress: function () {
                     return Math.round(100 / this.max_step) * this.current_step;
+                },
+                displayRMATab: function () {
+                    return this.show_rma_tab ? '' : 'd-none';
+                },
+                rmaTABIconVariant: function () {
+                    return this.determineREDCapStep() !== 4 ? 'danger' : 'success'
+                },
+                rmaTABIcon: function () {
+                    return this.determineREDCapStep() !== 4 ? 'exclamation-circle-fill' : 'check-circle-fill'
                 }
             },
             data() {
                 return {
                     PROD: 1,
-                    max_step: 4,
+                    max_step: 5,
                     irb: {},
                     irb_num: null,
+                    redcap_irb_num: <?php echo $module->getProject()->project['project_irb_number'] ?: null ?>,
+                    selected_pta_number: '',
+                    requires_pta: false,
+                    disable_new_pta_input: false,
+                    registered_pta: <?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? json_encode($module->getPortal()->getProjectFinancesRecords()) : [] ?>,
+                    sow_approval: {
+                        'pta_number': '',
+                        'is_rma': false,
+                        'registered_pta': '',
+                        'reviewer_name': '',
+                        'comment': '',
+                        'sow_id': '',
+                        'sow_title': ''
+                    },
+                    pta: {
+                        'pta_number': ''
+                    },
                     disable_overlay: false,
+                    show_rma_tab: false,
+                    show_rma_tab_badge: true,
                     search_term: null,
                     selected_user: [],
                     search_users: [],
@@ -414,6 +451,8 @@ try {
                     projectPortalSearchIRB: "<?php echo $module->getURL('ajax/portal/search_irb.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalRequestAccess: "<?php echo $module->getURL('ajax/portal/request_access.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSearchUsers: "<?php echo $module->getURL('ajax/portal/search_users.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalApproveSOW: "<?php echo $module->getURL('ajax/portal/approve_sow.php', false, true) . '&pid=' . $module->getProjectId() ?>",
+                    projectPortalcreateNewPTA: "<?php echo $module->getURL('ajax/portal/new_pta.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalCreateProject: "<?php echo $module->getURL('ajax/portal/create_project.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalGetUserProjects: "<?php echo $module->getURL('ajax/portal/get_user_projects.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalRMALineItems: "<?php echo $module->getURL('ajax/portal/get_line_items.php', false, true) . '&pid=' . $module->getProjectId() ?>",
@@ -483,11 +522,10 @@ try {
                     if (Object.keys(this.irb).length !== 0) {
                         this.ticket['irb_number'] = this.irb.protocol_number
                     }
-                    console.log(this.irb)
-                    console.log(this.ticket)
+
                     axios.post(this.projectPortalCreateProject, this.ticket).then(response => {
                         this.ticket.project_portal_id = response.data
-                        this.$refs['project-creation-modal'].hide()
+                        this.closeModal('project-creation-modal')
                         this.attachRedCapProject()
                     }).catch(err => {
                         this.variant = 'danger'
@@ -522,6 +560,81 @@ try {
                         this.isDisabled = false
                         this.alertMessage = err.response.data.message
                     });
+                },
+                selectPTA: function (pta) {
+                    if (pta.id === 'new') {
+                        this.openModal('create-pta-modal')
+                    } else {
+                        this.disable_new_pta_input = true
+                        this.sow_approval.registered_pta = pta.id
+                    }
+
+                },
+                createNewPTA: function () {
+                    axios.post(this.projectPortalcreateNewPTA, this.pta)
+                        .then(response => {
+                            console.log(response.data)
+                            // set newly created pta number as selected
+                            this.selected_pta_number = this.pta.pta_number
+                            this.sow_approval.registered_pta = response.data.id
+
+
+                            this.registered_pta = response.data.finances
+                            this.openModal('approve-sow-modal')
+                            this.closeModal('create-pta-modal')
+
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                        this.disable_overlay = false
+                    });
+                },
+                approveSOW: function () {
+                    axios.post(this.projectPortalApproveSOW, this.sow_approval)
+                        .then(response => {
+                            this.closeModal('approve-sow-modal')
+                            if (this.sow_approval.is_rma === true) {
+                                this.getSignedAuth()
+                            } else {
+                                this.showDismissibleAlert = true
+                                //this.resultModalTitle = 'Service Block'
+                                //this.$refs['result-modal'].show()
+                            }
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                        loading(false)
+                        this.disable_overlay = false
+                    });
+                },
+                openModal: function (name) {
+                    this.$refs[name].show()
+                },
+                closeModal: function (name) {
+                    this.$refs[name].hide()
+                },
+                selectProject: function (project) {
+                    console.log(project)
+                    if (project.id === 'new') {
+                        if (this.redcap_irb_num != null) {
+
+                            // set irb to be searched
+                            this.irb_num = this.redcap_irb_num
+
+                            // search r2p2 for saved irb
+                            this.searchIRB()
+
+                            // go to search IRB step
+                            this.onClickNext(3)
+                        } else {
+                            this.onClickNext()
+                        }
+
+                    }
                 },
                 selectUser: function (user) {
                     axios.post(this.projectPortalGetUserProjects, {'suid': user.suid})
@@ -696,7 +809,7 @@ try {
                     const urlSearchParams = new URLSearchParams(window.location.search);
                     const params = Object.fromEntries(urlSearchParams.entries());
                     if (params['open-support-modal'] != undefined && params['open-support-modal'] == 'true') {
-                        this.$refs['generic-modal'].show()
+                        this.openModal('generic-modal')
                     }
                 },
                 manupilateProjectInfo: function () {
@@ -773,8 +886,8 @@ try {
                     axios.post(this.ajaxCreateJiraTicketURL, this.ticket)
                         .then(response => {
                             this.getUserTickets()
-                            this.$refs['generic-modal'].hide()
-                            this.$refs['result-modal'].show()
+                            this.closeModal('generic-modal')
+                            this.openModal('result-modal')
                             this.variant = 'success'
                             this.showDismissibleAlert = true
                             this.alertMessage = response.data.message
@@ -790,12 +903,15 @@ try {
                 submitServiceBlock: function () {
                     axios.post(this.ajaxCreateServiceBlockURL, this.selectedServiceBlock)
                         .then(response => {
-                            this.$refs['service-block-modal'].hide()
-                            this.$refs['result-modal'].show()
+                            this.closeModal('service-block-modal')
+                            this.sow_approval.sow_id = response.data.id
+                            this.sow_approval.is_rma = false
+                            this.sow_approval.sow_title = 'Approve SOW: ' + response.data.title
+                            this.openModal('approve-sow-modal')
                             this.variant = 'success'
-                            this.showDismissibleAlert = true
                             this.alertMessage = response.data.message
                             this.bodyMessage = response.data.message
+
                         }).catch(err => {
                         this.variant = 'danger'
                         this.isDisabled = false
@@ -890,8 +1006,15 @@ try {
                             //this will update em list in case the list changed during RMA genertion.
                             this.items_em = response.data.ems
                             this.calculateTotalFees()
+
                         }).then(response => {
                         this.determineREDCapStep()
+                    }).then(response => {
+                        // give user the chance to approve their SOW
+                        this.sow_approval.sow_id = this.portalREDCapMaintenanceAgreement.id
+                        this.sow_approval.is_rma = true
+                        this.sow_approval.sow_title = 'Approve SOW: ' + this.portalREDCapMaintenanceAgreement.title
+                        this.openModal('approve-sow-modal')
                     }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -959,8 +1082,8 @@ try {
                             }
 
                         }).then(response => {
-                        // when RMA is loaded then load line items for it.
-                        //this.getRMALineItems()
+                        //when RMA is loaded then load line items for it.
+                        this.show_rma_tab = true;
                     }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true

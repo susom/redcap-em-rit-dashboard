@@ -10,14 +10,20 @@ use GuzzleHttp\Exception\GuzzleException;
 
 try {
     $body = json_decode(file_get_contents('php://input'), true);
-    $r2p2Id = filter_var($body['r2p2_project_id'], FILTER_SANITIZE_NUMBER_INT);
-    $user = $module->prepareOnBehalfUser([]);
-    $data = $module->getPortal()->requstProjectAccess($r2p2Id, $user);
-    if (!empty($data)) {
+    $pta['pta_charge_number'] = $body['pta_number'];
+    $pta = $module->prepareOnBehalfUser($pta);
 
-        echo json_encode(array_merge($data, array('status' => 'success', 'data' => $data)));
+
+    if (!$pta['pta_charge_number']) {
+        throw new \Exception('PTA number is missing');
+    }
+
+    $data = $module->getPortal()->createNewPTA($pta);
+    if (!empty($data)) {
+        $fiances = $module->getPortal()->getProjectFinancesRecords();
+        echo json_encode(array_merge($data, array('status' => 'success', 'finances' => $fiances)));
     } else {
-        echo json_encode(array('status' => 'error', 'data' => $data));
+        echo json_encode(array('status' => 'empty'));
     }
 } catch (\LogicException $e) {
     header("Content-type: application/json");

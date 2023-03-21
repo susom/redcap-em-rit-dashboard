@@ -33,7 +33,7 @@ try {
     $work_items = array(array('total_amount' => $sprintBlock['price'], 'description' => $description, 'text' => $sprintBlock['text']));
     $data = $module->getPortal()->generateR2P2SOW($portalProjectId, $module->getProjectId(), $work_items);
 
-    echo json_encode(array_merge($data, array('status' => 'success', 'message' => 'New Service Block Statement of Work was created in R2P2. Please click this &nbsp;<a target="_blank" href="' . $module->getPortal()->projectPortalSavedConfig['portal_project_url'] . '/sow?id=' . $data['id'] . '"><strong>link</strong></a>&nbsp; and Approve the Statement of Work.')));
+    echo json_encode(array_merge($data, array('status' => 'success', 'message' => 'New Service Block Statement of Work was created in R2P2. Please click this &nbsp;<a target="_blank" href="' . $module->getPortal()->projectPortalSavedConfig['portal_project_url'] . '/sow?id=' . $data['id'] . '"><strong>link</strong></a>&nbsp;')));
 } catch (\LogicException $e) {
     header("Content-type: application/json");
     http_response_code(404);
