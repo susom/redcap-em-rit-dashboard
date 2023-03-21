@@ -221,7 +221,7 @@ try {
                     max_step: 5,
                     irb: {},
                     irb_num: null,
-                    redcap_irb_num: <?php echo !is_null($module->getProject()->project['project_irb_number']) ? $module->getProject()->project['project_irb_number'] : '' ?>,
+                    redcap_irb_num: <?php echo $module->getProject()->project['project_irb_number'] ?: '""' ?>,
                     selected_pta_number: '',
                     requires_pta: false,
                     disable_new_pta_input: false,
