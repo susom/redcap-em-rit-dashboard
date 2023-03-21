@@ -620,7 +620,7 @@ try {
                 selectProject: function (project) {
                     console.log(project)
                     if (project.id === 'new') {
-                        if (this.redcap_irb_num != null) {
+                        if (this.redcap_irb_num != '') {
 
                             // set irb to be searched
                             this.irb_num = this.redcap_irb_num
