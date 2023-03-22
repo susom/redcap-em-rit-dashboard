@@ -1068,6 +1068,8 @@ try {
                         .then(response => {
                             if (response.data.status == 'success') {
                                 this.portalREDCapMaintenanceAgreement = response.data;
+                                // set sow_id in casae we want to approve SOW.
+                                this.sow_approval.sow_id = this.portalREDCapMaintenanceAgreement.id
                                 this.setProjectState(response.data.state)
                                 if (this.determineREDCapStep() === 1) {
                                     this.setPortalLinkageAlertMessage("warning", this.notifications.get_rma_step_1, true)
