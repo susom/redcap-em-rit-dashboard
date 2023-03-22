@@ -36,6 +36,7 @@ class Portal
 
     private $rmaId;
 
+    const NEW_PTA = array('id' => 'new', 'pta_charge_number' => '**Create New PTA**');
     /**
      * @var array[]
      */
@@ -195,7 +196,7 @@ class Portal
         ]);
         if ($response->getStatusCode() < 300) {
             $result = json_decode($response->getBody(), true);
-            $result['finances'][] = array('id' => 'new', 'pta_charge_number' => '**Create New PTA**');
+            $result['finances'][] = self::NEW_PTA;
 
             return $result['finances'];
         } else {
@@ -300,6 +301,9 @@ class Portal
         $approval['status'] = self::APPROVED_PENDING_DEVELOPMENT;
         $jwt = $this->getClient()->getJwtToken();
         $r2p2ProjectId = $this->projectPortalSavedConfig['portal_project_id'];
+        if (!$r2p2ProjectId) {
+            throw new \Exception('This project is not Linked to R2P2 project.');
+        }
         $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . "api/projects/$r2p2ProjectId/sow/$sowId/approve/", [
             'debug' => false,
             'form_params' => $approval,
@@ -323,6 +327,9 @@ class Portal
         }
         $jwt = $this->getClient()->getJwtToken();
         $r2p2ProjectId = $this->projectPortalSavedConfig['portal_project_id'];
+        if (!$r2p2ProjectId) {
+            throw new \Exception('This project is not Linked to R2P2 project.');
+        }
         $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . "api/projects/$r2p2ProjectId/add-finance/", [
             'debug' => false,
             'form_params' => $finance,

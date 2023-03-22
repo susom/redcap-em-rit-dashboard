@@ -225,7 +225,7 @@ try {
                     selected_pta_number: '',
                     requires_pta: false,
                     disable_new_pta_input: false,
-                    registered_pta: <?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? json_encode($module->getPortal()->getProjectFinancesRecords()) : [] ?>,
+                    registered_pta: <?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? json_encode($module->getPortal()->getProjectFinancesRecords()) : json_encode([Portal::NEW_PTA]) ?>,
                     sow_approval: {
                         'pta_number': '',
                         'is_rma': false,
@@ -436,27 +436,9 @@ try {
                     ticket_types: <?php echo json_encode($module->getSupport()->getJiraIssueTypes()) ?>,
                     project_portal_id: "",
                     header: "<?php echo str_replace(array("\n", "\r", "\""), array("\\n", "\\r", ""), $module->getSystemSetting('rit-dashboard-main-header'));; ?>",
-                    ajaxCreateJiraTicketURL: "<?php echo $module->getUrl('ajax/support/create_jira_ticket.php') ?>",
-                    ajaxUserTicketURL: "<?php echo $module->getUrl('ajax/user/get_user_tickets.php', false, true) ?>",
-                    ajaxProjectEMstURL: "<?php echo $module->getUrl('ajax/entity/get_project_external_modules.php', false, true) ?>",
-                    ajaxGenerateSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/generate_rma.php', false, true) ?>",
-                    ajaxCreateServiceBlockURL: "<?php echo $module->getUrl('ajax/portal/generate_service_block.php', false, true) ?>",
-                    ajaxAppendSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/append_to_existing_ema.php', false, true) ?>",
-                    ajaxGetSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/get_rma.php', false, true) ?>",
-                    ajaxUpdateSignedAuthURL: "<?php echo $module->getUrl('ajax/portal/update_rma.php', false, true) ?>",
+                    ajax_urls: <?php echo json_encode($module->getAjaxFiles(__DIR__ . '/../ajax/', 'ajax')) ?>,
                     ajaxPortalProjectsListURL: "<?php echo $module->getUrl('ajax/user/get_user_r2p2_project_list.php', false, true) ?>",
-                    attachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_attach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    detachREDCapURL: "<?php echo $module->getURL('ajax/portal/project_detach.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     projectPortalSectionURL: "<?php echo $module->getURL('ajax/portal/project_setup.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    projectPortalSearchIRB: "<?php echo $module->getURL('ajax/portal/search_irb.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    projectPortalRequestAccess: "<?php echo $module->getURL('ajax/portal/request_access.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    projectPortalSearchUsers: "<?php echo $module->getURL('ajax/portal/search_users.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    projectPortalApproveSOW: "<?php echo $module->getURL('ajax/portal/approve_sow.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    projectPortalcreateNewPTA: "<?php echo $module->getURL('ajax/portal/new_pta.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    projectPortalCreateProject: "<?php echo $module->getURL('ajax/portal/create_project.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    projectPortalGetUserProjects: "<?php echo $module->getURL('ajax/portal/get_user_projects.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    projectPortalRMALineItems: "<?php echo $module->getURL('ajax/portal/get_line_items.php', false, true) . '&pid=' . $module->getProjectId() ?>",
-                    ajaxUpdateProjectEMUtil: "<?php echo $module->getURL('ajax/manager/update_project_em_util.php', false, true) . '&pid=' . $module->getProjectId() ?>",
                     portal_linkage_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header')); ?>",
                     tickets_header: '<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-ticket-tab-header')); ?>',
                     external_modules_header: "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-external-modules-tab-header')); ?>",
@@ -523,10 +505,11 @@ try {
                         this.ticket['irb_number'] = this.irb.protocol_number
                     }
 
-                    axios.post(this.projectPortalCreateProject, this.ticket).then(response => {
+                    axios.post(this.ajax_urls.create_project, this.ticket).then(response => {
                         this.ticket.project_portal_id = response.data
                         this.closeModal('project-creation-modal')
                         this.attachRedCapProject()
+
                     }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -536,8 +519,14 @@ try {
 
 
                 },
+                approveLater: function () {
+                    if (this.sow_approval.is_rma === false) {
+                        this.openModal('result-modal');
+                    }
+                    this.closeModal('approve-sow-modal')
+                },
                 searchIRB: function () {
-                    axios.post(this.projectPortalSearchIRB, {'irb_num': this.irb_num})
+                    axios.post(this.ajax_urls.search_irb, {'irb_num': this.irb_num})
                         .then(response => {
 
                             if (response.data.status == "empty") {
@@ -570,8 +559,18 @@ try {
                     }
 
                 },
+                getFinances: function () {
+                    axios.get(this.ajax_urls.get_finances)
+                        .then(response => {
+                            this.registered_pta = response.data.data
+                        }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.alertMessage = err.response.data.message
+                    });
+                },
                 createNewPTA: function () {
-                    axios.post(this.projectPortalcreateNewPTA, this.pta)
+                    axios.post(this.ajax_urls.new_pta, this.pta)
                         .then(response => {
                             console.log(response.data)
                             // set newly created pta number as selected
@@ -592,7 +591,7 @@ try {
                     });
                 },
                 approveSOW: function () {
-                    axios.post(this.projectPortalApproveSOW, this.sow_approval)
+                    axios.post(this.ajax_urls.approve_sow, this.sow_approval)
                         .then(response => {
                             this.closeModal('approve-sow-modal')
                             if (this.sow_approval.is_rma === true) {
@@ -637,7 +636,7 @@ try {
                     }
                 },
                 selectUser: function (user) {
-                    axios.post(this.projectPortalGetUserProjects, {'suid': user.suid})
+                    axios.post(this.ajax_urls.get_user_projects, {'suid': user.suid})
                         .then(response => {
                             console.log(response.data.projects)
                             this.variant = 'success'
@@ -661,7 +660,7 @@ try {
                     this.disable_overlay = true
                     if (search.length > 2) {
                         loading(true)
-                        axios.post(this.projectPortalSearchUsers, {'term': search})
+                        axios.post(this.ajax_urls.search_users, {'term': search})
                             .then(response => {
                                 this.search_users = response.data.users
                                 this.disable_overlay = false
@@ -682,7 +681,7 @@ try {
                 },
                 requestAccess: function (project) {
 
-                    axios.post(this.projectPortalRequestAccess, {'r2p2_project_id': project.item.id})
+                    axios.post(this.ajax_urls.request_access, {'r2p2_project_id': project.item.id})
                         .then(response => {
 
                             this.variant = 'success'
@@ -819,7 +818,7 @@ try {
                 },
                 getUserTickets: function () {
                     this.emptyTicketsTable = 'No Tickets for this REDCap project'
-                    axios.get(this.ajaxUserTicketURL)
+                    axios.get(this.ajax_urls.get_user_tickets)
                         .then(response => {
                             this.items = this.allItems = response.data.data;
                             this.totalRows = this.items.length
@@ -830,7 +829,7 @@ try {
                         });
                 },
                 getProjectEMs: function () {
-                    axios.post(this.ajaxProjectEMstURL)
+                    axios.post(this.ajax_urls.get_project_external_modules)
                         .then(response => {
                             if (response.data.data != undefined) {
                                 this.items_em = this.allEms = response.data.data;
@@ -883,7 +882,7 @@ try {
                     return notification
                 },
                 submitTicket: function () {
-                    axios.post(this.ajaxCreateJiraTicketURL, this.ticket)
+                    axios.post(this.ajax_urls.create_jira_ticket, this.ticket)
                         .then(response => {
                             this.getUserTickets()
                             this.closeModal('generic-modal')
@@ -901,7 +900,7 @@ try {
                     ;
                 },
                 submitServiceBlock: function () {
-                    axios.post(this.ajaxCreateServiceBlockURL, this.selectedServiceBlock)
+                    axios.post(this.ajax_urls.generate_service_block, this.selectedServiceBlock)
                         .then(response => {
                             this.closeModal('service-block-modal')
                             this.sow_approval.sow_id = response.data.id
@@ -922,7 +921,7 @@ try {
                 },
 
                 updateExternalModuleList: function () {
-                    axios.post(this.ajaxUpdateProjectEMUtil)
+                    axios.post(this.ajax_urls.update_project_em_util)
                         .then(response => {
                             this.getProjectEMs()
                             return response
@@ -943,12 +942,13 @@ try {
 
                     project = this.ticket.project_portal_id
 
-                    axios.post(this.attachREDCapURL, {
+                    axios.post(this.ajax_urls.project_attach, {
                         project_portal_id: project.id,
                         project_portal_name: project.project_name,
                         project_portal_description: project.project_description
                     })
                         .then(response => {
+                            this.closeModal('project-creation-modal')
                             this.variant = 'success'
                             this.showDismissibleAlert = true
                             this.ticket.project_portal_id_saved = "true"
@@ -960,6 +960,7 @@ try {
                             this.ticket.project_portal_sow_url = response.data.portal_project.project_portal_sow_url
                         }).then(response => {
                         this.getSignedAuth()
+                        this.getFinances()
                     }).catch(err => {
                         this.variant = 'danger'
                         this.showDismissibleAlert = true
@@ -967,7 +968,7 @@ try {
                     });
                 },
                 detachRedCapProject: function () {
-                    axios.post(this.detachREDCapURL, {
+                    axios.post(this.ajax_urls.project_detach, {
                         project_portal_id: this.ticket.project_portal_id,
                         redcap_project_id: this.ticket.redcap_project_id
                     })
@@ -988,7 +989,7 @@ try {
                     }
                 },
                 generateSignedAuth: function () {
-                    axios.post(this.ajaxGenerateSignedAuthURL, {
+                    axios.post(this.ajax_urls.generate_rma, {
                         project_portal_id: this.ticket.project_portal_id,
                         redcap_project_id: this.ticket.redcap_project_id,
                         external_modules: this.items_em,
@@ -1022,7 +1023,7 @@ try {
                     });
                 },
                 appendSignedAuth: function () {
-                    axios.post(this.ajaxAppendSignedAuthURL, {
+                    axios.post(this.ajax_urls.append_to_existing_ema, {
                         project_portal_id: this.ticket.project_portal_id,
                         redcap_project_id: this.ticket.redcap_project_id,
                         portal_sow_id: this.portalREDCapMaintenanceAgreement.id,
@@ -1047,7 +1048,7 @@ try {
                     });
                 },
                 updateRMA: function () {
-                    axios.get(this.ajaxUpdateSignedAuthURL)
+                    axios.get(this.ajax_urls.update_rma)
                         .then(response => {
                             this.getProjectEMs()
                             return response
@@ -1063,7 +1064,7 @@ try {
                     });
                 },
                 getSignedAuth: function () {
-                    axios.get(this.ajaxGetSignedAuthURL + '&monthly_payment=' + this.totalFees)
+                    axios.get(this.ajax_urls.get_rma + '&monthly_payment=' + this.totalFees)
                         .then(response => {
                             if (response.data.status == 'success') {
                                 this.portalREDCapMaintenanceAgreement = response.data;
@@ -1091,7 +1092,7 @@ try {
                     });
                 },
                 getRMALineItems: function () {
-                    axios.get(this.projectPortalRMALineItems + '&rma_id=' + this.portalREDCapMaintenanceAgreement.id)
+                    axios.get(this.ajax_urls.get_line_items + '&rma_id=' + this.portalREDCapMaintenanceAgreement.id)
                         .then(response => {
                             if (response.data.data !== undefined) {
                                 this.processRMALineItems(response.data.data);

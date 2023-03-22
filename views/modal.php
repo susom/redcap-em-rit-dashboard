@@ -212,7 +212,7 @@
     </b-overlay>
     <template #modal-footer="{ ok, cancel, hide }">
         <b-button :disabled='isDisabled' class="float-left" variant="danger"
-                  @click="openModal('result-modal');closeModal('approve-sow-modal')">Later
+                  @click="approveLater()">Later
         </b-button>
         <b-button :disabled='isDisabled' class="float-right" variant="success" @click="approveSOW()">
             Approve

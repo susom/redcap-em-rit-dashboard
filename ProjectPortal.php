@@ -771,4 +771,29 @@ class ProjectPortal extends AbstractExternalModule
         $array['on_behalf_of_last_name'] = $user['user_lastname'];
         return $array;
     }
+
+    public function getAjaxFiles($dir, $folder)
+    {
+        $result = [];
+        $files = scandir($dir);
+        unset($files[array_search('.', $files, true)]);
+        unset($files[array_search('..', $files, true)]);
+
+        // prevent empty ordered elements
+        if (count($files) < 1)
+            return [];
+
+
+        foreach ($files as $file) {
+
+            if (is_dir($dir . '/' . $file)) {
+                $result = array_merge(self::getAjaxFiles($dir . '/' . $file, $folder . '/' . $file), $result);
+            } else {
+                $parts = explode('.', $file);
+                $result[$parts[0]] = $this->getUrl($folder . '/' . $file, false, true);
+            }
+
+        }
+        return $result;
+    }
 }
