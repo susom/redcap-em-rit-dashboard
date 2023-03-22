@@ -120,7 +120,7 @@
                     Step 3: The linked R2P2 REDCap Maintenance Agreement is awaiting approval.
                 </div>
                 <b-button size="sm" variant="primary" class="pl-4"
-                          @click="openWindow(portalREDCapMaintenanceAgreement.link)">
+                          @click="openModal('approve-sow-modal')">
                     Approve REDCap Maintenance Agreement in R2P2
                 </b-button>
                 <div>
