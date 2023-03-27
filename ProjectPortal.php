@@ -778,7 +778,7 @@ class ProjectPortal extends AbstractExternalModule
         $files = scandir($dir);
         unset($files[array_search('.', $files, true)]);
         unset($files[array_search('..', $files, true)]);
-
+        // test commit
         // prevent empty ordered elements
         if (count($files) < 1)
             return [];
