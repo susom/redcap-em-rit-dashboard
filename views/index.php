@@ -260,7 +260,7 @@ try {
                     },
                     showServiceBlockButton: false,
                     fullURL: window.location.href,
-                    tabsPathsDictionary: ['r2p2', 'support', 'external-modules', 'payment-history'],
+                    tabsPathsDictionary: ['r2p2', 'rma', 'support', 'external-modules', 'payment-history'],
                     options: [{value: 'CA', label: 'Canada'}],
                     notifications: <?php echo json_encode($module->getNotifications()) ?>,
                     isSuperUser: <?php echo $module->isSuperUser() ?: 0 ?>,
@@ -809,6 +809,9 @@ try {
                     const params = Object.fromEntries(urlSearchParams.entries());
                     if (params['open-support-modal'] != undefined && params['open-support-modal'] == 'true') {
                         this.openModal('generic-modal')
+                    }
+                    if (params['open-linkage-modal'] != undefined && params['open-linkage-modal'] == 'true') {
+                        this.openModal('project-creation-modal')
                     }
                 },
                 manupilateProjectInfo: function () {
