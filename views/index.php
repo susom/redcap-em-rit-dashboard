@@ -109,9 +109,9 @@ try {
             >
                 <b-row>
                     <b-col class="justify-content-center align-self-center" lg="1" style="font-size: 40px"><i
-                                class="fas fa-exclamation-circle"></i></b-col>
+                            class="fas fa-exclamation-circle"></i></b-col>
                     <b-col class="justify-content-center align-self-center" lg="11"><p
-                                v-html="noneDismissibleAlertMessage"></p></b-col>
+                            v-html="noneDismissibleAlertMessage"></p></b-col>
 
                 </b-row>
             </b-alert>
@@ -250,6 +250,29 @@ try {
                     LINKED: 4,
                     HAS_RMA: 8,
                     APPROVED_RMA: 16,
+                    user_has_admin_permissions: <?php echo ProjectPortal::isUserProjectAdmin() ? 'true' : 'false'; ?>,
+                    r2p2_groups: <?php echo json_encode($module->getPortal()->getR2P2Groups()['results'])  ?>,
+                    users_list: <?php echo json_encode($module->getPortal()->getProjectMembers())  ?>,
+                    users_fields_list: [
+                        {
+                            key: 'redcap',
+                            label: 'REDCap User',
+                            sortable: true
+                        },
+                        {
+                            key: 'r2p2',
+                            label: 'R2P2 User',
+                            sortable: true
+                        },
+                        {
+                            key: 'group',
+                            label: 'R2P2 Group'
+                        },
+                        {
+                            key: 'action',
+                            label: 'Actions'
+                        },
+                    ],
                     projectState: <?php echo $module->getState() ?>,
                     workItemTypes: <?php echo json_encode($module->getPortal()->getWorkItemsTypes()) ?>,
                     sprintBlocks: <?php echo json_encode($module->getPortal()->sprintBlocks) ?>,
@@ -499,6 +522,34 @@ try {
                 }
             },
             methods: {
+                removeREDCapUser: function (r2p2_user_id) {
+                    if (confirm('Are you sure you want to remove this user from R2P2 project?')) {
+                        axios.post(this.ajax_urls.delete_r2p2_user, {'r2p2_user_id': r2p2_user_id}).then(response => {
+                            this.users_list = response.data.users
+
+                        }).catch(err => {
+                            this.variant = 'danger'
+                            this.showDismissibleAlert = true
+                            this.isDisabled = false
+                            this.alertMessage = err.response.data.message
+                        });
+                    }
+                },
+                syncREDCapUserToR2P2: function (group_id, redcap_username, r2p2_user_id) {
+                    axios.post(this.ajax_urls.sync_users, {
+                        'group_id': group_id,
+                        'redcap_username': redcap_username,
+                        'r2p2_user_id': r2p2_user_id
+                    }).then(response => {
+                        this.users_list = response.data.users
+
+                    }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                    });
+                },
                 createR2P2Project: function () {
 
                     if (Object.keys(this.irb).length !== 0) {

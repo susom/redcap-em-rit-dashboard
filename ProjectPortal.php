@@ -796,4 +796,22 @@ class ProjectPortal extends AbstractExternalModule
         }
         return $result;
     }
+
+    public static function isUserProjectAdmin()
+    {
+        if (defined('PROJECT_ID') and (!defined('NOAUTH') || NOAUTH == false)) {
+
+            //this function return right for main user when hit it with survey respondent!!!!!
+            $right = REDCap::getUserRights();
+            $user = $right[USERID];
+            if ($user['design'] === "1") {
+                return true;
+            }
+        }
+        if (defined('SUPER_USER') && SUPER_USER == "1") {
+            return true;
+        }
+
+        return false;
+    }
 }

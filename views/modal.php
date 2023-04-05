@@ -37,18 +37,18 @@
         <div class="form-group">
             <label for="description"><strong>Detailed Description: </strong></label>
             <b-form-textarea
-                    id="textarea"
-                    v-model="selectedServiceBlock.description"
-                    placeholder="Please describe what you need help with."
-                    rows="6"
-                    max-rows="10"
+                id="textarea"
+                v-model="selectedServiceBlock.description"
+                placeholder="Please describe what you need help with."
+                rows="6"
+                max-rows="10"
             ></b-form-textarea>
         </div>
         <div class="form-group">
             <label for="portal-projects"><strong>Service Block Size <a
-                            href="https://medwiki.stanford.edu/display/redcap/The+Statement+of+Work%3A+How+we+price+professional+services"
-                            target="_blank" class="ml-1"><i
-                                class="fas fa-external-link-alt"></i><span>more info</span></a>: </strong></label>
+                        href="https://medwiki.stanford.edu/display/redcap/The+Statement+of+Work%3A+How+we+price+professional+services"
+                        target="_blank" class="ml-1"><i
+                            class="fas fa-external-link-alt"></i><span>more info</span></a>: </strong></label>
 
             <v-select class="mb-3 nopadding" v-model="selectedServiceBlock.id" :options="sprintBlocks"
                       label="title" required>
@@ -61,11 +61,11 @@
                           placeholder="Whom you met with?"></b-form-input>
         </div>
         <b-form-checkbox
-                id="checkbox-1"
-                v-model="isAccepted"
-                name="checkbox-1"
-                value="accepted"
-                unchecked-value="not_accepted"
+            id="checkbox-1"
+            v-model="isAccepted"
+            name="checkbox-1"
+            value="accepted"
+            unchecked-value="not_accepted"
         >
             I understand this is a request for a fixed amount of project assistance and depending on the scope and time
             of work additional blocks may be necessary.
@@ -163,10 +163,10 @@
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
 
         <b-alert
-                :variant="variant"
-                dismissible
-                fade
-                :show="showDismissibleAlert">
+            :variant="variant"
+            dismissible
+            fade
+            :show="showDismissibleAlert">
             <b class="row" v-html="alertMessage"></b>
         </b-alert>
         <b-row>
@@ -189,10 +189,10 @@
             </b-col>
         </b-row>
         <b-form-group
-                class="mb-3"
+            class="mb-3"
         >
             <label for="sow_approval.reviewer_name">Please enter your full name here for verification <span
-                        style="color: red">*</span></label>
+                    style="color: red">*</span></label>
             <b-input-group class="mb-2">
                 <b-form-input id="sow_approval.reviewer_name" v-model="sow_approval.reviewer_name"
                               type="text"></b-form-input>
@@ -200,9 +200,9 @@
         </b-form-group>
 
         <b-form-group
-                label="Comment (optional)"
-                label-for="project_description"
-                class="mb-3"
+            label="Comment (optional)"
+            label-for="project_description"
+            class="mb-3"
         >
             <b-input-group class="mb-2">
                 <b-form-textarea id="sow_approval.comment" v-model="sow_approval.comment"
@@ -223,10 +223,10 @@
 
 <b-modal ref="create-pta-modal" size="lg" id="create-pta-modal" title="Create New PTA">
     <b-alert
-            :variant="variant"
-            dismissible
-            fade
-            :show="showDismissibleAlert">
+        :variant="variant"
+        dismissible
+        fade
+        :show="showDismissibleAlert">
         <b class="row" v-html="alertMessage"></b>
     </b-alert>
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
@@ -243,6 +243,66 @@
     <template #modal-footer="{ ok, cancel, hide }">
         <b-button :disabled='isDisabled' variant="success" @click="createNewPTA()">
             Submit
+        </b-button>
+    </template>
+</b-modal>
+
+<b-modal ref="sync-users" size="lg" id="sync-users" title="Sync Users">
+    <b-alert
+        :variant="variant"
+        dismissible
+        fade
+        :show="showDismissibleAlert">
+        <b class="row" v-html="alertMessage"></b>
+    </b-alert>
+    <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
+        <div class="d-block text-center">
+            <b-table striped hover bordered :items="users_list" :fields="users_fields_list">
+
+                <template #cell(group)="row">
+                    <b-form-select :disabled="!user_has_admin_permissions" v-model="row.item.group_id"
+                                   :options="r2p2_groups"
+                                   value-field="id"
+                                   text-field="name"
+                    ></b-form-select>
+                </template>
+                <template #cell(action)="row">
+                    <div v-if="user_has_admin_permissions">
+                        <b-row v-if="row.item.r2p2 != 'N/A'">
+
+                            <b-col>
+                                <b-button size="sm" :disabled='isDisabled'
+                                          variant="success"
+                                          @click="syncREDCapUserToR2P2(row.item.group_id, row.item.redcap_username, row.item.r2p2_user_id)">
+                                    Update
+                                </b-button>
+
+                                <b-button size="sm" :disabled='isDisabled'
+                                          variant="danger"
+                                          @click="removeREDCapUser(row.item.r2p2_user_id)">
+                                    Delete
+                                </b-button>
+                            </b-col>
+
+                        </b-row>
+
+                        <b-row v-if="row.item.r2p2 == 'N/A'">
+                            <b-col>
+                                <b-button size="sm" :disabled='isDisabled' variant="primary"
+                                          @click="syncREDCapUserToR2P2(row.item.group_id, row.item.redcap_username, row.item.r2p2_user_id)">
+                                    Add
+                                </b-button>
+                            </b-col>
+                        </b-row>
+                    </div>
+                </template>
+            </b-table>
+        </div>
+
+    </b-overlay>
+    <template #modal-footer="{ ok, cancel, hide }">
+        <b-button :disabled='isDisabled' variant="secondary" @click="cancel()">
+            Close
         </b-button>
     </template>
 </b-modal>

@@ -30,7 +30,7 @@
                 <b-row>
 
                     <b-col class="justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
-                                    class="fas fa-exclamation-circle"></i></h5>
+                                class="fas fa-exclamation-circle"></i></h5>
                         {{notifications.r2p2_tab_rma_card_not_linked_danger_message}}<br>
 
                     </b-col>
@@ -44,14 +44,12 @@
                 <b-row>
 
                     <b-col class="justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
-                                    class="fas fa-exclamation-circle"></i></h5>
+                                class="fas fa-exclamation-circle"></i></h5>
                         {{notifications.r2p2_tab_rma_card_no_fees_warning_message}}
                     </b-col>
 
                 </b-row>
             </b-alert>
-
-
 
 
             <b-row class="text-center">
@@ -80,21 +78,28 @@
             <b-row>
 
                 <b-col class="justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
-                                class="fas fa-check-circle"></i></h5>
+                            class="fas fa-check-circle"></i></h5>
                     {{notifications.r2p2_tab_rma_card_linked_success_message}}
                     <a :href="ticket.project_portal_url" target="_blank" class="ml-1"><i
-                                class="fas fa-external-link-alt"></i>
-                            <span>{{ticket.project_portal_name}}</span></a>
-                    </b-col>
-
-                </b-row>
-            </b-alert>
-
-
-            <b-row class="mt-3">
-                <b-col lg="12">
-                    If this is incorrect, please open a support ticket with additional detail for assistance.
+                            class="fas fa-external-link-alt"></i>
+                        <span>{{ticket.project_portal_name}}</span></a>
                 </b-col>
+
             </b-row>
+        </b-alert>
+
+
+        <b-row class="mt-3">
+            <b-col lg="12">
+                If this is incorrect, please open a support ticket with additional detail for assistance.
+            </b-col>
+        </b-row>
+
+        <b-row class="mt-3" v-if="linked() == true">
+            <b-col lg="5">
+                <b-button variant="success" v-b-modal.sync-users>Sync REDCap Users to {{ticket.project_portal_name}}
+                </b-button>
+            </b-col>
+        </b-row>
     </div>
 </b-container>
