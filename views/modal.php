@@ -255,6 +255,7 @@
         :show="showDismissibleAlert">
         <b class="row" v-html="alertMessage"></b>
     </b-alert>
+    <p v-html="notifications.sync_users_instructions"></p>
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
         <div class="d-block text-center">
             <b-table striped hover bordered :items="users_list" :fields="users_fields_list">

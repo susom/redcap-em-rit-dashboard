@@ -476,7 +476,35 @@ try {
                     openTickets: 'Yes',
                     emptyTicketsTable: "No Tickets Found",
                     bodyMessage: '',
-                    emptyFilteredTicketsTable: "No tickets attached to this REDCap Project. To See full list uncheck 'Display Tickets for current REDCap projects' checkbox"
+                    emptyFilteredTicketsTable: "No tickets attached to this REDCap Project. To See full list uncheck 'Display Tickets for current REDCap projects' checkbox",
+                    historical_sprint_blocks: [],
+                    display_historical_sprint_blocks: false,
+                    historical_sprint_blocks_fields: [
+                        {
+                            key: 'id',
+                            label: 'ID',
+                            sortable: true
+                        },
+                        {
+                            key: 'title',
+                            label: 'Title',
+                            sortable: true
+                        },
+                        {
+                            key: 'amount',
+                            label: 'Amount',
+                            sortable: true
+                        }, {
+                            key: 'status',
+                            label: 'Status',
+                            sortable: true
+                        },
+                        {
+                            key: 'reviewed_by',
+                            label: 'Reviewed By',
+                            sortable: true
+                        },
+                    ]
                 }
             },
             created() {
@@ -522,6 +550,17 @@ try {
                 }
             },
             methods: {
+                getSprintBlocks: function (display) {
+                    axios.get(this.ajax_urls.get_sprint_blocks).then(response => {
+                        this.historical_sprint_blocks = response.data.sprint_blocks
+                        this.display_historical_sprint_blocks = display
+                    }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                    });
+                },
                 removeREDCapUser: function (r2p2_user_id) {
                     if (confirm('Are you sure you want to remove this user from R2P2 project?')) {
                         axios.post(this.ajax_urls.delete_r2p2_user, {'r2p2_user_id': r2p2_user_id}).then(response => {
@@ -964,7 +1003,7 @@ try {
                             this.variant = 'success'
                             this.alertMessage = response.data.message
                             this.bodyMessage = response.data.message
-
+                            this.getSprintBlocks(false)
                         }).catch(err => {
                         this.variant = 'danger'
                         this.isDisabled = false

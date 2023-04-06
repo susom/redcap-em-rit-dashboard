@@ -411,6 +411,84 @@ class Portal
 
     }
 
+    public function getR2P2ProjectSOWs()
+    {
+        $jwt = $this->getClient()->getJwtToken();
+        $r2p2ProjectId = $this->projectPortalSavedConfig['portal_project_id'];
+        if (!$r2p2ProjectId) {
+            throw new \Exception('This project is not Linked to R2P2 project.');
+        }
+        $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . "api/projects/$r2p2ProjectId/sow/", [
+            'debug' => false,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            $sows = json_decode($response->getBody(), true);
+            $result = [];
+            foreach ($sows as $sow) {
+                if (strpos($sow['title'], 'Sprint Block') !== false) {
+                    $sow['reviewed_by'] = $sow['user']['first_name'] . ' ' . $sow['user']['last_name'];
+                    $sow['status'] = $this->getSOWStatusText($sow['status']);
+
+                    if (isset($sow['charge_item_sow_id__charge_id__count']) and $sow['charge_item_sow_id__charge_id__count'] >= 1) {
+                        $sow['charges'] = $this->getSOWCharges($sow['id']);
+                        $sow['amount'] = '$' . $sow['charges'][0]['amount'];
+                    }
+                    $result[] = $sow;
+                }
+            }
+            return $result;
+        } else {
+            throw new \Exception("could not get REDCap signed auth from portal.");
+        }
+    }
+
+    public function getSOWStatusText($status)
+    {
+        switch ($status) {
+            case 0:
+                return 'To Be Done';
+            case 1:
+                return 'Pending';
+            case 2:
+                return 'Approved Pending Development';
+            case 3:
+                return 'Revision Requested';
+            case 4:
+                return 'Denied';
+            case 5:
+                return 'Done';
+            case 6:
+                return 'Approved Active Development';
+            case 7:
+                return 'Approved Maintenance';
+            case 8:
+                return 'Internal Review';
+        }
+    }
+
+    public function getSOWCharges($sowId)
+    {
+        $jwt = $this->getClient()->getJwtToken();
+        $r2p2ProjectId = $this->projectPortalSavedConfig['portal_project_id'];
+        if (!$r2p2ProjectId) {
+            throw new \Exception('This project is not Linked to R2P2 project.');
+        }
+        $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . "api/projects/sow/$sowId/charges/", [
+            'debug' => false,
+            'headers' => [
+                'Authorization' => "Bearer {$jwt}",
+            ]
+        ]);
+        if ($response->getStatusCode() < 300) {
+            return json_decode($response->getBody(), true);
+        } else {
+            throw new \Exception("could not get REDCap signed auth from portal.");
+        }
+    }
+
     public function createNewPTA($finance)
     {
 

@@ -33,7 +33,7 @@
             <b-col class="mt-3" lg="8">
                 To learn more about R2P2 and Professional Services view the <a target="_blank"
                                                                                href="https://medwiki.stanford.edu/x/uiK3Cg"><i
-                            class="fas fa-external-link-alt"></i> The R2P2 wiki</a>
+                        class="fas fa-external-link-alt"></i> The R2P2 wiki</a>
             </b-col>
         </b-row>
         <b-row :show="showServiceBlockButton" class="mb-3 mt-3">
@@ -42,14 +42,33 @@
                 </b-button>
             </b-col>
         </b-row>
+
         <b-row>
-
-            <b-col class="justify-content-center align-self-center mt-3" lg="8">
-                <a :href="ticket.project_portal_sow_url" target="_blank" class="ml-1"><i
-                            class="fas fa-external-link-alt"></i>
-                    <span>{{ticket.project_portal_name}} Statements of Work</span></a>
+            <b-col>
+                <b-button @click="getSprintBlocks(true);" size="sm" variant="secondary"
+                          v-if="display_historical_sprint_blocks === false">Show Historical Sprint Blocks
+                </b-button>
+                <b-button @click="display_historical_sprint_blocks = false" size="sm" variant="secondary"
+                          v-if="display_historical_sprint_blocks === true">Hide Historical Sprint Blocks
+                </b-button>
             </b-col>
-
         </b-row>
+        <div v-if="display_historical_sprint_blocks === true">
+            <b-row>
+                <b-col class="justify-content-center align-self-center mt-3" lg="8">
+                    <a :href="ticket.project_portal_sow_url" target="_blank" class="ml-1"><i
+                            class="fas fa-external-link-alt"></i>
+                        <span>Full list of Project SOWs</span></a>
+                </b-col>
+            </b-row>
+            <b-table class="mt-3" striped hover bordered v-if="display_historical_sprint_blocks === true"
+                     :items="historical_sprint_blocks"
+                     :fields="historical_sprint_blocks_fields">
+                <template #cell(title)="row">
+                    <a target="_blank" :href="ticket.project_portal_sow_url + '/?id=' + row.item.id"><i
+                            class="fas fa-external-link-alt"></i>{{row.item.title}}</a>
+                </template>
+            </b-table>
+        </div>
     </div>
 </b-container>
