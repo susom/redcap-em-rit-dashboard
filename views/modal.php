@@ -278,7 +278,7 @@
                                     Update
                                 </b-button>
 
-                                <b-button size="sm" :disabled='isDisabled'
+                                <b-button v-if="row.item.current_user == 0" size="sm" :disabled='isDisabled'
                                           variant="danger"
                                           @click="removeREDCapUser(row.item.r2p2_user_id)">
                                     Delete

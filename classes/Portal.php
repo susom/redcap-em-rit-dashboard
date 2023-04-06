@@ -191,6 +191,7 @@ class Portal
                         'group_id' => $r2p2User['group']['id'],
                         'redcap_username' => $user,
                         'r2p2_user_id' => $r2p2User['user']['id'],
+                        'current_user' => $user == USERID
                     );
                     $found = true;
                     break;
