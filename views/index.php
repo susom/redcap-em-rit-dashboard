@@ -479,6 +479,7 @@ try {
                     emptyFilteredTicketsTable: "No tickets attached to this REDCap Project. To See full list uncheck 'Display Tickets for current REDCap projects' checkbox",
                     historical_sprint_blocks: [],
                     display_historical_sprint_blocks: false,
+                    empty_sprint_block: "No Sprint Blocks Found",
                     historical_sprint_blocks_fields: [
                         {
                             key: 'id',
@@ -553,6 +554,9 @@ try {
                 getSprintBlocks: function (display) {
                     axios.get(this.ajax_urls.get_sprint_blocks).then(response => {
                         this.historical_sprint_blocks = response.data.sprint_blocks
+                        if (this.historical_sprint_blocks == undefined || this.historical_sprint_blocks.length == 0) {
+                            this.empty_sprint_block = 'No Sprint Blocks Found'
+                        }
                         this.display_historical_sprint_blocks = display
                     }).catch(err => {
                         this.variant = 'danger'

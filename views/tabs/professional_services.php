@@ -61,7 +61,8 @@
                         <span>Full list of Project SOWs</span></a>
                 </b-col>
             </b-row>
-            <b-table class="mt-3" striped hover bordered v-if="display_historical_sprint_blocks === true"
+            <b-table class="mt-3" show-empty striped hover bordered v-if="display_historical_sprint_blocks === true"
+                     :empty-text="empty_sprint_block"
                      :items="historical_sprint_blocks"
                      :fields="historical_sprint_blocks_fields">
                 <template #cell(title)="row">
