@@ -125,11 +125,11 @@
                                   @click="openModal('approve-sow-modal')">
                             Approve RMA
                         </b-button>
-                        OR
-                        <b-button size="sm" variant="secondary"
-                                  @click="openModal('sow-approval-instructions')">
-                            Email Approval Instruction
-                        </b-button>
+                        <!--                        OR-->
+                        <!--                        <b-button size="sm" variant="secondary"-->
+                        <!--                                  @click="openModal('sow-approval-instructions')">-->
+                        <!--                            Email Approval Instruction-->
+                        <!--                        </b-button>-->
                     </b-col>
                 </b-row>
                 <div>
