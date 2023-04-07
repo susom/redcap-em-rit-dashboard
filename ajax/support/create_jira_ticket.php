@@ -40,20 +40,7 @@ try {
 
     $data = $module->getSupport()->createJiraTicketViaPortal($redcapProjectId, $summary, $issueType, $description, $portalProjectId, $module->getProject()->project['app_title'], $raise_on_behalf_of, $user_firstname, $user_lastname);
     echo json_encode(array_merge($data, array('status' => 'success', 'message' => "<a target='_blank' href='" . $module->getClient()->getPortalBaseURL() . "support?id=" . $data['id'] . "'><h3>" . $data['jira']['key'] . "</h3></a>&nbsp;<h3>has been created</h3>")));
-} catch (\LogicException $e) {
-    header("Content-type: application/json");
-    http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
-} catch (ClientException $e) {
-    // for regular request if failed try to generate new token and try again. otherwise throw exception.
-    header("Content-type: application/json");
-    http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
 } catch (\Exception $e) {
-    header("Content-type: application/json");
-    http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
-} catch (GuzzleException $e) {
     header("Content-type: application/json");
     http_response_code(404);
     echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));

@@ -307,4 +307,41 @@
         </b-button>
     </template>
 </b-modal>
+
+<b-modal ref="sow-approval-instructions" size="lg" id="sow-approval-instructions" title="Send SOW Approval Instruction">
+    <b-alert
+        :variant="variant"
+        dismissible
+        fade
+        :show="showDismissibleAlert">
+        <b class="row" v-html="alertMessage"></b>
+    </b-alert>
+    <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
+        <div class="d-block text-center">
+            <span class="row ml-2" v-html="notifications.sow_approval_instructions"></span>
+            <b-form-group
+                label="Emails"
+                label-for="emails-list"
+                description="Add Emails separated by ','"
+                class="mb-3"
+            >
+                <b-input-group class="mb-2">
+                    <b-form-textarea id="sow_approval_emails" v-model="sow_approval_emails"
+                                     type="text"
+                                     placeholder="test@stanford.edu, test2@stanford.edu"></b-form-textarea>
+                </b-input-group>
+            </b-form-group>
+            <b-form-group
+
+            >
+
+            </b-form-group>
+        </div>
+    </b-overlay>
+    <template #modal-footer="{ ok, cancel, hide }">
+        <b-button :disabled='isDisabled' class="float-right" variant="success" @click="sendEmails()">
+            Send
+        </b-button>
+    </template>
+</b-modal>
 <!-- END Time Slots Modal -->

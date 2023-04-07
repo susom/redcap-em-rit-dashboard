@@ -100,6 +100,8 @@ class ProjectPortal extends AbstractExternalModule
      */
     private $state;
 
+    private $templates;
+
     /**
      * ProjectPortal constructor.
      */
@@ -813,5 +815,46 @@ class ProjectPortal extends AbstractExternalModule
         }
 
         return false;
+    }
+
+    public function getEmailTemplates($key)
+    {
+        if (!$this->templates) {
+            $this->setEmailTemplates();
+        }
+        foreach ($this->templates as $template) {
+            if ($template['template_name'] == $key) {
+                return $template;
+            }
+        }
+        return [];
+    }
+
+    /**
+     * @return void
+     */
+    public function setEmailTemplates()
+    {
+        $this->templates = $this->getSubSettings('emails_templates', $this->getProjectId());;
+    }
+
+    public function sendEmail($emails, $subject, $body)
+    {
+        foreach ($emails as $email) {
+            $object = new \Message();
+            $object->setTo($email);
+            $object->setFrom('redcap@stanford.edu');
+            $object->setSubject($subject);
+            $object->setBody($body); //format message??
+
+            $result = $object->send();
+            //$module->emDebug($to, $from, $subject, $msg, $result);
+
+            // Send Email
+            if ($result == false) {
+                throw new \Exception('Error sending mail: ' . $email->getSendError() . ' with ' . json_encode($email));
+            }
+        }
+
     }
 }

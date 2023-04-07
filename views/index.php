@@ -480,6 +480,7 @@ try {
                     historical_sprint_blocks: [],
                     display_historical_sprint_blocks: false,
                     empty_sprint_block: "No Sprint Blocks Found",
+                    sow_approval_emails: "",
                     historical_sprint_blocks_fields: [
                         {
                             key: 'id',
@@ -551,6 +552,33 @@ try {
                 }
             },
             methods: {
+                sendEmails: function () {
+                    axios.post(this.ajax_urls.send_intructions, {
+                        'sow_approval_emails': this.sow_approval_emails,
+                        'template': 'sow_approval_instructions'
+                    }).then(response => {
+                        this.variant = 'success'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = response.data.message
+                    }).catch(err => {
+                        this.variant = 'danger'
+                        this.showDismissibleAlert = true
+                        this.isDisabled = false
+                        this.alertMessage = err.response.data.message
+                    });
+                },
+                isUserHasPermission: function (groups) {
+                    for (var i = 0; i < this.users_list.length; i++) {
+
+                        if (this.users_list[i]['current_user'] === true) {
+                            var group_id = this.users_list[i]['group_id']
+
+                            return groups.includes(group_id)
+                        }
+                    }
+                    return false
+                },
                 getSprintBlocks: function (display) {
                     axios.get(this.ajax_urls.get_sprint_blocks).then(response => {
                         this.historical_sprint_blocks = response.data.sprint_blocks

@@ -152,6 +152,33 @@
       "name": "<b>Enable Debug Logging (system-wide)</b>",
       "required": false,
       "type": "checkbox"
+    },
+    {
+      "key": "emails_templates",
+      "name": "Email template",
+      "required": true,
+      "type": "sub_settings",
+      "repeatable": true,
+      "sub_settings": [
+        {
+          "key": "template_name",
+          "name": "Email Template Name",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "template_subject",
+          "name": "Email Template Subject",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "template_body",
+          "name": "Email Template Body",
+          "required": true,
+          "type": "rich-text"
+        }
+      ]
     }
   ],
   "project-settings": [

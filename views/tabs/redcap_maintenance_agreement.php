@@ -23,7 +23,7 @@
             <p>
                 <i>Additional details on the maintenance agreement can be found
                     at the <a href="https://medwiki.stanford.edu/x/dZeWCg" target="_blank" class="ml-1"><i
-                                class="fas fa-external-link-alt"></i> REDCap Wiki </a>
+                            class="fas fa-external-link-alt"></i> REDCap Wiki </a>
                 </i>
             </p>
 
@@ -34,8 +34,8 @@
             >
                 <b-row>
                     <b-col class="justify-content-center align-self-center" lg="12"><h5
-                                class="d-inline-block  p-1"><i
-                                    class="fas fa-exclamation-circle"></i></h5>
+                            class="d-inline-block  p-1"><i
+                                class="fas fa-exclamation-circle"></i></h5>
                         {{notifications.r2p2_tab_rma_card_danger_message}}
                     </b-col>
                 </b-row>
@@ -119,10 +119,19 @@
                     <h5 class="d-inline-block  p-1"><i class="far fa-circle"></i></h5>
                     Step 3: The linked R2P2 REDCap Maintenance Agreement is awaiting approval.
                 </div>
-                <b-button size="sm" variant="primary" class="pl-4"
-                          @click="openModal('approve-sow-modal')">
-                    Approve REDCap Maintenance Agreement in R2P2
-                </b-button>
+                <b-row>
+                    <b-col>
+                        <b-button :disabled="!isUserHasPermission([2,3])" size="sm" variant="primary" class="pl-4"
+                                  @click="openModal('approve-sow-modal')">
+                            Approve RMA
+                        </b-button>
+                        OR
+                        <b-button size="sm" variant="secondary"
+                                  @click="openModal('sow-approval-instructions')">
+                            Email Approval Instruction
+                        </b-button>
+                    </b-col>
+                </b-row>
                 <div>
                     <i>
                         Approval requires R2P2 admin or PI role
@@ -150,7 +159,7 @@
                 <p>
                     Additional details on the REDCap Maintenance Agreement can be found
                     at the <a href="https://medwiki.stanford.edu/x/dZeWCg" target="_blank" class="ml-1"><i
-                                class="fas fa-external-link-alt"></i> REDCap Wiki </a>
+                            class="fas fa-external-link-alt"></i> REDCap Wiki </a>
                 </p>
                 <b-alert class="d-flex d-inline-block"
                          variant="success"
@@ -159,8 +168,8 @@
                 >
                     <b-row>
                         <b-col class="justify-content-center align-self-center" lg="12"><h5
-                                    class="d-inline-block  p-1"><i
-                                        class="fas fa-check-circle"></i></h5> This REDCap Project is linked to
+                                class="d-inline-block  p-1"><i
+                                    class="fas fa-check-circle"></i></h5> This REDCap Project is linked to
                             an
                             approved
                             REDCap Maintenance Agreement.
