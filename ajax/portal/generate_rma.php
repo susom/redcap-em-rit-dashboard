@@ -43,20 +43,7 @@ try {
     $module->setState($module->getProject()->project['status'] == '1', $monthlyFees, true, true, $data['sow_status']);
 
     echo json_encode(array_merge($data, array('state' => $module->getState(), 'status' => 'success', 'message' => $module->getNotifications()['generate_rma_success_message'], 'ems' => $ems, 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
-} catch (\LogicException $e) {
-    header("Content-type: application/json");
-    http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
-} catch (ClientException $e) {
-    // for regular request if failed try to generate new token and try again. otherwise throw exception.
-    header("Content-type: application/json");
-    http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
 } catch (\Exception $e) {
-    header("Content-type: application/json");
-    http_response_code(404);
-    echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
-} catch (GuzzleException $e) {
     header("Content-type: application/json");
     http_response_code(404);
     echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
