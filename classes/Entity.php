@@ -128,6 +128,12 @@ class Entity
             }
         }
 
+        /** @var \Stanford\ExternalModuleManager\ExternalModuleManager $manager */
+        $manager = \ExternalModules\ExternalModules::getModuleInstance('external_module_manager');
+
+        $total += $manager->getProjectTotalCustomCharges($projectId);
+
+
         return $total;
     }
 
