@@ -152,9 +152,11 @@ class Portal
 
     public function getProjectMembers()
     {
-        $r2p2ProjectId = $this->projectPortalSavedConfig['portal_project_id'];
         try {
-
+            $r2p2ProjectId = $this->projectPortalSavedConfig['portal_project_id'];
+            if(!$r2p2ProjectId){
+                throw new \Exception('R2P2 project ID is not provided');
+            }
             $jwt = $this->getClient()->getJwtToken();
             $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/projects/' . $r2p2ProjectId . '/users/', [
                 'debug' => false,
