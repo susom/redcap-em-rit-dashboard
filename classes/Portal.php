@@ -651,10 +651,10 @@ class Portal
         $response = $this->getClient()->getGuzzleClient()->post($this->getClient()->getPortalBaseURL() . 'api/projects/' . $portalProjectId . '/request-access/', [
             'debug' => false,
             'form_params' => [
-                'on_behalf_of_email' => $user['user_email'],
-                'on_behalf_of_username' => $user['username'],
-                'on_behalf_of_first_name' => $user['user_firstname'],
-                'on_behalf_of_last_name' => $user['user_lastname'],
+                'on_behalf_of_email' => $user['on_behalf_of_email'],
+                'on_behalf_of_username' => $user['on_behalf_of_username'],
+                'on_behalf_of_first_name' => $user['on_behalf_of_first_name'],
+                'on_behalf_of_last_name' => $user['on_behalf_of_last_name'],
             ],
             'headers' => [
                 'Authorization' => "Bearer {$jwt}",
