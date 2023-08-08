@@ -119,7 +119,7 @@ class ProjectPortal extends AbstractExternalModule
 
             $this->setEntity(new Entity());
 
-            if ($_GET && ((isset($_GET['projectid']) && $_GET['projectid'] != null) || (isset($_GET['projectid']) && $_GET['pid'] != null))) {
+            if ($_GET && isset($_GET['pid']) && $_GET['pid'] != null) {
 
                 $this->setProject(new \Project($this->getProjectId()));
 
