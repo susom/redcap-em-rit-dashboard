@@ -102,6 +102,7 @@ class ProjectPortal extends AbstractExternalModule
 
     private $templates;
 
+    private $entity;
     /**
      * ProjectPortal constructor.
      */
