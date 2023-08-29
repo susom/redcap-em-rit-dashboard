@@ -217,6 +217,7 @@ try {
             },
             data() {
                 return {
+                    has_monthly_cost: <?php echo $monthlyFees > 0 ? 1 : 0 ?>,
                     PROD: 1,
                     max_step: 5,
                     irb: {},
@@ -737,6 +738,10 @@ try {
                 },
                 closeModal: function (name) {
                     this.$refs[name].hide()
+                },
+                supportTicketOpenR2P2CreationWizard(project){
+                    this.openModal('project-creation-modal')
+                    this.selectProject(project)
                 },
                 selectProject: function (project) {
                     console.log(project)
