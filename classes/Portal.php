@@ -43,10 +43,12 @@ class Portal
      * @var array[]
      */
     public $sprintBlocks = [
-        ['id' => 1, 'title' => 'Micro Block - $675', 'price' => 675, 'text' => 'Micro Sprint Block'],
-        ['id' => 2, 'title' => 'Small Block - $2,475', 'price' => 2475, 'text' => 'Small Sprint Block'],
-        ['id' => 3, 'title' => 'Standard Block - $4,725', 'price' => 4725, 'text' => 'Standard Sprint Block'],
-        ['id' => 4, 'title' => 'Large Block - $9,225', 'price' => 9225, 'text' => 'Large Sprint Block'],
+        ['id' => 1, 'title' => 'Micro Block - $900', 'price' => 900, 'text' => 'Micro Sprint Block'],
+        ['id' => 5, 'title' => 'Mini Block - $1,500', 'price' => 1500, 'text' => 'Mini Sprint Block'],
+        ['id' => 6, 'title' => 'Extra Small Block - $2,100', 'price' => 2100, 'text' => 'Extra Small Sprint Block'],
+        ['id' => 2, 'title' => 'Small Block - $3,300', 'price' => 3300, 'text' => 'Small Sprint Block'],
+        ['id' => 3, 'title' => 'Standard Block - $6,300', 'price' => 6300, 'text' => 'Standard Sprint Block'],
+        ['id' => 4, 'title' => 'Large Block - $12,300', 'price' => 12300, 'text' => 'Large Sprint Block'],
     ];
 
     const ADMIN_GROUP_ID = 3;
