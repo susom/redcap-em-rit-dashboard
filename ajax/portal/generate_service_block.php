@@ -14,6 +14,7 @@ try {
     $description = $body['description'];
     $redcap_admin = $body['redcap_admin'];
     $sprintBlockId = $body['id']['id'];
+    $fundingSource = $body['fundingSource']['id'];
 
     if (!$description) {
         throw new \Exception("Sprint block description is missing");
@@ -22,7 +23,7 @@ try {
     if (!$sprintBlockId) {
         throw new \Exception("Please select sprint block size. ");
     }
-    $sprintBlock = $module->getPortal()->searchServiceBlock($sprintBlockId);
+    $sprintBlock = $module->getPortal()->searchServiceBlock($sprintBlockId, $fundingSource);
 
     // if user provided info about meeting with redcap admin please attach it to the description.
     if ($redcap_admin) {

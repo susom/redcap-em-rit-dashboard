@@ -35,25 +35,39 @@
     </b-alert>
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
         <div class="form-group">
+            <label for="portal-projects">What is your funding source?</label>
+
+            <v-select class="mb-3 nopadding" v-model="selectedServiceBlock.fundingSource" :options="fundingSources"
+                      @input="checkFundingSource"
+                      required>
+            </v-select>
+
+        </div>
+        <div class="form-group">
             <label for="description"><strong>Detailed Description: </strong></label>
             <b-form-textarea
-                id="textarea"
-                v-model="selectedServiceBlock.description"
-                placeholder="Please describe what you need help with."
-                rows="6"
-                max-rows="10"
+                    id="textarea"
+                    v-model="selectedServiceBlock.description"
+                    placeholder="Please describe what you need help with."
+                    rows="6"
+                    max-rows="10"
             ></b-form-textarea>
         </div>
         <div class="form-group">
             <label for="portal-projects"><strong>Service Block Size <a
-                        href="https://medwiki.stanford.edu/display/redcap/The+Statement+of+Work%3A+How+we+price+professional+services"
-                        target="_blank" class="ml-1"><i
-                            class="fas fa-external-link-alt"></i><span>more info</span></a>: </strong></label>
-
-            <v-select class="mb-3 nopadding" v-model="selectedServiceBlock.id" :options="sprintBlocks"
+                            href="https://medwiki.stanford.edu/display/redcap/The+Statement+of+Work%3A+How+we+price+professional+services"
+                            target="_blank" class="ml-1"><i
+                                class="fas fa-external-link-alt"></i><span>more info</span></a>: </strong></label>
+            <b-alert variant="warning"
+                     fade
+                     :show="selectedServiceBlock.fundingSource == null"
+            >
+                <b class="row">Select Your funding source first!</b>
+            </b-alert>
+            <v-select :disabled="selectedServiceBlock.fundingSource == null" class="mb-3 nopadding"
+                      v-model="selectedServiceBlock.id" :options="sprintBlocks"
                       label="title" required>
             </v-select>
-
         </div>
         <div class="form-group">
             <label for="exampleInputEmail1">Have you met with someone from REDCap team? If so, please describe.</label>
@@ -61,11 +75,11 @@
                           placeholder="Whom you met with?"></b-form-input>
         </div>
         <b-form-checkbox
-            id="checkbox-1"
-            v-model="isAccepted"
-            name="checkbox-1"
-            value="accepted"
-            unchecked-value="not_accepted"
+                id="checkbox-1"
+                v-model="isAccepted"
+                name="checkbox-1"
+                value="accepted"
+                unchecked-value="not_accepted"
         >
             I understand this is a request for a fixed amount of project assistance and depending on the scope and time
             of work additional blocks may be necessary.
@@ -163,10 +177,10 @@
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
 
         <b-alert
-            :variant="variant"
-            dismissible
-            fade
-            :show="showDismissibleAlert">
+                :variant="variant"
+                dismissible
+                fade
+                :show="showDismissibleAlert">
             <b class="row" v-html="alertMessage"></b>
         </b-alert>
         <b-row>
@@ -176,7 +190,8 @@
         </b-row>
         <b-row>
             <b-col lg="12">
-                <label for="sow_approval.pta_number">Registered PTAs <span style="color: red">*</span></label>
+                <label for="sow_approval.pta_number">Registered PTAs <span v-if="has_monthly_cost == 1"
+                                                                           style="color: red">*</span></label>
             </b-col>
         </b-row>
         <b-row>
@@ -189,10 +204,10 @@
             </b-col>
         </b-row>
         <b-form-group
-            class="mb-3"
+                class="mb-3"
         >
             <label for="sow_approval.reviewer_name">Please enter your full name here for verification <span
-                    style="color: red">*</span></label>
+                        style="color: red">*</span></label>
             <b-input-group class="mb-2">
                 <b-form-input id="sow_approval.reviewer_name" v-model="sow_approval.reviewer_name"
                               type="text"></b-form-input>
@@ -200,9 +215,9 @@
         </b-form-group>
 
         <b-form-group
-            label="Comment (optional)"
-            label-for="project_description"
-            class="mb-3"
+                label="Comment (optional)"
+                label-for="project_description"
+                class="mb-3"
         >
             <b-input-group class="mb-2">
                 <b-form-textarea id="sow_approval.comment" v-model="sow_approval.comment"
@@ -223,10 +238,10 @@
 
 <b-modal ref="create-pta-modal" size="lg" id="create-pta-modal" title="Create New PTA">
     <b-alert
-        :variant="variant"
-        dismissible
-        fade
-        :show="showDismissibleAlert">
+            :variant="variant"
+            dismissible
+            fade
+            :show="showDismissibleAlert">
         <b class="row" v-html="alertMessage"></b>
     </b-alert>
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
@@ -249,10 +264,10 @@
 
 <b-modal ref="sync-users" size="lg" id="sync-users" title="Sync Users">
     <b-alert
-        :variant="variant"
-        dismissible
-        fade
-        :show="showDismissibleAlert">
+            :variant="variant"
+            dismissible
+            fade
+            :show="showDismissibleAlert">
         <b class="row" v-html="alertMessage"></b>
     </b-alert>
     <p v-html="notifications.sync_users_instructions"></p>
@@ -310,20 +325,20 @@
 
 <b-modal ref="sow-approval-instructions" size="lg" id="sow-approval-instructions" title="Send SOW Approval Instruction">
     <b-alert
-        :variant="variant"
-        dismissible
-        fade
-        :show="showDismissibleAlert">
+            :variant="variant"
+            dismissible
+            fade
+            :show="showDismissibleAlert">
         <b class="row" v-html="alertMessage"></b>
     </b-alert>
     <b-overlay :show="isLoading" variant="light" opacity="0.80" rounded="sm">
         <div class="d-block text-center">
             <span class="row ml-2" v-html="notifications.sow_approval_instructions"></span>
             <b-form-group
-                label="Emails"
-                label-for="emails-list"
-                description="Add Emails separated by ','"
-                class="mb-3"
+                    label="Emails"
+                    label-for="emails-list"
+                    description="Add Emails separated by ','"
+                    class="mb-3"
             >
                 <b-input-group class="mb-2">
                     <b-form-textarea id="sow_approval_emails" v-model="sow_approval_emails"

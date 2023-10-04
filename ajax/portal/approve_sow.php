@@ -17,7 +17,9 @@ try {
         $approval['registered_pta'] = htmlentities($body['registered_pta']);
     }
 
-    if (!$approval['pta_number'] && !$approval['registered_pta']) {
+    // only check for PTA if project incurring monthly fees.
+    $monthlyFees = $module->getEntity()->getTotalMonthlyPayment($module->getProjectId());
+    if ($monthlyFees > 0 && !$approval['pta_number'] && !$approval['registered_pta']) {
         throw new \Exception('PTA is missing. Please select or create a new one.');
     }
 

@@ -109,9 +109,9 @@ try {
             >
                 <b-row>
                     <b-col class="justify-content-center align-self-center" lg="1" style="font-size: 40px"><i
-                            class="fas fa-exclamation-circle"></i></b-col>
+                                class="fas fa-exclamation-circle"></i></b-col>
                     <b-col class="justify-content-center align-self-center" lg="11"><p
-                            v-html="noneDismissibleAlertMessage"></p></b-col>
+                                v-html="noneDismissibleAlertMessage"></p></b-col>
 
                 </b-row>
             </b-alert>
@@ -222,7 +222,7 @@ try {
                     max_step: 5,
                     irb: {},
                     irb_num: null,
-                    redcap_irb_num: <?php echo "'" .$module->getProject()->project['project_irb_number'] . "'" ?: '""' ?>,
+                    redcap_irb_num: <?php echo "'" . $module->getProject()->project['project_irb_number'] . "'" ?: '""' ?>,
                     selected_pta_number: '',
                     requires_pta: false,
                     disable_new_pta_input: false,
@@ -276,11 +276,15 @@ try {
                     ],
                     projectState: <?php echo $module->getState() ?>,
                     workItemTypes: <?php echo json_encode($module->getPortal()->getWorkItemsTypes()) ?>,
-                    sprintBlocks: <?php echo json_encode($module->getPortal()->sprintBlocks) ?>,
+                    fullPriceSprintBlocks: <?php echo json_encode($module->getPortal()->sprintBlocks) ?>,
+                    sprintBlocks: this.fullPriceSprintBlocks,
+                    discountedSprintBlocks: <?php echo json_encode($module->getPortal()->discountedSprintBlocks) ?>,
+                    fundingSources: <?php echo json_encode($module->getPortal()->fundingSources) ?>,
                     selectedServiceBlock: {
                         id: null,
                         description: null,
-                        redcap_admin: null
+                        redcap_admin: null,
+                        fundingSource: null
                     },
                     showServiceBlockButton: false,
                     fullURL: window.location.href,
@@ -673,7 +677,17 @@ try {
                         this.alertMessage = err.response.data.message
                     });
                 },
-                selectPTA: function (pta) {
+                checkFundingSource: function (source) {
+                    // if funding source is not industry
+                    if (source != undefined) {
+                        if (source.id !== 3) {
+                            this.sprintBlocks = this.discountedSprintBlocks
+                        } else {
+                            this.sprintBlocks = this.fullPriceSprintBlocks
+                        }
+                    }
+
+                }, selectPTA: function (pta) {
                     if (pta.id === 'new') {
                         this.openModal('create-pta-modal')
                     } else {
@@ -739,7 +753,7 @@ try {
                 closeModal: function (name) {
                     this.$refs[name].hide()
                 },
-                supportTicketOpenR2P2CreationWizard(project){
+                supportTicketOpenR2P2CreationWizard(project) {
                     this.openModal('project-creation-modal')
                     this.selectProject(project)
                 },

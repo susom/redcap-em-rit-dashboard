@@ -51,6 +51,24 @@ class Portal
         ['id' => 4, 'title' => 'Large Block - $12,300', 'price' => 12300, 'text' => 'Large Sprint Block'],
     ];
 
+    public $discountedSprintBlocks = [
+        ['id' => 1, 'title' => 'Micro Block - $705', 'price' => 705, 'text' => 'Micro Sprint Block'],
+        ['id' => 5, 'title' => 'Mini Block - $1,175', 'price' => 1175, 'text' => 'Mini Sprint Block'],
+        ['id' => 6, 'title' => 'Extra Small Block - $1,645', 'price' => 1645, 'text' => 'Extra Small Sprint Block'],
+        ['id' => 2, 'title' => 'Small Block - $2,585', 'price' => 2585, 'text' => 'Small Sprint Block'],
+        ['id' => 3, 'title' => 'Standard Block - $4,935', 'price' => 4935, 'text' => 'Standard Sprint Block'],
+        ['id' => 4, 'title' => 'Large Block - $9,635', 'price' => 9635, 'text' => 'Large Sprint Block'],
+    ];
+
+    public $fundingSources = [
+        ['id' => 1,'label' =>'Federally Funded, e.g., NIH grant'],
+        ['id' => 2,'label' =>'Federally Funded, e.g., NIH grant'],
+        ['id' => 3,'label' =>'Industry Funded'],
+        ['id' => 4,'label' =>'Stanford Department/ Gift Funded'],
+        ['id' => 5,'label' =>'Seeking Funding, e.g., grant to be written'],
+        ['id' => 6,'label' =>'Unfunded'],
+    ];
+
     const ADMIN_GROUP_ID = 3;
 
     const APPROVED_PENDING_DEVELOPMENT = 2;
@@ -744,9 +762,14 @@ class Portal
      * @param $id
      * @return array
      */
-    public function searchServiceBlock($id)
+    public function searchServiceBlock($id, $fundingSource)
     {
-        foreach ($this->sprintBlocks as $sprintBlock) {
+        $blocks = $this->sprintBlocks;
+        // if funding source is not industrial
+        if($fundingSource != 3){
+            $blocks = $this->discountedSprintBlocks;
+        }
+        foreach ($blocks as $sprintBlock) {
             if ($id == $sprintBlock['id']) {
                 return $sprintBlock;
             }
