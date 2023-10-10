@@ -574,6 +574,10 @@ try {
                     });
                 },
                 isUserHasPermission: function (groups) {
+                    if(this.isSuperUser === 1)
+                    {
+                        return true
+                    }
                     for (var i = 0; i < this.users_list.length; i++) {
 
                         if (this.users_list[i]['current_user'] === true) {
