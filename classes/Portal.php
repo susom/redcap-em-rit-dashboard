@@ -152,8 +152,8 @@ class Portal
                 // temp fix for now
                 $projects = $projects[0];
                 $this->projectPortalSavedConfig['portal_project_id'] = $projects['project_id'];
-                $this->projectPortalSavedConfig['portal_project_name'] = $projects['portal_project_name'];
-                $this->projectPortalSavedConfig['portal_project_description'] = $projects['portal_project_description'];
+                $this->projectPortalSavedConfig['portal_project_name'] = $projects['portal_project_name']?:'';
+                $this->projectPortalSavedConfig['portal_project_description'] = $projects['portal_project_description']?:'';
                 $this->projectPortalSavedConfig['portal_project_url'] = $this->getClient()->getPortalBaseURL() . 'detail/' . $projects['project_id'];
 
 
