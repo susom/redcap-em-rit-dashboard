@@ -511,6 +511,11 @@ try {
                             label: 'Reviewed By',
                             sortable: true
                         },
+                        {
+                            key: 'created_at',
+                            label: 'Created At',
+                            sortable: true
+                        },
                     ]
                 }
             },

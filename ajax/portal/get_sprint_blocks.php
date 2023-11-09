@@ -9,6 +9,9 @@ use GuzzleHttp\Exception\GuzzleException;
 
 try {
     $data = $module->getPortal()->getR2P2ProjectSOWs();
+    foreach ($data as $key => $item){
+        $data[$key]['created_at'] = date('m/d/Y H:i:s', strtotime($item['created_at']));
+    }
     echo json_encode(array('status' => 'success', 'sprint_blocks' => $data));
 } catch (\Exception $e) {
     header("Content-type: application/json");
