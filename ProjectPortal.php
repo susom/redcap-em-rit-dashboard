@@ -2,7 +2,7 @@
 
 namespace Stanford\ProjectPortal;
 
-require __DIR__ . '/vendor/autoload.php';
+#require __DIR__ . '/vendor/autoload.php';
 require_once("emLoggerTrait.php");
 require_once("classes/User.php");
 require_once("classes/Support.php");
