@@ -762,6 +762,62 @@ class ProjectPortal extends AbstractExternalModule
         $this->state = Utilities::determineProjectState($status, $fees, $isLinked, $hasRMA, $approvedRMA);
     }
 
+    public function getNotificationProjects()
+    {
+        $result = [];
+        $sql = "select redcap_projects.project_id as project_id, SUM(maintenance_fees) as total_fees, SUM(amount) as total_custom
+from redcap_projects
+        LEFT JOIN redcap_entity_project_external_modules_usage reemc
+              on redcap_projects.project_id = reemc.project_id
+        LEFT JOIN redcap_entity_custom_charges recc on redcap_projects.project_id = recc.project_id
+WHERE is_em_enabled = 1 AND reemc.project_id is NOT NULL  GROUP BY redcap_projects.project_id";
+
+        if (isset($_POST['project_status'])) {
+            $status = htmlspecialchars($_POST['project_status']);
+            $sql = "select redcap_projects.project_id as project_id, SUM(maintenance_fees) as total_fees, SUM(amount) as total_custom
+from redcap_projects
+        LEFT JOIN redcap_entity_project_external_modules_usage reemc
+              on redcap_projects.project_id = reemc.project_id
+        LEFT JOIN redcap_entity_custom_charges recc on redcap_projects.project_id = recc.project_id
+WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project_id is NOT NULL  GROUP BY redcap_projects.project_id";
+
+        }
+
+        $q = db_query($sql);
+
+        $has_fees = isset($_GET['has_fees'])?htmlspecialchars($_GET['has_fees']):null;
+        $has_rma = isset($_GET['has_rma'])?htmlspecialchars($_GET['has_rma']):null;
+        $rma_approved = isset($_GET['rma_approved'])?htmlspecialchars($_GET['rma_approved']):null;
+        // manually set the portal so we can make calls to r2p2 api.
+        $this->setPortal(new Portal($this->getClient()));
+
+        while ($row = db_fetch_assoc($q)) {
+            // if requested project has EMs with fees or custom charges.
+            if($has_fees){
+                if($row['total_fees'] > 0 or $row['total_custom'] > 0){
+                    $result[] = $row['project_id'];
+                    continue;
+                }
+            }
+            if(!is_null($has_rma) or !is_null($rma_approved)){
+                $r2p2 = $this->getPortal()->getR2P2ForREDCapProject($row['project_id']);
+
+                // if no RMA found for project.
+                if(empty($r2p2['rma']) OR !$has_rma){
+                    $result[] = $row['project_id'];
+
+                }
+                // RMA not approved
+                elseif(!in_array($r2p2['rma']['status'], array(2,6,7) )){
+                    $result[] = $row['project_id'];
+
+                }
+            }
+
+
+        }
+        return $result;
+    }
 
     public function prepareOnBehalfUser($array)
     {

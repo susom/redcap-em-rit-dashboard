@@ -127,16 +127,11 @@ class Portal
         }
     }
 
-    /**
-     * @param $redcapProjectId
-     * @return void
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function setProjectPortalSavedConfig($redcapProjectId)
+    public function getR2P2ForREDCapProject($redcapProjectId)
     {
-        try {
+        try{
             $jwt = $this->getClient()->getJwtToken();
-            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/redcap/search/' . $redcapProjectId . '/', [
+            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/sow/search-rma/' . $redcapProjectId . '/', [
                 'debug' => false,
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",
@@ -147,17 +142,31 @@ class Portal
             } else {
                 throw new \Exception("could not get REDCap signed auth from portal.");
             }
-            if (!empty($projects)) {
+            return end($projects);
+        }catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    /**
+     * @param $redcapProjectId
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function setProjectPortalSavedConfig($redcapProjectId)
+    {
+        try {
+            $project = $this->getR2P2ForREDCapProject($redcapProjectId);
+            if (!empty($project)) {
                 //$projects = json_decode($projects, true);
                 // temp fix for now
-                $projects = $projects[0];
-                $this->projectPortalSavedConfig['portal_project_id'] = $projects['project_id'];
-                $this->projectPortalSavedConfig['portal_project_name'] = $projects['portal_project_name'] ?? '';
-                $this->projectPortalSavedConfig['portal_project_description'] = $projects['portal_project_description'] ?? '';
-                $this->projectPortalSavedConfig['portal_project_url'] = $this->getClient()->getPortalBaseURL() . 'detail/' . $projects['project_id'];
+                $this->projectPortalSavedConfig['portal_project_id'] = $project['project_id'];
+                $this->projectPortalSavedConfig['portal_project_name'] = $project['portal_project_name'] ?? '';
+                $this->projectPortalSavedConfig['portal_project_description'] = $project['portal_project_description'] ?? '';
+                $this->projectPortalSavedConfig['portal_project_url'] = $this->getClient()->getPortalBaseURL() . 'detail/' . $project['project_id'];
 
 
-                $rma = $this->getREDCapSignedAuthInPortal($projects['project_id'], $this->getProjectId());
+                $rma = $project['rma'];
                 if (!empty($rma)) {
                     $this->setHasRMA(true);
                     $this->setRMAStatus($rma['status']);
