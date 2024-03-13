@@ -131,7 +131,7 @@ class Portal
     {
         try{
             $jwt = $this->getClient()->getJwtToken();
-            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/sow/search-rma/' . $redcapProjectId . '/', [
+            $response = $this->getClient()->getGuzzleClient()->get($this->getClient()->getPortalBaseURL() . 'api/sow/search/' . $redcapProjectId . '/', [
                 'debug' => false,
                 'headers' => [
                     'Authorization' => "Bearer {$jwt}",
