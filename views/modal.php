@@ -25,7 +25,7 @@
         </b-button>
     </template>
 </b-modal>
-<b-modal ref="service-block-modal" size="lg" id="service-block-modal" title="Generate Sprint Block">
+<b-modal ref="service-block-modal" size="lg" id="service-block-modal" title="Generate Support Block">
     <b-alert :variant="variant"
              dismissible
              fade
@@ -54,8 +54,8 @@
             ></b-form-textarea>
         </div>
         <div class="form-group">
-            <label for="portal-projects"><strong>Service Block Size <a
-                            href="https://medwiki.stanford.edu/display/redcap/The+Statement+of+Work%3A+How+we+price+professional+services"
+            <label for="portal-projects"><strong>Support Block Size <a
+                            href="https://medwiki.stanford.edu/display/redcap/Support+Blocks"
                             target="_blank" class="ml-1"><i
                                 class="fas fa-external-link-alt"></i><span>more info</span></a>: </strong></label>
             <b-alert variant="warning"
