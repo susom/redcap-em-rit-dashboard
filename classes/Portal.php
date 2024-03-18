@@ -43,21 +43,21 @@ class Portal
      * @var array[]
      */
     public $sprintBlocks = [
-        ['id' => 1, 'title' => 'Micro Block - $900', 'price' => 900, 'text' => 'Micro Sprint Block'],
-        ['id' => 5, 'title' => 'Mini Block - $1,500', 'price' => 1500, 'text' => 'Mini Sprint Block'],
-        ['id' => 6, 'title' => 'Extra Small Block - $2,100', 'price' => 2100, 'text' => 'Extra Small Sprint Block'],
-        ['id' => 2, 'title' => 'Small Block - $3,300', 'price' => 3300, 'text' => 'Small Sprint Block'],
-        ['id' => 3, 'title' => 'Standard Block - $6,300', 'price' => 6300, 'text' => 'Standard Sprint Block'],
-        ['id' => 4, 'title' => 'Large Block - $12,300', 'price' => 12300, 'text' => 'Large Sprint Block'],
+        ['id' => 1, 'title' => 'Micro Block - $900', 'price' => 900, 'text' => 'Micro Support Block'],
+        ['id' => 5, 'title' => 'Mini Block - $1,500', 'price' => 1500, 'text' => 'Mini Support Block'],
+        ['id' => 6, 'title' => 'Extra Small Block - $2,100', 'price' => 2100, 'text' => 'Extra Small Support Block'],
+        ['id' => 2, 'title' => 'Small Block - $3,300', 'price' => 3300, 'text' => 'Small Support Block'],
+        ['id' => 3, 'title' => 'Standard Block - $6,300', 'price' => 6300, 'text' => 'Standard Support Block'],
+        ['id' => 4, 'title' => 'Large Block - $12,300', 'price' => 12300, 'text' => 'Large Support Block'],
     ];
 
     public $discountedSprintBlocks = [
-        ['id' => 1, 'title' => 'Micro Block - $705', 'price' => 705, 'text' => 'Micro Sprint Block'],
-        ['id' => 5, 'title' => 'Mini Block - $1,175', 'price' => 1175, 'text' => 'Mini Sprint Block'],
-        ['id' => 6, 'title' => 'Extra Small Block - $1,645', 'price' => 1645, 'text' => 'Extra Small Sprint Block'],
-        ['id' => 2, 'title' => 'Small Block - $2,585', 'price' => 2585, 'text' => 'Small Sprint Block'],
-        ['id' => 3, 'title' => 'Standard Block - $4,935', 'price' => 4935, 'text' => 'Standard Sprint Block'],
-        ['id' => 4, 'title' => 'Large Block - $9,635', 'price' => 9635, 'text' => 'Large Sprint Block'],
+        ['id' => 1, 'title' => 'Micro Block - $705', 'price' => 705, 'text' => 'Micro Support Block'],
+        ['id' => 5, 'title' => 'Mini Block - $1,175', 'price' => 1175, 'text' => 'Mini Support Block'],
+        ['id' => 6, 'title' => 'Extra Small Block - $1,645', 'price' => 1645, 'text' => 'Extra Small Support Block'],
+        ['id' => 2, 'title' => 'Small Block - $2,585', 'price' => 2585, 'text' => 'Small Support Block'],
+        ['id' => 3, 'title' => 'Standard Block - $4,935', 'price' => 4935, 'text' => 'Standard Support Block'],
+        ['id' => 4, 'title' => 'Large Block - $9,635', 'price' => 9635, 'text' => 'Large Support Block'],
     ];
 
     public $fundingSources = [
@@ -460,7 +460,7 @@ class Portal
             $sows = json_decode($response->getBody(), true);
             $result = [];
             foreach ($sows as $sow) {
-                if (strpos($sow['title'], 'Sprint Block') !== false) {
+                if (strpos($sow['title'], 'Support Block') !== false) {
                     $sow['reviewed_by'] = $sow['user']['first_name'] . ' ' . $sow['user']['last_name'];
                     $sow['status'] = $this->getSOWStatusText($sow['status']);
 

@@ -21,7 +21,7 @@ try {
     }
 
     if (!$sprintBlockId) {
-        throw new \Exception("Please select sprint block size. ");
+        throw new \Exception("Please select support block size. ");
     }
     $sprintBlock = $module->getPortal()->searchServiceBlock($sprintBlockId, $fundingSource);
 

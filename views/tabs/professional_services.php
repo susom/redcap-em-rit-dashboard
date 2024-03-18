@@ -9,7 +9,7 @@
 
         <b-row>
             <b-col class="mt-3" lg="8">
-                In order to request a sprint block, please first link this REDCap project to a R2P2 Research Project.
+                In order to request a support block, please first link this REDCap project to a R2P2 Research Project.
                 See the first tab for more details.
             </b-col>
         </b-row>
@@ -17,15 +17,15 @@
     <div v-else>
         <b-row>
             <b-col class="mt-3" lg="8">
-                To easily request professional assistance, a “Sprint Block” Statement of Work can be created from this
+                To easily request professional assistance, a “Support Block” Statement of Work can be created from this
                 page. The size of the block and dollar amount should come from documentation or a conversation with RIT
-                personnel. All Sprint Blocks represent an estimate of time and work and do not guarantee project
-                completion. Additional Sprint Blocks may be required.
+                personnel. All Support Blocks represent an estimate of time and work and do not guarantee project
+                completion. Additional Support Blocks may be required.
             </b-col>
         </b-row>
         <b-row>
             <b-col class="mt-3" lg="8">
-                After a Sprint Block is requested, a new Statement of Work (SoW) will be automatically created in R2P2.
+                After a Support Block is requested, a new Statement of Work (SoW) will be automatically created in R2P2.
                 Before work can being, you or someone from the research team must approve the SoW and provide a PTA.
             </b-col>
         </b-row>
@@ -38,7 +38,7 @@
         </b-row>
         <b-row :show="showServiceBlockButton" class="mb-3 mt-3">
             <b-col class="mt-3" lg="6">
-                <b-button size="sm" variant="success" v-b-modal.service-block-modal>Generate Sprint Block
+                <b-button size="sm" variant="success" v-b-modal.service-block-modal>Generate Support Block
                 </b-button>
             </b-col>
         </b-row>
@@ -46,10 +46,10 @@
         <b-row>
             <b-col>
                 <b-button @click="getSprintBlocks(true);" size="sm" variant="secondary"
-                          v-if="display_historical_sprint_blocks === false">Show Historical Sprint Blocks
+                          v-if="display_historical_sprint_blocks === false">Show Historical Support Blocks
                 </b-button>
                 <b-button @click="display_historical_sprint_blocks = false" size="sm" variant="secondary"
-                          v-if="display_historical_sprint_blocks === true">Hide Historical Sprint Blocks
+                          v-if="display_historical_sprint_blocks === true">Hide Historical Support Blocks
                 </b-button>
             </b-col>
         </b-row>
