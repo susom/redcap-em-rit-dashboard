@@ -142,7 +142,7 @@ class Portal
             } else {
                 throw new \Exception("could not get REDCap signed auth from portal.");
             }
-            return end($projects);
+            return $projects;
         }catch (\Exception $e) {
             echo $e->getMessage();
         }
