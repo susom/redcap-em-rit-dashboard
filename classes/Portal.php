@@ -166,7 +166,7 @@ class Portal
                 $this->projectPortalSavedConfig['portal_project_url'] = $this->getClient()->getPortalBaseURL() . 'detail/' . $project['project_id'];
 
 
-                $rma = $project['rma'][0];
+                $rma = $project['rma'];
                 if (!empty($rma)) {
                     $this->setHasRMA(true);
                     $this->setRMAStatus($rma['status']);
