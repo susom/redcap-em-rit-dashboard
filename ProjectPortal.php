@@ -804,7 +804,7 @@ WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project
                 $r2p2 = $this->getPortal()->getR2P2ForREDCapProject($row['project_id']);
 
                 // if no RMA found for project.
-                if(!isset($r2p2['rma']) OR empty($r2p2['rma']) OR !$has_rma){
+                if(!$has_rma AND (!isset($r2p2['rma']) OR empty($r2p2['rma']))){
                     $result[] = $row['project_id'];
 
                     // if we want projects with RMA
