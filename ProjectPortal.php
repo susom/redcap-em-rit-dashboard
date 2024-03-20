@@ -788,6 +788,7 @@ WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project
         $has_fees = isset($_GET['has_fees'])?htmlspecialchars($_GET['has_fees']):null;
         $has_rma = isset($_GET['has_rma'])?htmlspecialchars($_GET['has_rma']):null;
         $rma_approved = isset($_GET['rma_approved'])?htmlspecialchars($_GET['rma_approved']):null;
+        $pta_status = isset($_GET['pta_status'])?htmlspecialchars($_GET['pta_status']):null;
         // manually set the portal so we can make calls to r2p2 api.
         $this->setPortal(new Portal($this->getClient()));
 
@@ -803,20 +804,38 @@ WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project
                 $r2p2 = $this->getPortal()->getR2P2ForREDCapProject($row['project_id']);
 
                 // if no RMA found for project.
-                if(empty($r2p2['rma']) OR !$has_rma){
+                if(!isset($r2p2['rma']) OR empty($r2p2['rma']) OR !$has_rma){
                     $result[] = $row['project_id'];
 
-                }
-                // RMA not approved
-                elseif(!in_array($r2p2['rma']['status'], array(2,6,7) )){
+                    // if we want projects with RMA
+                }elseif($has_rma AND !empty($r2p2['rma'])){
                     $result[] = $row['project_id'];
-
                 }
+
+                // RMA exists
+                if(!empty($r2p2['rma'])){
+                    // RMA not approved or approved
+                   if($rma_approved AND in_array($r2p2['rma']['status'], array(2,6,7))){
+                        $result[] = $row['project_id'];
+                   }elseif(!$rma_approved AND !in_array($r2p2['rma']['status'], array(2,6,7))){
+                       $result[] = $row['project_id'];
+                   }
+                }
+
+                // PTA exists
+                if(!empty($r2p2['pta']) AND $pta_status){
+                    // Check PTA status
+                   if($pta_status == $r2p2['pta']['status']){
+                        $result[] = $row['project_id'];
+                   }
+                }
+
             }
 
 
         }
-        return $result;
+        // remove any duplicate project ids.
+        return array_unique($result);
     }
 
     public function prepareOnBehalfUser($array)
