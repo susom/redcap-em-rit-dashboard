@@ -765,7 +765,7 @@ class ProjectPortal extends AbstractExternalModule
     public function getNotificationProjects()
     {
         $result = [];
-        $sql = "select redcap_projects.project_id as project_id, SUM(maintenance_fees) as total_fees, SUM(amount) as total_custom
+        $sql = "select redcap_projects.project_id as project_id, SUM(if(has_maintenance_fees = 1,maintenance_fees,0)) as total_fees, SUM(amount) as total_custom
 from redcap_projects
         LEFT JOIN redcap_entity_project_external_modules_usage reemc
               on redcap_projects.project_id = reemc.project_id
@@ -774,7 +774,7 @@ WHERE is_em_enabled = 1 AND reemc.project_id is NOT NULL  GROUP BY redcap_projec
 
         if (isset($_GET['project_status'])) {
             $status = htmlspecialchars($_GET['project_status']);
-            $sql = "select redcap_projects.project_id as project_id, SUM(maintenance_fees) as total_fees, SUM(amount) as total_custom
+            $sql = "select redcap_projects.project_id as project_id, SUM(if(has_maintenance_fees = 1,maintenance_fees,0)) as total_fees, SUM(amount) as total_custom
 from redcap_projects
         LEFT JOIN redcap_entity_project_external_modules_usage reemc
               on redcap_projects.project_id = reemc.project_id
