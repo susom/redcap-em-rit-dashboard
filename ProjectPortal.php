@@ -831,6 +831,17 @@ WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project
                     }
                 }
 
+                if (isset($_GET[self::HAS_FEES]) AND $has_fees == 1) {
+                    // if we want projects with fees. skip projects without fees.
+                    if (($row['total_fees'] + $row['total_custom']) == 0) {
+                        continue;
+                    }
+                }elseif (isset($_GET[self::HAS_FEES]) AND $has_fees == 0){
+                    // if we want projects without fees. skip projects with fees.
+                    if(($row['total_fees'] + $row['total_custom']) > 0){
+                        continue;
+                    }
+                }
 
                 // if pta is requested but r2p2 pta does not match the requested status. then skip
                 if(isset($_GET['pta_status'])){
@@ -841,12 +852,12 @@ WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project
 
 
                 // if we want projects with RMA approved
-                if($rma_approved == 1){
+                if(isset($_GET[self::RMA_APPROVED]) AND $rma_approved == 1){
                     // if we want projects with RMA approved. skip not approved ones.
                     if(!in_array($r2p2['rma']['status'], array(2,6,7))){
                             continue;
                         }
-                }else{
+                }elseif(isset($_GET[self::RMA_APPROVED]) AND $rma_approved == 0){
                     // if we want projects with RMA NOT approved. skip approved ones.
                     if(in_array($r2p2['rma']['status'], array(2,6,7))){
                             continue;
