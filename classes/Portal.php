@@ -195,7 +195,7 @@ class Portal
             ]);
             if ($response->getStatusCode() < 300) {
                 $r2p2Users = json_decode($response->getBody(), true);;
-                return $this->matchREDCapUsersWithR2P2($r2p2Users['results']);
+                return $this->matchREDCapUsersWithR2P2($r2p2Users);
             } else {
                 throw new \Exception("could not get REDCap signed auth from portal.");
             }

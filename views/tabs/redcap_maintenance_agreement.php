@@ -121,7 +121,7 @@
                 </div>
                 <b-row>
                     <b-col>
-                        <b-button size="sm" variant="primary" class="pl-4"
+                        <b-button :disabled="!isUserHasPermission([2,3])" size="sm" variant="primary" class="pl-4"
                                   @click="openModal('approve-sow-modal')">
                             Approve RMA
                         </b-button>
