@@ -43,21 +43,21 @@ class Portal
      * @var array[]
      */
     public $sprintBlocks = [
-        ['id' => 1, 'title' => 'Micro Block - $900', 'price' => 900, 'text' => 'Micro Support Block'],
-        ['id' => 5, 'title' => 'Mini Block - $1,500', 'price' => 1500, 'text' => 'Mini Support Block'],
-        ['id' => 6, 'title' => 'Extra Small Block - $2,100', 'price' => 2100, 'text' => 'Extra Small Support Block'],
-        ['id' => 2, 'title' => 'Small Block - $3,300', 'price' => 3300, 'text' => 'Small Support Block'],
-        ['id' => 3, 'title' => 'Standard Block - $6,300', 'price' => 6300, 'text' => 'Standard Support Block'],
-        ['id' => 4, 'title' => 'Large Block - $12,300', 'price' => 12300, 'text' => 'Large Support Block'],
+        ['id' => 1, 'title' => 'Micro Block - $945', 'price' => 945, 'text' => 'Micro Support Block'],
+        ['id' => 5, 'title' => 'Mini Block - $1,575', 'price' => 1575, 'text' => 'Mini Support Block'],
+        ['id' => 6, 'title' => 'Extra Small Block - $2,205', 'price' => 2205, 'text' => 'Extra Small Support Block'],
+        ['id' => 2, 'title' => 'Small Block - $3,465', 'price' => 3465, 'text' => 'Small Support Block'],
+        ['id' => 3, 'title' => 'Standard Block - $6,615', 'price' => 6615, 'text' => 'Standard Support Block'],
+        ['id' => 4, 'title' => 'Large Block - $12,915', 'price' => 12915, 'text' => 'Large Support Block'],
     ];
 
     public $discountedSprintBlocks = [
-        ['id' => 1, 'title' => 'Micro Block - $705', 'price' => 705, 'text' => 'Micro Support Block'],
-        ['id' => 5, 'title' => 'Mini Block - $1,175', 'price' => 1175, 'text' => 'Mini Support Block'],
-        ['id' => 6, 'title' => 'Extra Small Block - $1,645', 'price' => 1645, 'text' => 'Extra Small Support Block'],
-        ['id' => 2, 'title' => 'Small Block - $2,585', 'price' => 2585, 'text' => 'Small Support Block'],
-        ['id' => 3, 'title' => 'Standard Block - $4,935', 'price' => 4935, 'text' => 'Standard Support Block'],
-        ['id' => 4, 'title' => 'Large Block - $9,635', 'price' => 9635, 'text' => 'Large Support Block'],
+        ['id' => 1, 'title' => 'Micro Block - $743', 'price' => 743, 'text' => 'Micro Support Block'],
+        ['id' => 5, 'title' => 'Mini Block - $1,238', 'price' => 1238, 'text' => 'Mini Support Block'],
+        ['id' => 6, 'title' => 'Extra Small Block - $1,733', 'price' => 1733, 'text' => 'Extra Small Support Block'],
+        ['id' => 2, 'title' => 'Small Block - $2,723', 'price' => 2723, 'text' => 'Small Support Block'],
+        ['id' => 3, 'title' => 'Standard Block - $5,198', 'price' => 5198, 'text' => 'Standard Support Block'],
+        ['id' => 4, 'title' => 'Large Block - $10,148', 'price' => 10148, 'text' => 'Large Support Block'],
     ];
 
     public $fundingSources = [
