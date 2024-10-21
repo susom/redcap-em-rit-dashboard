@@ -2,6 +2,7 @@
 
 namespace Stanford\ProjectPortal;
 
+# test commit to trigger Github actions build for all branches.
 #require __DIR__ . '/vendor/autoload.php';
 require_once("emLoggerTrait.php");
 require_once("classes/User.php");
