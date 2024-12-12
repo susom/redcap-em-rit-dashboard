@@ -27,7 +27,8 @@
     "services",
     "cron/entity/check_overdue_payments",
     "cron/portal/process_ems",
-    "ajax/notifications/get_projects"
+    "ajax/notifications/get_projects",
+    "ajax/portal/get_portal_project"
   ],
   "links": {
     "project": [

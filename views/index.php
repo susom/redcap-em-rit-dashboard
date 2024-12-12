@@ -191,6 +191,9 @@ try {
     <!--    <script src="--><?php //echo $module->getUrl('views/tabs/Test.vue.js', false, false) ?><!--"></script>-->
     <script type="module">
         var ajaxCalls = [];
+        window.portalLinkageHeader = "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header')); ?>"
+        window.ajax_urls: <?php echo json_encode($module->getAjaxFiles(__DIR__ . '/../ajax/', 'ajax')) ?>;
+        window.notifications: <?php echo json_encode($module->getNotifications()) ?>,
         Vue.component('v-select', VueSelect.VueSelect);
         // Vue.component('Navigation', Navigation)
         new Vue({
