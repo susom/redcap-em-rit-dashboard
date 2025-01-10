@@ -37,6 +37,12 @@
         "icon": "fas fa-columns",
         "url": "views/index.php",
         "show-header-and-footer": true
+      },
+      {
+        "name": "NEW Dashboard",
+        "icon": "fas fa-columns",
+        "url": "views/index_v3.php",
+        "show-header-and-footer": true
       }
     ],
     "control-center": [

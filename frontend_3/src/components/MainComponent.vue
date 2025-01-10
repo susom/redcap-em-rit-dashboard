@@ -39,7 +39,8 @@ export default {
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="professional-services-tab" data-bs-toggle="tab" data-bs-target="#professional-services"
+        <button class="nav-link" id="professional-services-tab" data-bs-toggle="tab"
+                data-bs-target="#professional-services"
                 type="button"
                 role="tab" aria-controls="professional-services" aria-selected="false">Professional Services
         </button>
@@ -66,5 +67,15 @@ export default {
 </template>
 
 <style scoped>
+.tab-content {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+}
 
+.nav-tabs {
+  margin-bottom: 0;
+}
 </style>
