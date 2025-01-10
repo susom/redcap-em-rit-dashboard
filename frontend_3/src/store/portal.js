@@ -10,16 +10,17 @@ export const useSharedPortalProject = defineStore('sharedObject', {
     }),
     actions: {
         async loadPortalProject() {
-             console.log('loadPortalProject method')
+            console.log(this.isLoaded)
+            console.log(this.data)
             if (this.isLoaded) return this.data; // Return if already loaded
 
             try {
                // const response = await axios.post(window.ajax_urls.get_portal_project);
                 const response = await axios.post(this.ajax_urls.get_portal_project);
-                console.log("response")
-                console.log(response)
+
                 this.data = response.data;
                 this.isLoaded = true;
+                return this.data
             } catch (err) {
                 this.error = err.message || 'Failed to fetch data';
                 console.error('Error loading shared object:', err);
@@ -31,8 +32,7 @@ export const useSharedPortalProject = defineStore('sharedObject', {
             if(!this.isLoaded){
                 await this.loadPortalProject()
             }
-            console.log('linked method')
-            console.log(this.data)
+
             if (this.data.project_portal_id !== '') {
                 return true;
             }

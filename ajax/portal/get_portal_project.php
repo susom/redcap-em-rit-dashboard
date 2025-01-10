@@ -13,11 +13,11 @@ try {
         'project_portal_type' => '',
         'project_portal_description' => '',
         'project_portal_id'               => isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id'] : '',
-        'project_portal_name'             => isset($module->getPortal()->projectPortalSavedConfig['project_portal_name']) ? $module->getPortal()->projectPortalSavedConfig['project_portal_name'] : '',
-        'project_portal_id_saved'         => isset($module->getPortal()->projectPortalSavedConfig['project_portal_id_saved']) ? $module->getPortal()->projectPortalSavedConfig['project_portal_id_saved'] : '',
-        'project_portal_url'              => isset($module->getPortal()->projectPortalSavedConfig['project_portal_url']) ? $module->getPortal()->projectPortalSavedConfig['project_portal_url'] : '',
-        'project_portal_sow_url'          => isset($module->getPortal()->projectPortalSavedConfig['project_portal_sow_url']) ? $module->getPortal()->projectPortalSavedConfig['project_portal_sow_url'] : '',
-        'project_portal_consultation_url' => isset($module->getPortal()->projectPortalSavedConfig['project_portal_consultation_url']) ? $module->getPortal()->projectPortalSavedConfig['project_portal_consultation_url'] : '',
+        'project_portal_name'             => isset($module->getPortal()->projectPortalSavedConfig['portal_project_name']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_name'] : '',
+        'project_portal_id_saved'         => isset($module->getPortal()->projectPortalSavedConfig['portal_project_id_saved']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_id_saved'] : '',
+        'project_portal_url'              => isset($module->getPortal()->projectPortalSavedConfig['portal_project_url']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_url'] : '',
+        'project_portal_sow_url'          => isset($module->getPortal()->projectPortalSavedConfig['portal_project_sow_url']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_sow_url'] : '',
+        'project_portal_consultation_url' => isset($module->getPortal()->projectPortalSavedConfig['portal_project_consultation_url']) ? $module->getPortal()->projectPortalSavedConfig['portal_project_consultation_url'] : '',
     ];
     echo json_encode(array('status' => 'success', 'data' => $data));
 } catch (\Exception $e) {

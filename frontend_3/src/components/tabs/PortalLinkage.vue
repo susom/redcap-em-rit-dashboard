@@ -14,20 +14,18 @@ export default {
       portalLinkageHeader: window.portalLinkageHeader + 'TEST REMOVE',
       totalFees: useSharedExternalModules().getTotalFees(),
       notifications: window.notifications || {},
+      projectPortal: {}
     }
   },
   async mounted() {
     const sharedPortal = useSharedPortalProject();
     this.portalLinked = await sharedPortal.linked(); // Wait for linked to resolve and update portalLinked
-    console.log(this.portalLinked)
+    this.projectPortal = await sharedPortal.loadPortalProject();
+    console.log(this.projectPortal)
+    console.log(this.projectPortal.data.project_portal_url)
   },
   methods: {
-    linked: function () {
-      if (this.ticket.project_portal_id !== '' && this.ticket.project_portal_id_saved === "true") {
-        return true;
-      }
-      return false;
-    },
+
   }
 }
 </script>
@@ -85,6 +83,16 @@ export default {
 <!--          </p>-->
         </div>
       </div>
+    </div>
+    <div v-else>
+        <div class="row">
+          <div class="col-12 justify-content-center align-self-center"><h5 class="d-inline-block  p-1"><i
+                            class="fas fa-check-circle"></i></h5>
+            {{this.notifications.r2p2_tab_rma_card_linked_success_message}}
+            <a :href="this.projectPortal.data.project_portal_url">
+            <span>{{this.projectPortal.data.project_portal_name}}</span></a>
+          </div>
+        </div>
     </div>
   </div>
 </template>
