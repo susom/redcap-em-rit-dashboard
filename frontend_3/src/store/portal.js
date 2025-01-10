@@ -6,32 +6,34 @@ export const useSharedPortalProject = defineStore('sharedObject', {
         data: null, // The shared object
         isLoaded: false, // Whether the object has been loaded
         error: null, // Error message if any
+        ajax_urls: window.ajax_urls || {},
     }),
     actions: {
         async loadPortalProject() {
-             console.log('loadPortalProject method')
              console.log('loadPortalProject method')
             if (this.isLoaded) return this.data; // Return if already loaded
 
             try {
                // const response = await axios.post(window.ajax_urls.get_portal_project);
-                const response = await axios.post('http://redcap.local/redcap_v14.9.1/ExternalModules/?prefix=rit_dashboard&page=ajax/portal/get_portal_project&NOAUTH&pid=164');
+                const response = await axios.post(this.ajax_urls.get_portal_project);
+                console.log("response")
+                console.log(response)
                 this.data = response.data;
                 this.isLoaded = true;
-                return this.data;
             } catch (err) {
                 this.error = err.message || 'Failed to fetch data';
                 console.error('Error loading shared object:', err);
                 throw err;
             }
         },
-        linked: function () {
-            console.log('linked method')
-            if(!this.isLoaded){
-                this.loadPortalProject()
-            }
+        async linked () {
 
-            if (this.data.project_portal_id !== '' && this.data.project_portal_id_saved === "true") {
+            if(!this.isLoaded){
+                await this.loadPortalProject()
+            }
+            console.log('linked method')
+            console.log(this.data)
+            if (this.data.project_portal_id !== '') {
                 return true;
             }
             return false;

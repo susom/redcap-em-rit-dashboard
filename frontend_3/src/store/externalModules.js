@@ -1,19 +1,20 @@
 import {defineStore} from 'pinia';
 import axios from 'axios';
 
-export const useSharedExternalModules = defineStore('sharedObject', {
+export const useSharedExternalModules = defineStore('sharedEMObject', {
     state: () => ({
         totalFees: 0, // The shared object
         items_em: null, // list of enabled EMs
         isLoaded: false, // Whether the object has been loaded
         error: null, // Error message if any
+        ajax_urls: window.ajax_urls || {},
     }),
     actions: {
         async loadExternalModules() {
             if (this.isLoaded) return this.items_em; // Return if already loaded
 
             try {
-                const response = await axios.post(window.ajax_urls.get_project_external_modules);
+                const response = await axios.post(this.ajax_urls.get_project_external_modules);
                 if (response.data.data !== undefined) {
                     this.items_em = this.allEms = response.data.data;
                     this.totalRows_em = this.items_em.length;
@@ -47,6 +48,7 @@ export const useSharedExternalModules = defineStore('sharedObject', {
 
         },
         getTotalFees () {
+
             if (!this.isLoaded){
                 this.loadExternalModules()
             }

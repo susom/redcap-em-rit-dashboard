@@ -1,19 +1,25 @@
 <script>
 
-import {useSharedPortalProject} from '@/store/portal';
-import {useSharedExternalModules} from '@/store/externalModules';
+import {useSharedPortalProject} from '../../store/portal.js';
+import {useSharedExternalModules} from '../../store/externalModules.js';
 
 export default {
   name: "PortalLinkage",
   data() {
     return {
-      portalLinked: useSharedPortalProject().linked(),
+      portalLinked: false,
       portalLinkageAlertMessage: 'portalLinkageAlertMessage',
       showPortalLinkageDismissibleAlert: 'd-none',
       portalLinkageVariant: 'alert-danger',
       portalLinkageHeader: window.portalLinkageHeader + 'TEST REMOVE',
-      totalFees: useSharedExternalModules().getTotalFees()
+      totalFees: useSharedExternalModules().getTotalFees(),
+      notifications: window.notifications || {},
     }
+  },
+  async mounted() {
+    const sharedPortal = useSharedPortalProject();
+    this.portalLinked = await sharedPortal.linked(); // Wait for linked to resolve and update portalLinked
+    console.log(this.portalLinked)
   },
   methods: {
     linked: function () {
@@ -54,12 +60,12 @@ export default {
       <div class="card" style="width: 18rem;">
         <div class="card-body">
           <h5 class="card-title">R2P2 - REDCap Linkage</h5>
-          <p class="card-text">
+<!--          <p class="card-text">-->
             <div v-if="totalFees > 0">
               <div class="row alert alert-danger fade show">
                 <div class="col-12 justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
                     class="fas fa-exclamation-circle"></i></h5>
-                  {{ window.notifications.r2p2_tab_rma_card_not_linked_danger_message }}<br>
+                  {{ this.notifications.r2p2_tab_rma_card_not_linked_danger_message }}<br>
                 </div>
               </div>
             </div>
@@ -67,7 +73,7 @@ export default {
               <div class="row alert warning fade show">
                 <div class="col-12 justify-content-center align-self-center" lg="12"><h5 class="d-inline-block  p-1"><i
                     class="fas fa-exclamation-circle"></i></h5>
-                  {{ window.notifications.r2p2_tab_rma_card_no_fees_warning_message }}<br>
+                  {{ this.notifications.r2p2_tab_rma_card_no_fees_warning_message }}<br>
                 </div>
               </div>
             </div>
@@ -76,7 +82,7 @@ export default {
                 Find/Create R2P2 Project
               </button>
             </div>
-          </p>
+<!--          </p>-->
         </div>
       </div>
     </div>

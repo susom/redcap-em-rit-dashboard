@@ -1,10 +1,10 @@
 <script>
 
-import PortalLinkage from "@/components/tabs/PortalLinkage.vue";
-import RMAComponent from "@/components/tabs/RMAComponent.vue";
-import SupportTickets from "@/components/tabs/SupportTickets.vue";
-import ExternalModules from "@/components/tabs/ExternalModules.vue";
-import ProfessionalServices from "@/components/tabs/ProfessionalServices.vue";
+import PortalLinkage from "../components/tabs/PortalLinkage.vue";
+import RMAComponent from "../components/tabs/RMAComponent.vue";
+import SupportTickets from "../components/tabs/SupportTickets.vue";
+import ExternalModules from "../components/tabs/ExternalModules.vue";
+import ProfessionalServices from "../components/tabs/ProfessionalServices.vue";
 
 export default {
   name: "MainComponent",
