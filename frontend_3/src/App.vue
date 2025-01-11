@@ -4,6 +4,7 @@
       <GlobalOverlay/>
       <MainComponent/>
       <FooterComponent/>
+      <ModalComponent/>
   </div>
 </template>
 
@@ -12,6 +13,7 @@ import HeaderComponent from './components/HeaderComponent.vue'
 import GlobalOverlay from './components/GlobalOverlay.vue';
 import MainComponent from "./components/MainComponent.vue";
 import FooterComponent from "./components/FooterComponent.vue";
+import ModalComponent from "./components/ModalComponent.vue";
 export default {
   name: 'App',
   components: {
@@ -19,6 +21,7 @@ export default {
     MainComponent,
     HeaderComponent,
     GlobalOverlay,
+    ModalComponent,
   }
 }
 </script>

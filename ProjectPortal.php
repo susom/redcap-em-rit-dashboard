@@ -109,6 +109,7 @@ class ProjectPortal extends AbstractExternalModule
     private $templates;
 
     private $entity;
+
     /**
      * ProjectPortal constructor.
      */
@@ -756,6 +757,10 @@ class ProjectPortal extends AbstractExternalModule
      */
     public function getState(): int
     {
+        if (!$this->state) {
+            $monthlyFees = $this->getEntity()->getTotalMonthlyPayment($this->getProjectId());
+            $this->setState($this->getProject()->project['status'] == '1', $monthlyFees, isset($this->getPortal()->projectPortalSavedConfig['portal_project_id']), $this->getPortal()->getHasRMA(), $this->getPortal()->getRMAStatus());
+        }
         return $this->state;
     }
 
@@ -792,77 +797,77 @@ WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project
         $q = db_query($sql);
 
 
-        $has_rma = isset($_GET[self::HAS_RMA])?htmlspecialchars($_GET[self::HAS_RMA]):null;
-        $rma_approved = isset($_GET[self::RMA_APPROVED])?htmlspecialchars($_GET[self::RMA_APPROVED]):null;
-        $has_fees = isset($_GET[self::HAS_FEES])?htmlspecialchars($_GET[self::HAS_FEES]):null;
-        $pta_status = isset($_GET['pta_status'])?htmlspecialchars($_GET['pta_status']):null;
+        $has_rma = isset($_GET[self::HAS_RMA]) ? htmlspecialchars($_GET[self::HAS_RMA]) : null;
+        $rma_approved = isset($_GET[self::RMA_APPROVED]) ? htmlspecialchars($_GET[self::RMA_APPROVED]) : null;
+        $has_fees = isset($_GET[self::HAS_FEES]) ? htmlspecialchars($_GET[self::HAS_FEES]) : null;
+        $pta_status = isset($_GET['pta_status']) ? htmlspecialchars($_GET['pta_status']) : null;
         // manually set the portal so we can make calls to r2p2 api.
         $this->setPortal(new Portal($this->getClient()));
 
-        if($has_rma == 0 AND ($rma_approved == 1 or $pta_status)) {
+        if ($has_rma == 0 and ($rma_approved == 1 or $pta_status)) {
             throw new \Exception("Wrong combination or parameters!");
         }
 
         while ($row = db_fetch_assoc($q)) {
             // if we need projects without RMA. then check only if it has fees or not.
-            if(is_null($has_rma)) {
+            if (is_null($has_rma)) {
                 if ($has_fees == 1) {
                     if (($row['total_fees'] + $row['total_custom']) > 0) {
                         $result[] = $row['project_id'];
                     }
-                }else{
-                    if(($row['total_fees'] + $row['total_custom']) == 0){
+                } else {
+                    if (($row['total_fees'] + $row['total_custom']) == 0) {
                         $result[] = $row['project_id'];
                     }
                 }
                 continue;
-            }else{
+            } else {
                 // we need RMA.
                 $r2p2 = $this->getPortal()->getR2P2ForREDCapProject($row['project_id']);
 
-                if($has_rma == 1) {
+                if ($has_rma == 1) {
                     // if no RMA then skip
                     if (empty($r2p2['rma'])) {
                         continue;
                     }
-                }else{
+                } else {
                     // if RMA exists then skip
                     if (!empty($r2p2['rma'])) {
                         continue;
                     }
                 }
 
-                if (isset($_GET[self::HAS_FEES]) AND $has_fees == 1) {
+                if (isset($_GET[self::HAS_FEES]) and $has_fees == 1) {
                     // if we want projects with fees. skip projects without fees.
                     if (($row['total_fees'] + $row['total_custom']) == 0) {
                         continue;
                     }
-                }elseif (isset($_GET[self::HAS_FEES]) AND $has_fees == 0){
+                } elseif (isset($_GET[self::HAS_FEES]) and $has_fees == 0) {
                     // if we want projects without fees. skip projects with fees.
-                    if(($row['total_fees'] + $row['total_custom']) > 0){
+                    if (($row['total_fees'] + $row['total_custom']) > 0) {
                         continue;
                     }
                 }
 
                 // if pta is requested but r2p2 pta does not match the requested status. then skip
-                if(isset($_GET['pta_status'])){
-                    if(empty($r2p2['rma']) or $pta_status != $r2p2['pta']['status']){
+                if (isset($_GET['pta_status'])) {
+                    if (empty($r2p2['rma']) or $pta_status != $r2p2['pta']['status']) {
                         continue;
                     }
                 }
 
 
                 // if we want projects with RMA approved
-                if(isset($_GET[self::RMA_APPROVED]) AND $rma_approved == 1){
+                if (isset($_GET[self::RMA_APPROVED]) and $rma_approved == 1) {
                     // if we want projects with RMA approved. skip not approved ones.
-                    if(!in_array($r2p2['rma']['status'], array(2,6,7))){
-                            continue;
-                        }
-                }elseif(isset($_GET[self::RMA_APPROVED]) AND $rma_approved == 0){
+                    if (!in_array($r2p2['rma']['status'], array(2, 6, 7))) {
+                        continue;
+                    }
+                } elseif (isset($_GET[self::RMA_APPROVED]) and $rma_approved == 0) {
                     // if we want projects with RMA NOT approved. skip approved ones.
-                    if(in_array($r2p2['rma']['status'], array(2,6,7))){
-                            continue;
-                        }
+                    if (in_array($r2p2['rma']['status'], array(2, 6, 7))) {
+                        continue;
+                    }
                 }
                 $result[] = $row['project_id'];
             }

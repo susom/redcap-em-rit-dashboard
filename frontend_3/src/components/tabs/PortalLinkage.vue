@@ -21,8 +21,7 @@ export default {
     const sharedPortal = useSharedPortalProject();
     this.portalLinked = await sharedPortal.linked(); // Wait for linked to resolve and update portalLinked
     this.projectPortal = await sharedPortal.loadPortalProject();
-    console.log(this.projectPortal)
-    console.log(this.projectPortal.data.project_portal_url)
+
   },
   methods: {}
 }
@@ -87,7 +86,7 @@ export default {
         <div class="col-12 justify-content-center align-self-center"><h5 class="d-inline-block  p-1"><i
             class="fas fa-check-circle"></i></h5>
           {{ this.notifications.r2p2_tab_rma_card_linked_success_message }}
-          <a :href="this.projectPortal.data.project_portal_url">
+          <a :href="this.projectPortal.data.project_portal_url || ''">
             <span>{{ this.projectPortal.data.project_portal_name }}</span></a>
         </div>
       </div>
