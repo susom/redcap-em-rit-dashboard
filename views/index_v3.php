@@ -12,6 +12,7 @@ use GuzzleHttp\Exception\GuzzleException;
     window.notifications = <?php echo json_encode($module->getNotifications()) ?>;
     window.ajax_urls = <?php echo json_encode($module->getAjaxFiles(__DIR__ . '/../ajax/', 'ajax')) ?>;
     window.portalLinkageHeader = "<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-portal-linkage-tab-header')); ?>";
+    window.tickets_header = '<?php echo str_replace(array("\n", "\r"), array("\\n", "\\r"), $module->getSystemSetting('rit-dashboard-ticket-tab-header')); ?>';
 </script>
 <div id="app"></div>
 <script src="<?php echo $module->getUrl('frontend_3/public/js/bundle.js') ?>"></script>

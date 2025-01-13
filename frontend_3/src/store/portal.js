@@ -16,23 +16,28 @@ export const useSharedPortalProject = defineStore('sharedObject', {
             LINKED: 4,
             HAS_RMA: 8,
             APPROVED_RMA: 16,
+            useOverlayStore : useOverlayStore()
         }),
         actions: {
             async loadPortalProject() {
-                useOverlayStore.showOverlay();
+
                 if (this.isLoaded) return this.data; // Return if already loaded
 
                 try {
+                    this.useOverlayStore.showOverlay()
                     // const response = await axios.post(window.ajax_urls.get_portal_project);
                     const response = await axios.post(this.ajax_urls.get_portal_project);
-
+                    this.useOverlayStore.hideOverlay()
                     this.data = response.data;
                     this.isLoaded = true;
                     return this.data
+
                 } catch (err) {
                     this.error = err.message || 'Failed to fetch data';
                     console.error('Error loading shared object:', err);
+
                     throw err;
+
                 }
             },
             async linked() {

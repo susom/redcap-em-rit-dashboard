@@ -3,7 +3,7 @@
     <!-- Modal 1 -->
     <div
       class="modal fade"
-      id="modal1"
+      id="support-ticket-modal"
       tabindex="-1"
       aria-labelledby="modal1Label"
       aria-hidden="true"
@@ -11,7 +11,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modal1Label">Modal 1</h5>
+            <h5 class="modal-title" id="modal1Label">Create New Ticket</h5>
             <button
               type="button"
               class="btn-close"
@@ -19,7 +19,7 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body">This is Modal 1 content.</div>
+          <div class="modal-body">MODAL TODO</div>
         </div>
       </div>
     </div>
