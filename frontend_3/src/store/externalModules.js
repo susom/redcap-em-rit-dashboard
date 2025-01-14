@@ -15,6 +15,7 @@ export const useSharedExternalModules = defineStore('sharedEMObject', {
 
             try {
                 const response = await axios.post(this.ajax_urls.get_project_external_modules);
+
                 if (response.data.data !== undefined) {
                     this.items_em = this.allEms = response.data.data;
                     this.totalRows_em = this.items_em.length;
@@ -22,9 +23,9 @@ export const useSharedExternalModules = defineStore('sharedEMObject', {
                     this.calculateTotalFees()
                     this.filterEms()
                 }
-                this.data = response.data;
+                this.data = response.data.data;
                 this.isLoaded = true;
-                return this.data;
+                return response.data.data;
             } catch (err) {
                 this.error = err.message || 'Failed to fetch data';
                 console.error('Error loading shared object:', err);
@@ -36,6 +37,7 @@ export const useSharedExternalModules = defineStore('sharedEMObject', {
             for (var i = 0; i < this.items_em.length; i++) {
                 this.totalFees += parseFloat(this.items_em[i].maintenance_fees)
             }
+
         },
         filterEms() {
             if (this.currentProjectEms === 'Yes') {
@@ -47,7 +49,7 @@ export const useSharedExternalModules = defineStore('sharedEMObject', {
             }
 
         },
-        getTotalFees () {
+        async getTotalFees () {
 
             if (!this.isLoaded){
                 this.loadExternalModules()

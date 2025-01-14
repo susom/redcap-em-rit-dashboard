@@ -125,10 +125,9 @@ export default {
         <div class="col-6">
           <div class="row">
             <div class="col-6">
-              <b-button :disabled="!this.isUserHasPermission([2,3])" size="sm" variant="primary" class="pl-4"
-              >
+              <button :disabled="!this.isUserHasPermission([2,3])" class="pl-4">
                 Approve RMA / TODO MODAL
-              </b-button>
+              </button>
             </div>
           </div>
           <div>

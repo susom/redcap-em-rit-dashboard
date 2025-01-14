@@ -5,10 +5,27 @@ import RMAComponent from "../components/tabs/RMAComponent.vue";
 import SupportTickets from "../components/tabs/SupportTickets.vue";
 import ExternalModules from "../components/tabs/ExternalModules.vue";
 import ProfessionalServices from "../components/tabs/ProfessionalServices.vue";
+import {useSharedPortalProject} from '../store/portal.js';
 
 export default {
   name: "MainComponent",
-  components: {ProfessionalServices, ExternalModules, SupportTickets, RMAComponent, PortalLinkage}
+  components: {ProfessionalServices, ExternalModules, SupportTickets, RMAComponent, PortalLinkage},
+  data () {
+    return {
+      redcapStep: 0,
+      rmaTabVariant: 'text-danger',
+      rmaTabIcon: 'fa-exclamation-circle'
+    }
+  },
+  async mounted() {
+    const sharedPortal = useSharedPortalProject();
+    this.redcapStep = await sharedPortal.determineREDCapStep();
+    console.log(this.redcapStep)
+    if (this.redcapStep === 4) {
+      this.rmaTabVariant = 'text-success';
+      this.rmaTabIcon = 'fa-check-circle';
+    }
+  },
 }
 </script>
 
@@ -24,7 +41,11 @@ export default {
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="rma-tab" data-bs-toggle="tab" data-bs-target="#rma" type="button"
                 role="tab" aria-controls="rma" aria-selected="false">REDCap Maintenance Agreement
+            <h5 class="d-inline-block  p-1"><i
+                  class="fas" :class="[this.rmaTabIcon, this.rmaTabVariant]"></i></h5>
         </button>
+
+
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="support-tickets-tab" data-bs-toggle="tab" data-bs-target="#support-tickets"

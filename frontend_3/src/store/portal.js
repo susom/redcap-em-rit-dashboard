@@ -130,7 +130,7 @@ export const useSharedPortalProject = defineStore('sharedObject', {
                     console.error('Error loading shared object:', err);
                     throw err;
                 }
-            }
+            },
         },
     })
 ;
