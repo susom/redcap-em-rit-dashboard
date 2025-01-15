@@ -33,7 +33,7 @@ export default {
 
 <template>
   <div class="container-fluid">
-    <div v-if="this.redcapStep < 4" class="row mt-2">
+    <div v-if="this.redcapStep < 4" class="row">
       <div class="col-12">
         <p>
           We recommend all REDCap projects be bound to an approved REDCap Maintenance Agreement. Some

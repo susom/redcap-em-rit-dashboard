@@ -27,15 +27,15 @@
     <!-- Modal 2 -->
     <div
       class="modal fade"
-      id="modal2"
+      id="professional-services-modal"
       tabindex="-1"
-      aria-labelledby="modal2Label"
+      aria-labelledby="professional-services-modalLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modal2Label">Modal 2</h5>
+            <h5 class="modal-title" id="professional-services-modalLabel">Generate Support Block</h5>
             <button
               type="button"
               class="btn-close"
@@ -43,7 +43,7 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body">This is Modal 2 content.</div>
+          <div class="modal-body">Modal Todo</div>
         </div>
       </div>
     </div>

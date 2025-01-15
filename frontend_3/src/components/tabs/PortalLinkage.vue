@@ -73,7 +73,7 @@ export default {
             </div>
           </div>
           <div class="text-center">
-            <button class="mt-3 success small">
+            <button class="success small">
               Find/Create R2P2 Project
             </button>
           </div>
@@ -97,7 +97,7 @@ export default {
       </div>
       <div class="row">
         <div class="col-5">
-          <button class="mt-3 btn btn-success small">
+          <button class="btn btn-success small">
               Sync REDCap Users to {{ this.projectPortal.data.project_portal_name }} / TODO MODAL
             </button>
         </div>

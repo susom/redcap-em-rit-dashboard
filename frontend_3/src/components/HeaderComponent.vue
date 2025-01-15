@@ -1,6 +1,9 @@
 <script>
+import AlertComponent from "./AlertComponent.vue";
+
 export default {
   name: "HeaderComponent",
+  components: {AlertComponent},
   data() {
     return {
       showError: false,
@@ -13,12 +16,7 @@ export default {
 <template>
   <div>
     <div class="row">
-      <div class="col-12">
-        <div ref="el" class="alert alert-info alert-dismissible fade" :class="{show : showError}" role="alert">
-          <div>{{ this.errorMessage }}</div>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      </div>
+      <AlertComponent/>
     </div>
     <h4>
       Welcome to your REDCap R2P2 Dashboard!
