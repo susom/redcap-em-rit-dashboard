@@ -124,12 +124,12 @@ export default {
           </button>
         </div>
       </div>
-      <div class="row">
+      <div class="row float-left">
         <div class="col-12">
-          <button @click="getSprintBlocks(true);" class="btn btn-secondary btn-sm"
+          <button @click="getSprintBlocks(true);" class="btn btn-secondary btn-sm mt-3 "
                   v-if="display_historical_sprint_blocks === false">Show Historical Support Blocks
           </button>
-          <button @click="display_historical_sprint_blocks = false" class="btn btn-secondary btn-sm"
+          <button @click="display_historical_sprint_blocks = false" class="btn btn-secondary btn-sm mt-3"
                   v-if="display_historical_sprint_blocks === true">Hide Historical Support Blocks
           </button>
         </div>

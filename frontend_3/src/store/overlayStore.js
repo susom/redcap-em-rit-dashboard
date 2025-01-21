@@ -1,17 +1,16 @@
-// store/overlayStore.js
+// stores/useOverlayStore.js
 import { defineStore } from 'pinia';
 
 export const useOverlayStore = defineStore('overlay', {
   state: () => ({
-    isVisible: false,
-    isDisabled : false,
+    isOverlayVisible: false,
   }),
   actions: {
     showOverlay() {
-      this.isVisible = true;
+      this.isOverlayVisible = true;
     },
     hideOverlay() {
-      this.isVisible = false;
+      this.isOverlayVisible = false;
     },
   },
 });

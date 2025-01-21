@@ -73,7 +73,7 @@ export default {
             </div>
           </div>
           <div class="text-center">
-            <button class="success small">
+            <button class="btn btn-success small">
               Find/Create R2P2 Project
             </button>
           </div>

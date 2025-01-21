@@ -83,7 +83,7 @@ export default {
     </div>
     <div class="row">
       <div class="col-12">
-        <button @click="updateExternalModuleList()">
+        <button class="btn btn-success" @click="updateExternalModuleList()">
           Update External Modules List
         </button>
       </div>

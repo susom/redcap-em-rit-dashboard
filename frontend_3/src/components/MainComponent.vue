@@ -40,9 +40,9 @@ export default {
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="rma-tab" data-bs-toggle="tab" data-bs-target="#rma" type="button"
-                role="tab" aria-controls="rma" aria-selected="false">REDCap Maintenance Agreement
-            <h5 class="d-inline-block"><i
-                  class="fas fa-1" :class="[this.rmaTabIcon, this.rmaTabVariant]"></i></h5>
+                role="tab" aria-controls="rma" aria-selected="false">REDCap Maintenance Agreement (RMA)
+            <small class="d-inline-block"><i
+                  class="fas fa-1" :class="[this.rmaTabIcon, this.rmaTabVariant]"></i></small>
         </button>
 
 
