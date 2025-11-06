@@ -35,7 +35,15 @@ try {
     $data = $module->getPortal()->generateR2P2SOW($portalProjectId, $module->getProjectId(), $work_items);
 
     echo json_encode(array_merge($data, array('status' => 'success', 'message' => 'New Service Block Statement of Work was created in R2P2. Please click this &nbsp;<a target="_blank" href="' . $module->getPortal()->projectPortalSavedConfig['portal_project_url'] . '/sow?id=' . $data['id'] . '"><strong>link</strong></a>&nbsp;')));
-} catch (\Exception $e) {
+} catch (ClientException $e) {
+    header("Content-type: application/json");
+    http_response_code(404);
+    $response = $e->getResponse();
+    $responseBodyAsString = $response->getBody()->getContents();
+    $message = json_decode($responseBodyAsString, true);
+    echo json_encode(array('status' => 'error', 'message' => $message['message']));
+}
+catch (\Exception $e) {
     header("Content-type: application/json");
     http_response_code(404);
     echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));

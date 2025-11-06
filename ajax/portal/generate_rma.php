@@ -43,7 +43,15 @@ try {
     $module->setState($module->getProject()->project['status'] == '1', $monthlyFees, true, true, $data['sow_status']);
 
     echo json_encode(array_merge($data, array('state' => $module->getState(), 'status' => 'success', 'message' => $module->getNotifications()['generate_rma_success_message'], 'ems' => $ems, 'link' => $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/sow/' . $data['id'])));
-} catch (\Exception $e) {
+} catch (ClientException $e) {
+    header("Content-type: application/json");
+    http_response_code(404);
+    $response = $e->getResponse();
+    $responseBodyAsString = $response->getBody()->getContents();
+    $message = json_decode($responseBodyAsString, true);
+    echo json_encode(array('status' => 'error', 'message' => $message['message']));
+}
+catch (\Exception $e) {
     header("Content-type: application/json");
     http_response_code(404);
     echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));

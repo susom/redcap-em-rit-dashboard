@@ -14,7 +14,15 @@ try {
     }
     $data = $module->getPortal()->updateRMA($module->getPortal()->projectPortalSavedConfig['portal_project_id']);
     echo json_encode(array('status' => 'success', 'message' => $data['message']));
-} catch (\Exception $e) {
+} catch (ClientException $e) {
+    header("Content-type: application/json");
+    http_response_code(404);
+    $response = $e->getResponse();
+    $responseBodyAsString = $response->getBody()->getContents();
+    $message = json_decode($responseBodyAsString, true);
+    echo json_encode(array('status' => 'error', 'message' => $message['message']));
+}
+catch (\Exception $e) {
     header("Content-type: application/json");
     http_response_code(404);
     echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
