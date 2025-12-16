@@ -25,7 +25,6 @@ ProjectSetup = {
         // setting a timeout
         var data = '<div id="portal-linkage-container">        <div class="alert alert-secondary d-flex justify-content-center">\n' +
             '  <div class="spinner-border" role="status">\n' +
-            '    <span class="sr-only">Loading...</span>\n' +
             '  </div>\n' +
             '</div></div>'
 
