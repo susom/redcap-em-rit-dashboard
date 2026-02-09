@@ -387,8 +387,11 @@ class ProjectPortal extends AbstractExternalModule
             if (!is_numeric($_POST['month']) or !in_array($_POST['month'], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])) {
                 throw new \LogicException("Month has wrong format!");
             }
-            if (!is_numeric($_POST['year']) or ($_POST['year'] < 2020 or $_POST['year'] > 2025)) {
+            if (!is_numeric($_POST['year'])) {
                 throw new \LogicException("Year has wrong format!");
+            }
+            if ($_POST['year'] < 2020 or $_POST['year'] > 2028) {
+                throw new \LogicException("Year must be less 2028!");
             }
             if (isset($_POST['project_id']) and !is_numeric($_POST['project_id'])) {
                 throw new \LogicException("Project id has wrong format!");
