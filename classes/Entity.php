@@ -186,6 +186,7 @@ class Entity
             } elseif (is_null($data['maintenance_fees']) && $data['is_em_enabled']) {
                 //$maintenance_monthly_cost = '<a target=\"_blank\" href=\"https://medwiki.stanford.edu/x/dZeWCg\">To be determined</a>';
                 $maintenance_monthly_cost = '<strong>To be determined</strong>';
+                // Test commit
             } elseif (!$data['is_em_enabled'] && $data['maintenance_fees']) {
                 $maintenance_monthly_cost = 'Module Disabled';
             } else {
