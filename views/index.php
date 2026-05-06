@@ -18,7 +18,6 @@ try {
 
     <!-- Load required Bootstrap and BootstrapVue CSS -->
     <!--    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>-->
-    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@2.23.1/dist/bootstrap-vue.min.css"/>
 
     <!-- Load polyfills to support older browsers -->
     <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"

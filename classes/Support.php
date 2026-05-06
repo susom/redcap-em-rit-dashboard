@@ -74,7 +74,7 @@ class Support
         if (!$this->jiraIssueTypes) {
             $this->setJiraIssueTypes();
         }
-        return $this->jiraIssueTypes;
+        return $this->jiraIssueTypes ?? [];
     }
 
     /**
@@ -103,7 +103,7 @@ class Support
                 $this->jiraIssueTypes = $jiraIssueTypes;
             }
         } catch (\Exception $e) {
-            echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
+            // silently fail; getJiraIssueTypes() returns [] as fallback
         }
     }
 
