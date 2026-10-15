@@ -38,7 +38,9 @@ class Client
 
         $this->setPrefix($prefix);
 
-        $this->setGuzzleClient(new \GuzzleHttp\Client(['headers' => ['ORIGIN' => $_SERVER['SERVER_NAME']]]));
+        // SERVER_NAME is not set when running from cron; Guzzle 8 (REDCap 17.5+) rejects null header values.
+        $headers = !empty($_SERVER['SERVER_NAME']) ? ['ORIGIN' => (string)$_SERVER['SERVER_NAME']] : [];
+        $this->setGuzzleClient(new \GuzzleHttp\Client(['headers' => $headers]));
 
         $this->setToken(ExternalModules::getSystemSetting($this->getPrefix(), 'project-portal-api-token'));
 
