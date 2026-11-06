@@ -37,8 +37,12 @@ class ManagerEM
     {
         try {
             if ($this->getManagerREDCapProjectId() != '') {
-                $url = $this->getManagerEMObject()->getUrl('ajax/refresh_project_em_util.php', true, true) . '&redcap_project_id=' . $projectId . '&pid=' . $this->getManagerREDCapProjectId();
-                $response = $this->getClient()->getGuzzleClient()->get($url, [
+                $managerEM = $this->getManagerEMObject();
+                $url = $managerEM->getUrl('ajax/refresh_project_em_util.php', true, true) . '&redcap_project_id=' . intval($projectId) . '&pid=' . intval($this->getManagerREDCapProjectId());
+                // EM Manager only runs this NOAUTH page for callers that POST its shared api-token.
+                // The token goes in the body, never the URL, so it stays out of access logs.
+                $response = $this->getClient()->getGuzzleClient()->post($url, [
+                    'form_params' => ['secret_token' => (string)$managerEM->getSystemSetting('api-token')],
                     'debug' => false
                 ]);
                 if ($response->getStatusCode() < 300) {
@@ -46,6 +50,8 @@ class ManagerEM
                 }
             }
         } catch (\Exception $e) {
+            // Callers (go_prod's RMA rule, generate_rma) carry on with the stored usage rows, so leave a trace.
+            ExternalModules::getModuleInstance($this->getPrefix())->emError("Refreshing EM usage for project $projectId failed: " . $e->getMessage());
             return false;
         }
     }
