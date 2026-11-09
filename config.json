@@ -53,6 +53,11 @@
       "type": "text"
     },
     {
+      "key": "notifications-api-token",
+      "name": "<b>Token for the REDCap Notifications API module.</b><br>That module's rules must send it as <code>\"secret_token\"</code> in their Request body to pull project lists from <code>ajax/notifications/get_projects</code>. While empty, those requests are refused.",
+      "type": "text"
+    },
+    {
       "key": "portal-username",
       "name": "<b>Enter the portal username that will be used to authenticate the integration between portal and redcap.</b>",
       "type": "text"

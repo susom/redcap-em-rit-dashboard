@@ -7,6 +7,14 @@ use GuzzleHttp\Exception\GuzzleException;
 
 /** @var \Stanford\ProjectPortal\ProjectPortal $module */
 
+// NOAUTH page: only this module's own cron may run it. It POSTs the shared token (see processCustomCharges()).
+if (!$module->isAuthorizedServiceRequest()) {
+    http_response_code(403);
+    header("Content-type: application/json");
+    echo json_encode(array('status' => 'error', 'message' => 'Forbidden'));
+    return;
+}
+
 try {
     // this will replicate em_charges and create charges for rma
     $module->getPortal()->replicateREDCapEMCharges();

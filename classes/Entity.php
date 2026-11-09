@@ -75,14 +75,13 @@ class Entity
             $month = date('m', time());
             $year = date('Y', time());
             // check if overdue payment record exists for current month
-            $query = "select * from redcap_entity_projects_overdue_payments where project_id = " . intval($projectId) . " and `year` = " . intval($year) . " and `month` = " . intval($month);
-            $q = db_query($query);
+            $q = db_query("select * from redcap_entity_projects_overdue_payments where project_id = ? and `year` = ? and `month` = ?", [(int)$projectId, (int)$year, (int)$month]);
             $row = db_fetch_assoc($q);
             if (empty($row)) {
                 $ems = $this->generateProjectEMUsageArray($projectId);
                 $external_modules = htmlspecialchars(json_encode($ems), ENT_QUOTES, 'UTF-8');
-                $sql = "insert into redcap_entity_projects_overdue_payments (`project_id`, `external_modules`, monthly_payments, created, updated, instance, year, month) values ('$projectId', '$external_modules' , '{$monthlyPayment}','" . time() . "','" . time() . "','1', '" . date("Y") . "', '" . date("m") . "')";
-                db_query($sql);
+                db_query("insert into redcap_entity_projects_overdue_payments (`project_id`, `external_modules`, monthly_payments, created, updated, instance, year, month) values (?, ?, ?, ?, ?, '1', ?, ?)",
+                    [(int)$projectId, $external_modules, $monthlyPayment, time(), time(), date("Y"), date("m")]);
             }
         }
     }
@@ -139,10 +138,19 @@ class Entity
     public function updateEMChargesWithR2P2Id($updatedIds)
     {
         $result = [];
-        foreach ($updatedIds as $id) {
-            $sql = sprintf("UPDATE %s SET r2p2_em_charge_id = %s WHERE id = %s", db_escape('redcap_entity_external_modules_charges'), db_escape($id['r2p2_charge_id']), db_escape($id['redcap_charge_id']));
-            $q = db_query($sql);
-            $result[] = 'REDCap Entity Charge Record ' . $id['r2p2_charge_id'] . ' Updated Successfully!';
+        foreach ((array)$updatedIds as $id) {
+            // R2P2 sends {"redcap_charge_id": <int>, "r2p2_charge_id": <int>}. Anything else is refused, and the
+            // values are bound, never written into the SQL text.
+            $r2p2Id = is_array($id) ? filter_var($id['r2p2_charge_id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : false;
+            $chargeId = is_array($id) ? filter_var($id['redcap_charge_id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : false;
+            if ($r2p2Id === false || $chargeId === false) {
+                $result[] = 'Skipped an entry: r2p2_charge_id and redcap_charge_id must be positive integers.';
+                continue;
+            }
+            db_query("UPDATE redcap_entity_external_modules_charges SET r2p2_em_charge_id = ? WHERE id = ?", [$r2p2Id, $chargeId]);
+            $result[] = db_affected_rows() > 0
+                ? 'REDCap Entity Charge Record ' . $r2p2Id . ' Updated Successfully!'
+                : 'REDCap Entity Charge Record ' . $chargeId . ' was not changed (not found, or already linked to ' . $r2p2Id . ').';
         }
         return $result;
     }

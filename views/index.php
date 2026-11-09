@@ -19,10 +19,6 @@ try {
     <!-- Load required Bootstrap and BootstrapVue CSS -->
     <!--    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>-->
 
-    <!-- Load polyfills to support older browsers -->
-    <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"
-            crossorigin="anonymous"></script>
-
     <!-- Load Vue followed by BootstrapVue -->
     <!--    <script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>-->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
@@ -221,7 +217,7 @@ try {
                     max_step: 5,
                     irb: {},
                     irb_num: null,
-                    redcap_irb_num: <?php echo "'" . $module->getProject()->project['project_irb_number'] . "'" ?: '""' ?>,
+                    redcap_irb_num: <?php echo json_encode((string)$module->getProject()->project['project_irb_number'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
                     selected_pta_number: '',
                     requires_pta: false,
                     disable_new_pta_input: false,
@@ -458,7 +454,7 @@ try {
                         project_portal_consultation_url: "<?php echo isset($module->getPortal()->projectPortalSavedConfig['portal_project_id']) ? $module->getClient()->getPortalBaseURL() . 'detail/' . $module->getPortal()->projectPortalSavedConfig['portal_project_id'] . '/consultation' : '' ?>"
                     },
                     base_portal_url: "<?php echo $module->getClient()->getPortalBaseURL() ?>",
-                    project_status: "<?php echo $module->getProject()->project['status'] ?>",
+                    project_status: <?php echo json_encode((string)$module->getProject()->project['status']) ?>,
                     portal_projects_list: <?php echo json_encode($module->getUser()->getProjectPortalList()) ?>,
                     ticket_types: <?php echo json_encode($module->getSupport()->getJiraIssueTypes()) ?>,
                     project_portal_id: "",

@@ -135,7 +135,9 @@ class ProjectPortal extends AbstractExternalModule
 
                 // only make connection if and only if the called page within this EM
                 preg_match('/prefix=rit_dashboard.*page=.*/m', $_SERVER['REQUEST_URI'], $matches, PREG_OFFSET_CAPTURE);
-                if (!empty($matches)) {
+                // Not for NOAUTH pages: they check the caller's token first, and the one that needs this data
+                // (cron/entity/check_overdue_payments) loads it itself, so anonymous requests can't make us call R2P2.
+                if (!empty($matches) && !ExternalModules::isNoAuth()) {
                     $this->getPortal()->prepareR2P2SavedProject();
                 }
 
@@ -158,7 +160,7 @@ class ProjectPortal extends AbstractExternalModule
         while ($project = $projects->fetch_assoc()) {
             $id = $project['project_id'];
             $url = $this->getUrl("cron/entity/check_overdue_payments.php", true) . '&pid=' . $id;
-            $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+            $this->postToSelf($url);
             $this->emDebug("running cron for $url on project " . $project['app_title']);
         }
     }
@@ -172,7 +174,21 @@ class ProjectPortal extends AbstractExternalModule
     {
         $id = ExternalModules::getSystemSetting($this->PREFIX, 'external-modules-manager-redcap-project');
         $url = $this->getUrl("cron/portal/process_ems.php", true) . '&pid=' . $id;
-        $this->getClient()->getGuzzleClient()->request('GET', $url, array(\GuzzleHttp\RequestOptions::SYNCHRONOUS => true));
+        $this->postToSelf($url);
+    }
+
+    /**
+     * NOAUTH self-call made by this module's crons. The target page only runs when the POST carries the
+     * module's shared token (project-portal-api-token), sent in the body so it stays out of URLs and logs.
+     * @param string $url
+     * @return void
+     */
+    private function postToSelf($url)
+    {
+        $this->getClient()->getGuzzleClient()->request('POST', $url, [
+            \GuzzleHttp\RequestOptions::SYNCHRONOUS => true,
+            'form_params' => ['secret_token' => (string)$this->getSystemSetting('project-portal-api-token')],
+        ]);
     }
 
     // override code function to allow any logged-in user to access the dashboard.
@@ -269,13 +285,12 @@ class ProjectPortal extends AbstractExternalModule
             throw new \LogicException("you are not allowed to access the API");
         }
 
-        $token = filter_var($_POST['secret_token'], FILTER_SANITIZE_STRING);
-        if (!$this->verifyToken($token)) {
+        if (!$this->verifyToken($_POST['secret_token'])) {
             throw new \LogicException("wrong token provided");
         }
 
-        // set request
-        $this->setRequest(filter_var($_POST['request'], FILTER_SANITIZE_STRING));
+        // set request (only compared against the request names below, never output)
+        $this->setRequest(is_string($_POST['request']) ? $_POST['request'] : '');
 
         if ($this->getRequest() == 'version') {
             header("Content-type: application/json");
@@ -361,12 +376,19 @@ class ProjectPortal extends AbstractExternalModule
 
             echo json_encode($this->getUser()->generateCustomSurveyRecord($this->getProjectId(), filter_var($_POST['instrument'], FILTER_SANITIZE_STRING), $data));
         } elseif ($this->getRequest() == "get_redcap_record") {
-            if (!isset($_POST['record_id'])) {
+            if (!isset($_POST['record_id']) || !is_string($_POST['record_id']) || $_POST['record_id'] === '') {
                 throw new \LogicException("REDCap Record ID is missing!");
             }
-            $result = $this->getEntity()->getREDCapRecordViaID($this->getProjectId(), $this->getFirstEventId(), filter_var($_POST['record_id'], FILTER_SANITIZE_STRING));
+            // R2P2 only reads back records of its own survey projects, and every one of them has the
+            // portal_summarize field. Refuse any other project, so the token cannot read arbitrary records.
+            $project = $this->getProject();
+            if (!$project || !isset($project->metadata['portal_summarize'])) {
+                throw new \LogicException("Record lookup is not available for this project.");
+            }
+            $recordId = $_POST['record_id'];
+            $result = $this->getEntity()->getREDCapRecordViaID($this->getProjectId(), $this->getFirstEventId(), $recordId);
 
-            echo json_encode($result[filter_var($_POST['record_id'], FILTER_SANITIZE_STRING)][$this->getFirstEventId()]);
+            echo json_encode($result[$recordId][$this->getFirstEventId()]);
         } elseif ($this->getRequest() == "get_redcap_enabled_ems") {
             if (!isset($_POST['redcap_project_id'])) {
                 throw new \LogicException("REDCap Project ID is missing!");
@@ -481,7 +503,7 @@ class ProjectPortal extends AbstractExternalModule
 
         // APPLY IP FILTER
         $ip_filter = $this->getSystemSetting('ip');
-        if (!empty($ip_filter) && !empty($ip_filter[0]) && empty($_POST['magic_skip_cidr'])) {
+        if (!empty($ip_filter) && !empty($ip_filter[0])) {
             $isValid = false;
             foreach ($ip_filter as $filter) {
                 if (self::ipCIDRCheck($filter, $ip_addr)) {
@@ -489,21 +511,21 @@ class ProjectPortal extends AbstractExternalModule
                     break;
                 }
             }
-            // Exit - invalid IP
             if (!$isValid) {
+                $subject = "Unauthorized IP trying to access the R2P2 services API";
+                $body = "IP address $ip_addr is trying to access the R2P2 services API and is not in the approved IP range.";
 
                 // Send email to designated user if IP is invalid
                 $emailTo = $this->getSystemSetting('alert-email');
                 if (!empty($emailTo)) {
                     $emailFrom = "noreply@stanford.edu";
-                    $subject = "Unauthorized IP trying to access Biocatalyst Reports";
-                    $body = "IP address $ip_addr is trying to access Biocatalyst Reports and is not in the approved IP range.";
-                    $status = REDCap::email($emailTo, $emailFrom, $subject, $body);
+                    REDCap::email($emailTo, $emailFrom, $subject, $body);
                 }
-
-                // Return error
                 $this->emError($subject, $body);
-                $this->returnError("Invalid source IP. Please contact REDCap Administrator to whitelist this IP:" . $ip_addr);
+
+                // Refuse: processRequest() stops here. (returnError() used to answer and then carry on, because
+                // exitAfterHook() does not end a page request, so the allowlist never blocked anything.)
+                return false;
             }
         }
         return true;
@@ -511,12 +533,50 @@ class ProjectPortal extends AbstractExternalModule
 
     /**
      * check if provided token is correct or not
-     * @param $token
+     * @param mixed $token raw value the caller sent
      * @return bool
      */
     private function verifyToken($token)
     {
-        return $token == $this->getClient()->getToken();
+        return $this->isValidToken($token, $this->getClient()->getToken());
+    }
+
+    /**
+     * Shared-secret check for server-to-server calls: fails closed when no token is configured, and
+     * compares in constant time.
+     * @param mixed $token
+     * @param mixed $expected
+     * @return bool
+     */
+    public function isValidToken($token, $expected): bool
+    {
+        $expected = (string)$expected;
+        return $expected !== '' && is_string($token) && hash_equals($expected, $token);
+    }
+
+    /**
+     * The secret_token a server-to-server caller sent, from a form POST or from a JSON body
+     * (the REDCap Notifications API module posts JSON).
+     * @return mixed
+     */
+    public function getRequestSecretToken()
+    {
+        if (isset($_POST['secret_token'])) {
+            return $_POST['secret_token'];
+        }
+        $body = json_decode((string)file_get_contents('php://input'), true);
+        return is_array($body) ? ($body['secret_token'] ?? null) : null;
+    }
+
+    /**
+     * Gate for NOAUTH pages that do work: only a POST carrying the token stored in $settingKey gets through.
+     * @param string $settingKey
+     * @return bool
+     */
+    public function isAuthorizedServiceRequest($settingKey = 'project-portal-api-token'): bool
+    {
+        return ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST'
+            && $this->isValidToken($this->getRequestSecretToken(), $this->getSystemSetting($settingKey));
     }
 
 
@@ -781,18 +841,23 @@ from redcap_projects
         LEFT JOIN redcap_entity_custom_charges recc on redcap_projects.project_id = recc.project_id
 WHERE is_em_enabled = 1 AND reemc.project_id is NOT NULL  GROUP BY redcap_projects.project_id";
 
+        $params = [];
         if (isset($_GET['project_status'])) {
-            $status = htmlspecialchars($_GET['project_status']);
+            $status = (string)$_GET['project_status'];
+            if (!in_array($status, ['0', '1', '2'], true)) {
+                throw new \Exception("Wrong project status!");
+            }
+            $params = [$status];
             $sql = "select redcap_projects.project_id as project_id, SUM(if(has_maintenance_fees = 1,maintenance_fees,0)) as total_fees, SUM(amount) as total_custom
 from redcap_projects
         LEFT JOIN redcap_entity_project_external_modules_usage reemc
               on redcap_projects.project_id = reemc.project_id
         LEFT JOIN redcap_entity_custom_charges recc on redcap_projects.project_id = recc.project_id
-WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project_id is NOT NULL  GROUP BY redcap_projects.project_id";
+WHERE is_em_enabled = 1 AND redcap_projects.status = ? AND reemc.project_id is NOT NULL  GROUP BY redcap_projects.project_id";
 
         }
 
-        $q = db_query($sql);
+        $q = db_query($sql, $params);
 
 
         $has_rma = isset($_GET[self::HAS_RMA])?htmlspecialchars($_GET[self::HAS_RMA]):null;
@@ -811,11 +876,11 @@ WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project
             if(is_null($has_rma)) {
                 if ($has_fees == 1) {
                     if (($row['total_fees'] + $row['total_custom']) > 0) {
-                        $result[] = $row['project_id'];
+                        $result[] = (string)$row['project_id']; // bound queries return ints; callers have always received strings
                     }
                 }else{
                     if(($row['total_fees'] + $row['total_custom']) == 0){
-                        $result[] = $row['project_id'];
+                        $result[] = (string)$row['project_id']; // bound queries return ints; callers have always received strings
                     }
                 }
                 continue;
@@ -867,7 +932,7 @@ WHERE is_em_enabled = 1 AND redcap_projects.status = '$status' AND reemc.project
                             continue;
                         }
                 }
-                $result[] = $row['project_id'];
+                $result[] = (string)$row['project_id']; // bound queries return ints; callers have always received strings
             }
 
         }
